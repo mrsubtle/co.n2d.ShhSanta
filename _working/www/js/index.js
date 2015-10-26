@@ -1,6 +1,39 @@
 /*
  * index.js
  */
+
+// Modify Date object to include an addHours and subHours functions
+  Date.prototype.addHours= function(h){
+    this.setHours(this.getHours()+h);
+    return this;
+  }
+  Date.prototype.subHours= function(h){
+    this.setHours(this.getHours()-h);
+    return this;
+  }
+  Date.prototype.addMinutes= function(m){
+    this.setMinutes(this.getMinutes()+m);
+    return this;
+  }
+  Date.prototype.subMinutes= function(m){
+    this.setMinutes(this.getMinutes()-m);
+    return this;
+  }
+  Date.prototype.addSeconds= function(s){
+    this.setSeconds(this.getSeconds()+s);
+    return this;
+  }
+  Date.prototype.subSeconds= function(s){
+    this.setSeconds(this.getSeconds()-s);
+    return this;
+  }
+  Date.prototype.toUTC = function(){
+    //this requires the Moment.js library to be loaded
+    if (moment) { this.setMinutes(this.getMinutes() + moment().utcOffset()); }
+    return this;
+  }
+
+
 var modals = {
   mdl_item_create : {
     el : "#mdl_item_create",
@@ -216,6 +249,230 @@ var modals = {
         }
       });
     }
+  },
+  mdl_event_create : {
+    el : "#mdl_event_create",
+    hide : function(){
+      this.remE();
+      $('group.modalContainer').one('webkittransitionend transitionend',function(){
+        $(modals.mdl_event_create.el).addClass('hidden');
+        setTimeout(function(){
+          //reset the modal
+          $('#frm_item_create')[0].reset();
+          $(modals.mdl_event_create.el + ' #item_create_photoContainer').html('');
+          $(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').addClass('hidden');
+        },1);
+      });
+      $('group.modalContainer').addClass('modalOff');
+      $('.app').toggleClass('tilt');
+    },
+    show : function(){
+      $('.app').toggleClass('tilt');
+      modals.mdl_event_create.remE().then(modals.mdl_event_create.addE().done(function(){
+        modals.mdl_event_create.render();
+        $(modals.mdl_event_create.el + ' content').scrollTop(0);
+        //TODO
+        //Uncomment for Event photo functions
+        //$(modals.mdl_event_create.el + ' #item_create_photoContainer').html('');
+        //$(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').addClass("hidden");
+      }));
+    },
+    addE : function() {
+      return $.Deferred(function(a){
+        $(modals.mdl_event_create.el + ' #frm_event_create').on('submit',function(e){
+          modals.mdl_event_create.setData();
+          e.preventDefault();
+        });
+        $(modals.mdl_event_create.el + ' #btn_cancel').hammer().on('tap',function(e){
+          modals.mdl_event_create.hide();
+          e.preventDefault();
+        });
+        $(modals.mdl_event_create.el + ' #btn_save').hammer().on('tap',function(e){
+          modals.mdl_event_create.setData();
+          e.preventDefault();
+        });
+        $(modals.mdl_event_create.el + ' #txt_upc').on('blur',function(e){
+          var upc = $(modals.mdl_event_create.el + ' #txt_upc').val();
+          if(upc != "" || upc != null){
+            try {
+              util.getDataUPC(upc,function(d){
+                $(modals.mdl_event_create.el + ' #lbl_barcodeStatus').html('...item found!');
+                //if an image is available, pre-load the image
+                if( d.images.length >= 1 ){
+                  util.convertImgToBase64(d.images[0],function(base64string){
+                    var v = {
+                      uri : base64string
+                    };
+                    var tpl = _.template( $('#tpl_item_create_photo').html() );
+                    $(modals.mdl_event_create.el + ' #item_create_photoContainer').html(tpl(v));
+                    $(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').removeClass("hidden");
+                  });
+                }
+                //populate the item name
+                $(modals.mdl_event_create.el + ' #txt_name').val(d.name);
+              },function(e){
+                var obj = $(modals.mdl_event_create.el + ' #lbl_barcodeStatus');
+                var objMsg = obj.html();
+                obj.html('...item info not found. :(');
+                setTimeout(function(){
+                  obj.html(objMsg);
+                },3000);
+              });
+            } catch (e) {
+              //DEBUG
+              console.log(e);
+            }
+          }
+        });
+        $(modals.mdl_event_create.el + ' #btn_scanBarcode').hammer().on('tap',function(e){
+          var lblO = $(modals.mdl_event_create.el + ' #frm_item_create #lbl_barcodeStatus');
+          var tmpLbl = lblO.html();
+          lblO.html( $('#tpl_loading').html() );
+          //scan that code!
+          cordova.plugins.barcodeScanner.scan(
+            function (result) {
+              if(result.cancelled == 0){
+                lblO.html('...successful scan...');
+                $('#frm_item_create #txt_upc').val(result.text);
+                var upc = result.text;
+                if(upc != "" || upc != null){
+                  util.getDataUPC(upc,function(d){
+                    //if an image is available, pre-load the image
+                    if( d.images.length >= 1 ){
+                      util.convertImgToBase64(d.images[0],function(base64string){
+                        var v = {
+                          uri : base64string
+                        };
+                        var tpl = _.template( $('#tpl_item_create_photo').html() );
+                        $(modals.mdl_event_create.el + ' #item_create_photoContainer').html(tpl(v));
+                        $(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').removeClass("hidden");
+                      });
+                    }
+                    //populate the item name
+                    $(modals.mdl_event_create.el + ' #txt_name').val(d.name);
+
+                  },function(e){
+                    //DEBUG
+                    console.log(e);
+                  });
+                }
+              } else {
+                lblO.html(tmpLbl);
+              }
+              //DEBUG
+              console.log(result);
+            },
+            function (error) {
+              lblO.html(tmpLbl);
+              app.e("Oops! Scan seems to have failed, but don't worry - we'll fix it. Eventiually.");
+              //DEBUG
+              console.log(error);
+            }
+          );
+          e.preventDefault();
+        });
+        $(modals.mdl_event_create.el + ' #btn_takeItemPhoto').hammer().on('tap',function(e){
+          navigator.camera.getPicture(function(imgData){
+            //success!
+            var v = {
+              uri : "data:image/png;base64," + imgData
+            };
+            var tpl = _.template( $('#tpl_item_create_photo').html() );
+            $(modals.mdl_event_create.el + ' #item_create_photoContainer').html(tpl(v));
+            $(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').removeClass("hidden");
+          }, function(error){
+            //fail :(
+            app.e('Can\'t take a picture.  I don\'t know why.  Do you?');
+          }, {
+            quality: 80,
+            destinationType: Camera.DestinationType.DATA_URL,
+            sourceType: Camera.PictureSourceType.CAMERA,
+            allowEdit: true,
+            targetWidth: 1024,
+            targetHeight: 1024,
+            encodingType: Camera.EncodingType.PNG,
+            cameraDirection: Camera.Direction.BACK
+          });
+          e.preventDefault();
+        });
+        $(modals.mdl_event_create.el + ' #btn_selectItemPhoto').hammer().on('tap',function(e){
+          navigator.camera.getPicture(function(imgData){
+            //success!
+            var v = {
+              uri : "data:image/png;base64," + imgData
+            };
+            var tpl = _.template( $('#tpl_item_create_photo').html() );
+            $(modals.mdl_event_create.el + ' #item_create_photoContainer').html(tpl(v));
+            $(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').removeClass('hidden');
+          }, function(error){
+            //fail :(
+            app.e("Umm... This is embarassing. I can't open the gallery.  I don't know why.  Do you?");
+          }, {
+            quality: 80,
+            destinationType: Camera.DestinationType.DATA_URL,
+            sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+            allowEdit: true,
+            targetWidth: 1024,
+            targetHeight: 1024,
+            encodingType: Camera.EncodingType.PNG
+          });
+          e.preventDefault();
+        });
+        $(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').hammer().on('tap',function(e){
+          $(modals.mdl_event_create.el + ' #item_create_photoContainer').html('');
+          $(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').addClass('hidden');
+          e.preventDefault();
+        });
+        a.resolve();
+      }).promise();
+    },
+    remE : function() {
+      return $.Deferred(function(r){
+        $(modals.mdl_event_create.el + ' #frm_item_create').off('submit');
+        $(modals.mdl_event_create.el + ' #btn_cancel').hammer().off('tap');
+        $(modals.mdl_event_create.el + ' #btn_save').hammer().off('tap');
+        $(modals.mdl_event_create.el + ' #txt_upc').off('blur');
+        $(modals.mdl_event_create.el + ' #btn_scanBarcode').hammer().off('tap');
+        $(modals.mdl_event_create.el + ' #btn_takeItemPhoto').hammer().off('tap');
+        $(modals.mdl_event_create.el + ' #btn_selectItemPhoto').hammer().off('tap');
+        $(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').hammer().off('tap');
+        r.resolve();
+      }).promise();
+    },
+    render : function(){
+      //unhide the appropriate modal
+      $(modals.mdl_event_create.el).removeClass('hidden');
+      //animate modal container
+      $('group.modalContainer').removeClass('modalOff');
+    },
+    setData : function(){
+      var Event = Parse.Object.extend("Event");
+      var newEvent = new Event();
+      newEvent.set('createdBy',Parse.User.current());
+      newEvent.set('title',$(modals.mdl_event_create.el+" #txt_title").val());
+      newItem.set('description',$(modals.mdl_event_create.el+" #txt_description").val());
+      newItem.set('upc',parseInt($(modals.mdl_event_create.el+" #txt_upc").val()));
+      newItem.set('rating',parseInt($(modals.mdl_event_create.el+" #txt_rating").val()));
+      newItem.set('lastSeenAt',$(modals.mdl_event_create.el+" #txt_lastSeenAt").val());
+      newItem.set('estPrice',parseInt($(modals.mdl_event_create.el+" #txt_estPrice").val()));
+      if($('#mdl_event_create #item_create_photoContainer img').length != 0){
+        var t = $('#mdl_event_create #item_create_photoContainer img').attr('src');
+        var base64data = t.slice("data:image/png;base64,".length);
+        var image = new Parse.File('item.png',{ base64 : base64data });
+        newItem.set('photo', image);
+      }
+      newItem.save(null,{
+        success : function(newItem){
+          user.wishList.push(newItem);
+          pages.wishList.init();
+          modals.mdl_event_create.hide();
+        },
+        error : function(newItem,error){
+          app.e("Couldn't save that item.  We'll look into it ASAP!");
+          app.l(JSON.stringify(error,null,2),2);
+        }
+      });
+    }
   }
 };
 
@@ -327,7 +584,8 @@ var pages = {
     },
     doSignUp : function(){
       user.parse = new Parse.User();
-      user.parse.set("username", $('#frm_signup #txt_username').val());
+      user.parse.set("username", $('#frm_signup #txt_email').val());
+      user.parse.set("elfName", $('#frm_signup #txt_elfName').val());
       user.parse.set("password", $('#frm_signup #txt_password').val());
       user.parse.set("email", $('#frm_signup #txt_email').val());
 
@@ -354,156 +612,188 @@ var pages = {
     }
   },
   start : {
-    init : function(callback){
-      pages.start.getData(pages.start.render,false);
-      //
-      //execute callback if defined
-      if(callback){
-        callback();
-      }
+    init : function(){
+      pages.start.getData().done(function(){
+        pages.start.render().done(function(){
+          pages.start.remE().then(
+            pages.start.addE
+          ).then(
+            app.remE().then(app.addE)
+          );
+        })
+      });
     },
     addE : function(){
-      $('#santaList li').hammer().on('tap',function(e){
-        app.meta.currentPersonObjectID = $(this).attr('id');
-        pages.personWishList.getData(app.showScreen($('section#personWishList'),false),function(){
-          app.l('Failed to get person data',2);
+      return $.Deferred(function(a){
+        $('#santaList li').hammer().on('tap',function(e){
+          app.meta.currentPersonObjectID = $(this).attr('id');
+          pages.personWishList.getData(app.showScreen($('section#personWishList'),false),function(){
+            app.l('Failed to get person data',2);
+          });
         });
-      });
+        a.resolve();
+      }).promise();
     },
     remE : function(){
-      $('#santaList li .front').hammer().off('tap');
+      return $.Deferred(function(r){
+        $('#santaList li .front').hammer().off('tap');
+        r.resolve();
+      }).promise();
     },
-    render: function(callback){
-      //update the navbar title for the start page & wish list page
-      //var title = user.parse.get('username')+"'s "+$('section#start').data('title');
-      //$('nav#top .right').html(title);
-
-      if(user.santaList.length > 0){
-        $('.screen#start #santaList').html("");
-        $.each(user.santaList,function(i,v){
-          var template = _.template( $('#tpl_start_listItem').html() );
-          $('.screen#start #santaList').append(template(v));
-        });
-
-        //init start page events
-        pages.start.remE();
-        pages.start.addE();
-        //re-init global app events
-        app.remE();
-        app.addE();
-      }
-      //
-      //execute callback if defined
-      if(callback){
-        callback();
-      }
+    render: function(){
+      app.l('Render santa list',1);
+      return $.Deferred(function(render){
+        if(user.santaList.length > 0){
+          $('.screen#start #santaList').html("");
+          $.each(user.santaList,function(i,v){
+            var template = _.template( $('#tpl_start_listItem').html() );
+            $('.screen#start #santaList').append(template(v));
+          });
+        } else {
+          $('.screen#start #santaList').html("No people for you to buy for, Santa.");
+        }
+        render.resolve();
+      }).promise();
     },
-    getData : function(successCallback,failCallack){
-      var url = "js/santaList.json";
-      $.getJSON(url,function(d){
-        //success
-      }).done(function(d){
-        //anal-retention success
-          //sort results by the 'eventAt' date property, and update the localobject
-          user.santaList = _.sortBy(d, function(o) { return -o.eventAt; });
-        if(successCallback){
-          successCallback();
+    getData : function(forceDataUpdate){
+      //show the loading indicator on the Santa Shopping List
+      //$('#start.screen #santaList').html('');
+      //var loaderTpl = _.template( $('#tpl_loading').html() );
+      //$('#start.screen #santaList').append( loaderTpl({textToShow:"Santa's Shopping List"}) );
+      app.l('Getting santa list items...',1);
+      return $.Deferred(function(getData){
+        if (forceDataUpdate || user.santaListUpdatedAt <= new Date().subMinutes(15)) {
+
+          //Get data from Parse
+          var Santas = Parse.Object.extend("Santas");
+          var santaListQuery = new Parse.Query(Santas);
+          santaListQuery.equalTo('santa', Parse.User.current());
+          santaListQuery.include('recipient');
+          santaListQuery.include('event');
+          santaListQuery.ascending('createdAt');
+          santaListQuery.find({
+            success: function(r){
+              user.santaList = r;
+              user.santaListUpdatedAt = new Date();
+              app.l('...got santa list items FROM PARSE',1);
+              getData.resolve(user.santaList);
+            },
+            error: function(e){
+              //TODO
+              //Tie error to master logging system
+              console.error(e);
+              app.e("Poop! I has some trouble finding who you need to shop for! Try again in a few minutes, ok?");
+              getData.reject(e);
+            }
+          });
+        } else {
+          app.l('...got santa list items FROM CACHE',1);
+          getData.resolve(user.santaList);
         }
-      }).fail(function(d){
-        //failover
-        app.l(d,2);
-        if(failCallack){
-          failCallack();
-        }
-      }).always(function(){
-        //do this no matter what
-      });
+      }).promise();
     }
   },
   wishList : {
     init : function(){
-      pages.wishList.getData();
+      pages.wishList.getData().done(function(){
+        pages.wishList.render().done(function(){
+          pages.wishList.remE().then(
+            pages.wishList.addE
+          ).then(
+            app.remE().then(app.addE)
+          );
+        })
+      });
     },
     addE : function(){
-      $('nav#top #btn_addItem').hammer().on('tap',function(){
-        modals.mdl_item_create.show();
-      });
+      console.log('addE');
+      return $.Deferred(function(a){
+        $('nav#top #btn_addItem').hammer().on('tap',function(){
+          modals.mdl_item_create.show();
+        });
+        a.resolve();
+      }).promise();
     },
     remE : function(){
-      $('nav#top #btn_addItem').hammer().off('tap');
+      console.log('remE');
+      return $.Deferred(function(r){
+        $('nav#top #btn_addItem').hammer().off('tap');
+        r.resolve();
+      }).promise();
     },
-    render : function(callback){
-      $('#wishList.screen #wishList').html('');
-      $.each(user.wishList,function(i,v){
-        //DEBUG
-        //console.log(v);
-        var t = _.template($('#tpl_wishList_listItem').html());
-        var d = {
-          objectId : v.get('objectId'),
-          name : v.get('name'),
-          description : v.get('description'),
-          photoURL : v.get('photo').url()
-        };
-        $('#wishList.screen #wishList').append(t(d));
-        //DEBUG
-        //console.log(d);
-        pages.wishList.remE();
-        app.remE();
-        app.addE();
-        pages.wishList.addE();
-      });
-      if(callback){
-        callback();
-      }
+    render : function(){
+      return $.Deferred(function(render){
+        app.l('Render wish list',1);
+        $('#wishList.screen #wishList').html('');
+        _.each(user.wishList,function(o,i,a){
+          //DEBUG
+          //console.log(v);
+          var t = _.template($('#tpl_wishList_listItem').html());
+          var d = {
+            objectId : o.get('objectId'),
+            name : o.get('name'),
+            description : o.get('description'),
+            photoURL : o.get('photo').url()
+          };
+          $('#wishList.screen #wishList').append(t(d));
+        });
+        render.resolve()
+      }).promise();
     },
-    getData : function(successCallback,errorCallback){
-
+    getData : function(forceDataUpdate){
+      app.l('Getting wish list items...',1);
       //show the loading indicator on the wishList
       $('#wishList.screen #wishList').html('');
       var loaderTpl = _.template( $('#tpl_loading').html() );
-      $('#wishList.screen #wishList').append(loaderTpl(null));
-
-      var Item = Parse.Object.extend('Item');
-      var wishListQuery = new Parse.Query(Item);
-
-      wishListQuery.descending('rating');
-      wishListQuery.equalTo('owner',Parse.User.current());
-
-      //include the _User object
-      wishListQuery.include('owner');
-
-      wishListQuery.find({
-        success : function(results){
-          //DEBUG
-          console.log(results);
-          user.wishList = results;
-          if(successCallback){
-            successCallback();
-          }
-        },
-        error : function(error){
-          app.e("Darn it! I couldn't find your Wish List.  Gimmea sec, and try again.");
-          app.l(JSON.stringify(error,null,2),2);
-          if(errorCallback){
-            errorCallback();
-          }
+      $('#wishList.screen #wishList').append(loaderTpl({}));
+      //perfom data GET
+      return $.Deferred(function(getData){
+        if (forceDataUpdate || user.wishListUpdatedAt <= new Date().subMinutes(5)) {
+          var Item = Parse.Object.extend('Item');
+          var wishListQuery = new Parse.Query(Item);
+          wishListQuery.descending('rating');
+          wishListQuery.equalTo('owner',Parse.User.current());
+          //include the _User object
+          wishListQuery.include('owner');
+          wishListQuery.find({
+            success : function(results){
+              //got the data
+              user.wishList = results;
+              user.wishListUpdatedAt = new Date();
+              app.l('...got wish list items FROM PARSE',1);
+              getData.resolve(user.wishList);
+            },
+            error : function(error){
+              app.e("Darn it! I couldn't find your Wish List.  Gimmea sec, and try again.");
+              app.l(JSON.stringify(error,null,2),2);
+              getData.reject(error);
+            }
+          });
+        } else {
+          app.l('...got wish list items FROM CACHE',1);
+          getData.resolve(user.wishList);
         }
-      }).then(function(){
-        pages.wishList.render();
-      });
+      }).promise();
     }
   },
   events : {
-    init : function(){},
-    addE : function(){},
-    remE : function(){}
-  },
-  eventCreate : {
-    init : function(){},
-    addE : function(){},
-    remE : function(){},
-    render : function(){},
-    setData : function(){}
+    init : function(){
+      pages.events.remE().done(pages.events.addE);
+    },
+    addE : function(){
+      return $.Deferred(function(a){
+        $('nav#top #btn_addEvent').hammer().on('tap',function(){
+          modals.mdl_event_create.show();
+        });
+        a.resolve();
+      }).promise();
+    },
+    remE : function(){
+      return $.Deferred(function(r){
+        $('nav#top #btn_addEvent').hammer().off('tap');
+        r.resolve();
+      }).promise();
+    }
   },
   eventDetail : {
     init : function(){},
@@ -615,6 +905,7 @@ var app = {
     "currentPersonObjectID" : ""
   },
   d:{
+    //semantics3 not used
     s3:{
       key : 'SEM3B276C4B7FC81D24558D608D8121DF6AA',
       secret : 'YjQ1NTMzNDRmMTNmMzQyNzgyMjhlOWQ1ODVjMThlZGM',
@@ -665,9 +956,8 @@ var app = {
 
     app.bindEvents();
 
-    user.parse = Parse.User.current();
     //check if the user's token exists, and is still valid through Parse
-    if(user.parse){
+    if(Parse.User.current()){
       //load the user data
       app.signin();
     } else {
@@ -689,7 +979,7 @@ var app = {
     //load the start screen on signin
     app.showScreen($('section#start'),true);
   },
-  showScreen: function(s,animateBoolean,callBack){
+  showScreen: function(s,animateBoolean){
     if(animateBoolean){
       //animate crap
       $('section.screen:not(.hidden)').each(function(){
@@ -751,7 +1041,7 @@ var app = {
     }
 
 
-    //custom page events
+    //custom page actions
     switch (s.attr('id')) {
       case 'login':
         pages.login.init();
@@ -761,6 +1051,9 @@ var app = {
         break;
       case 'signup':
         pages.signup.init();
+        break;
+      case 'events':
+        pages.events.init();
         break;
       case 'settings':
         pages.settings.init();
@@ -777,10 +1070,6 @@ var app = {
     }
     if(s.data("tabbar")==true){
       $('nav#tab').removeClass('hidden');
-    }
-
-    if (callBack) {
-      callBack();
     }
   },
   s: function(message,type){
@@ -846,40 +1135,46 @@ var app = {
     app.addE();
   },
   addE : function(){
-    $('.touchable').on('touchstart mousedown',function(){
-      $('.touchable').removeClass('touched');
-      $(this).addClass('touched');
-    });
-    $('.touchable').on('touchend touchcancel mouseup',function(){
-      $('.touchable').removeClass('touched');
-    });
-    $('.touchable').hammer().on('tap',function(e){
-      e.preventDefault();
-      //DEBUG:console.log(e);
-      $(this).addClass();
-    });
-    $('.shakeable').on('touchstart mousedown',function(){
-      $('.shakeable').removeClass('shake');
-      $(this).addClass('shake');
-    });
-    $('.shakeable').on('touchend touchcancel mouseup',function(){
-      $('.shakeable').removeClass('shake');
-    });
-    //tab bar item actions
-    $('nav#tab .item').hammer().on('tap',function(e){
-      var s = $('section.screen#'+$(this).data('screen'));
-      //console.log('Loading: '+$(this).data('screen'));
-      app.showScreen(s,false);
-    });
+    return $.Deferred(function(a){
+      $('.touchable').on('touchstart mousedown',function(){
+        $('.touchable').removeClass('touched');
+        $(this).addClass('touched');
+      });
+      $('.touchable').on('touchend touchcancel mouseup',function(){
+        $('.touchable').removeClass('touched');
+      });
+      $('.touchable').hammer().on('tap',function(e){
+        e.preventDefault();
+        //DEBUG:console.log(e);
+        $(this).addClass();
+      });
+      $('.shakeable').on('touchstart mousedown',function(){
+        $('.shakeable').removeClass('shake');
+        $(this).addClass('shake');
+      });
+      $('.shakeable').on('touchend touchcancel mouseup',function(){
+        $('.shakeable').removeClass('shake');
+      });
+      //tab bar item actions
+      $('nav#tab .item').hammer().on('tap',function(e){
+        var s = $('section.screen#'+$(this).data('screen'));
+        //console.log('Loading: '+$(this).data('screen'));
+        app.showScreen(s,false);
+      });
+      a.resolve();
+    }).promise();
   },
   remE : function(){
-    $('.touchable').off('touchstart mousedown');
-    $('.touchable').off('touchend touchcancel mouseup');
-    $('.touchable').hammer().off('tap');
-    $('.shakeable').off('touchstart mousedown');
-    $('.shakeable').off('touchend touchcancel mouseup');
-    //tab bar item actions
-    $('nav#tab .item').hammer().off('tap');
+    return $.Deferred(function(r){
+      $('.touchable').off('touchstart mousedown');
+      $('.touchable').off('touchend touchcancel mouseup');
+      $('.touchable').hammer().off('tap');
+      $('.shakeable').off('touchstart mousedown');
+      $('.shakeable').off('touchend touchcancel mouseup');
+      //tab bar item actions
+      $('nav#tab .item').hammer().off('tap');
+      r.resolve();
+    }).promise();
   },
   onDeviceReady: function() {
     app.s('deviceready');
@@ -889,8 +1184,11 @@ var app = {
 var user = {
   parse : null,
   santaList : [],
+  santaListUpdatedAt : new Date(2000,01,01),
   eventList : [],
-  wishList : []
+  eventListUpdatedAt : new Date(2000,01,01),
+  wishList : [],
+  wishListUpdatedAt : new Date(2000,01,01)
 };
 
 //various utility functions
@@ -1059,9 +1357,11 @@ var util = {
 
   },
   getDataUPC : function(upc, successCallback, errorCallback){
-    // NEW lookup via Outpan
+    // NEW lookup via Outpan test UPC: 714201313585
+    // Test string: http://www.outpan.com/api/get-product.php?barcode=0714201313585&apikey=e4df75113dd952806a676e683515c618
     var url = 'http://www.outpan.com/api/get-product.php?barcode='+upc+'&apikey='+app.d.outpan.key;
     //var response = {};
+    app.l('Product lookup for UPC:'+upc,1);
     $.getJSON(url,null).done(function(d){
       //DEBUG
       //console.log(d);
@@ -1079,9 +1379,58 @@ var util = {
         errorCallback(e);
       }
     }).always(function(){
-      console.log('product lookup done');
-
+      app.l('Product lookup complete for UPC:'+upc,1);
     });
+  },
+  photo : {
+    fromLibrary : function(){
+      return $.Deferred(function(flf){
+        //DEBUG
+        console.log('From LIBRARY');
+        navigator.camera.getPicture(function(data){
+          //success
+          flf.resolve(data);
+        }, function(){
+          //error
+          flf.reject(e);
+        }, {
+          //options
+          quality: 75,
+          destinationType: 0, //0 = DATA_URL, 1 = FILE_URI
+          sourceType: 0, //0 = Library, 1 = Camera
+          allowEdit: true,
+          encodingType: 0, //0 = JPG, 1 = PNG
+          targetWidth: 512,
+          targetHeight: 512,
+          saveToPhotoAlbum: false,
+          cameraDirection: 0 //0 = back, 1 = front
+        });
+      }).promise();
+    },
+    takeNew : function(){
+      return $.Deferred(function(tnf){
+        //DEBUG
+        console.log('Take NEW');
+        navigator.camera.getPicture(function(data){
+          //success
+          tnf.resolve(data);
+        }, function(e){
+          //error
+          tnf.reject(e);
+        }, {
+          //options
+          quality: 75,
+          destinationType: 0, //0 = DATA_URL, 1 = FILE_URI
+          sourceType: 1, //0 = Library, 1 = Camera
+          allowEdit: true,
+          encodingType: 0, //0 = JPG, 1 = PNG
+          targetWidth: 512,
+          targetHeight: 512,
+          saveToPhotoAlbum: true,
+          cameraDirection: 1 //0 = back, 1 = front
+        });
+      }).promise();
+    }
   },
   convertImgToBase64 : function(url, callback, outputFormat){
     /*
