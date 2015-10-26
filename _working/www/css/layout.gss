@@ -1,0 +1,11 @@
+/*
+ * layout.gss
+ */
+
+/* VARIABLES =============================== */
+  [touchbase] == 15 !require;
+  [touch4] == [touchbase] * 4 !require;
+  [touch3] == [touchbase] * 3 !require;
+  [touch2] == [touchbase] * 2 !require;
+
+  #santaLogo[center] == ::window[center];

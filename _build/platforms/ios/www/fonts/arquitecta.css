@@ -1,0 +1,117 @@
+/**
+* @license
+* MyFonts Webfont Build ID 2747811, 2014-02-14T09:28:38-0500
+*
+* The fonts listed in this notice are subject to the End User License
+* Agreement(s) entered into by the website owner. All other parties are
+* explicitly restricted from using the Licensed Webfonts(s).
+*
+* You may obtain a valid license at the URLs below.
+*
+* Webfont: Arquitecta Italic by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/italic/
+*
+* Webfont: Arquitecta Black Italic by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/black-italic/
+*
+* Webfont: Arquitecta Black by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/black/
+*
+* Webfont: Arquitecta Bold Italic by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/bold-italic/
+*
+* Webfont: Arquitecta by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/regular/
+*
+* Webfont: Arquitecta Book Italic by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/book-italic/
+*
+* Webfont: Arquitecta Book by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/book/
+*
+* Webfont: Arquitecta Bold by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/bold/
+*
+* Webfont: Arquitecta Heavy Italic by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/heavy-italic/
+*
+* Webfont: Arquitecta Heavy by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/heavy/
+*
+* Webfont: Arquitecta Light Italic by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/light-italic/
+*
+* Webfont: Arquitecta Light by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/light/
+*
+* Webfont: Arquitecta Medium Italic by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/medium-italic/
+*
+* Webfont: Arquitecta Medium by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/medium/
+*
+* Webfont: Arquitecta Thin Italic by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/thin-italic/
+*
+* Webfont: Arquitecta Thin by Latinotype
+* URL: http://www.myfonts.com/fonts/latinotype/arquitecta/thin/
+*
+*
+* License: http://www.myfonts.com/viewlicense?type=web&buildid=2747811
+* Licensed pageviews: 10,000
+* Webfonts copyright: Copyright (c) 2013 by Miguel &amp; Daniel Hern&#x00C3;&#x00A1;ndez. All rights reserved.
+*
+* © 2014 MyFonts Inc
+*/
+
+
+/* @import must be at top of file, otherwise CSS will not work */
+@import url("//hello.myfonts.net/count/29eda3");
+
+
+@font-face {font-family: 'Arquitecta-Italic';src: url('arquitecta/29EDA3_0_0.eot');src: url('arquitecta/29EDA3_0_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_0_0.woff') format('woff'),url('arquitecta/29EDA3_0_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaBlack-Italic';src: url('arquitecta/29EDA3_1_0.eot');src: url('arquitecta/29EDA3_1_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_1_0.woff') format('woff'),url('arquitecta/29EDA3_1_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaBlack';src: url('arquitecta/29EDA3_2_0.eot');src: url('arquitecta/29EDA3_2_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_2_0.woff') format('woff'),url('arquitecta/29EDA3_2_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaBold-Italic';src: url('arquitecta/29EDA3_3_0.eot');src: url('arquitecta/29EDA3_3_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_3_0.woff') format('woff'),url('arquitecta/29EDA3_3_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'Arquitecta';src: url('arquitecta/29EDA3_4_0.eot');src: url('arquitecta/29EDA3_4_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_4_0.woff') format('woff'),url('arquitecta/29EDA3_4_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaBook-Italic';src: url('arquitecta/29EDA3_5_0.eot');src: url('arquitecta/29EDA3_5_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_5_0.woff') format('woff'),url('arquitecta/29EDA3_5_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaBook';src: url('arquitecta/29EDA3_6_0.eot');src: url('arquitecta/29EDA3_6_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_6_0.woff') format('woff'),url('arquitecta/29EDA3_6_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaBold';src: url('arquitecta/29EDA3_7_0.eot');src: url('arquitecta/29EDA3_7_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_7_0.woff') format('woff'),url('arquitecta/29EDA3_7_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaHeavy-Italic';src: url('arquitecta/29EDA3_8_0.eot');src: url('arquitecta/29EDA3_8_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_8_0.woff') format('woff'),url('arquitecta/29EDA3_8_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaHeavy';src: url('arquitecta/29EDA3_9_0.eot');src: url('arquitecta/29EDA3_9_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_9_0.woff') format('woff'),url('arquitecta/29EDA3_9_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaLight-Italic';src: url('arquitecta/29EDA3_A_0.eot');src: url('arquitecta/29EDA3_A_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_A_0.woff') format('woff'),url('arquitecta/29EDA3_A_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaLight';src: url('arquitecta/29EDA3_B_0.eot');src: url('arquitecta/29EDA3_B_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_B_0.woff') format('woff'),url('arquitecta/29EDA3_B_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaMedium-Italic';src: url('arquitecta/29EDA3_C_0.eot');src: url('arquitecta/29EDA3_C_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_C_0.woff') format('woff'),url('arquitecta/29EDA3_C_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaMedium';src: url('arquitecta/29EDA3_D_0.eot');src: url('arquitecta/29EDA3_D_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_D_0.woff') format('woff'),url('arquitecta/29EDA3_D_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaThin-Italic';src: url('arquitecta/29EDA3_E_0.eot');src: url('arquitecta/29EDA3_E_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_E_0.woff') format('woff'),url('arquitecta/29EDA3_E_0.ttf') format('truetype');}
+
+
+@font-face {font-family: 'ArquitectaThin';src: url('arquitecta/29EDA3_F_0.eot');src: url('arquitecta/29EDA3_F_0.eot?#iefix') format('embedded-opentype'),url('arquitecta/29EDA3_F_0.woff') format('woff'),url('arquitecta/29EDA3_F_0.ttf') format('truetype');}

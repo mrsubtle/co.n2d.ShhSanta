@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="1024px" height="1024px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+    <title>AppIcon</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="1024" height="1024"></rect>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Size-Guides" sketch:type="MSLayerGroup" transform="translate(0.000000, -124.000000)"></g>
+        <g id="AppIcon" sketch:type="MSArtboardGroup">
+            <g id="BG-+-Santa" sketch:type="MSLayerGroup">
+                <rect id="BG" fill-opacity="0" fill="#D8D8D8" sketch:type="MSShapeGroup" x="0" y="0" width="1024" height="1024"></rect>
+                <mask id="mask-2" sketch:name="Rectangle 12" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Rectangle-12" fill="#FEFEFF" sketch:type="MSShapeGroup" xlink:href="#path-1"></use>
+                <g id="Santa-2" mask="url(#mask-2)" sketch:type="MSShapeGroup">
+                    <g transform="translate(-193.000000, -986.000000)">
+                        <path d="M134.114615,1631.62781 C134.114615,736.990704 1273.59621,719.424811 1273.59621,1631.62781 L1273.59621,2419.85316 L134.114615,2419.85316 L134.114615,1631.62781 Z" id="Rectangle-2" stroke="#4990E2" stroke-width="36" fill="none" transform="translate(703.855412, 1686.949963) scale(1, -1) translate(-703.855412, -1686.949963) "></path>
+                        <ellipse id="Oval-3" stroke="none" fill="#FFB8C1" fill-rule="evenodd" cx="341.732024" cy="1557.71006" rx="111.051172" ry="111.074047"></ellipse>
+                        <ellipse id="Oval-4" stroke="none" fill="#FFB8C1" fill-rule="evenodd" cx="1061.15049" cy="1557.71006" rx="111.051172" ry="111.074047"></ellipse>
+                        <ellipse id="Oval-5" stroke="#4990E2" stroke-width="36" fill="#556270" fill-rule="evenodd" cx="708.683724" cy="1857.12706" rx="111.051172" ry="111.074047"></ellipse>
+                        <path d="M634.661147,1497.28014 C301.527454,1652.49772 -7.99203769,1535.30853 0.210373427,1535.30853 C143.087204,1921.58779 499.607762,1930.53129 710.459237,1823.65235 C921.310712,1930.53129 1277.83127,1921.58779 1420.7081,1535.30853 C1428.91051,1535.30853 1119.39102,1652.49772 786.257325,1497.28014 C769.297773,1486.59233 749.660943,1476.42483 727.161221,1466.91273 C722.596126,1464.34068 718.029859,1461.71374 713.46317,1459.03094 C712.456786,1459.41184 711.455474,1459.79395 710.459221,1460.17725 C709.462989,1459.79394 708.461682,1459.41184 707.455304,1459.03094 C702.888613,1461.71375 698.322343,1464.34068 693.75724,1466.91273 C671.257531,1476.42483 651.620701,1486.59233 634.661147,1497.28014 Z" id="Path-12" stroke="#4990E2" stroke-width="36" fill="#FFFFFF" fill-rule="evenodd"></path>
+                        <ellipse id="Oval-1" stroke="#4990E2" stroke-width="36" fill="#FFB8C1" fill-rule="evenodd" cx="708.683724" cy="1461.12393" rx="111.051172" ry="111.074047"></ellipse>
+                        <path d="M286.206438,1262.28062 L402.085922,1262.28062" id="Line" stroke="#4990E2" stroke-width="36" stroke-linecap="square" fill="none"></path>
+                        <path d="M1005.6249,1262.28062 L1121.50439,1262.28062" id="Line-2" stroke="#4990E2" stroke-width="36" stroke-linecap="square" fill="none"></path>
+                        <rect id="Rectangle-3" stroke="#4990E2" stroke-width="36" fill="#FFFFFF" fill-rule="evenodd" x="37.5483781" y="707.752136" width="1327.78576" height="381.515204" rx="11"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

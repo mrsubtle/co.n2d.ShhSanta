@@ -1,0 +1,895 @@
+/*
+ * index.less
+ */
+
+
+// VARIABLES ================================
+  @globalBG : #000;
+  @appBG1 : #f0f0f0;
+  @appBG : #fff;
+  @modalBG : darken(@appBG,2%);
+  @actionSheetBG : rgba(0,0,0,0.85);
+  @mainColor : rgb(73,72,73);
+  @tintColor : rgb(74,144,226);
+  @cancelColor : rgb(238,37,36);
+  @successColor : rgb(53,226,143);
+  @touchBase : 50px;
+  @navBase : @touchBase * 1.5;
+  @navBG : darken(@appBG,10%);
+  @mainColorMedium : lighten(@mainColor,20%);
+  @mainColorLight : lighten(@mainColor,40%);
+  @mainColorDark : darken(@mainColor,10%);
+  @tintColorDark : darken(@tintColor,20%);
+  @tintColorLight : lighten(@tintColor,20%);
+  @cancelColorDark : darken(@cancelColor,20%);
+  @cancelColorLight : lighten(@cancelColor,20%);
+  @successColorDark : darken(@successColor,20%);
+  @successColorLight : lighten(@successColor,20%);
+  @timingFunction : cubic-bezier(.11,1,.97,1);
+  @fontFamilyB : "HelveticaNeue-Bold","Roboto-Bold";
+  @fontFamilyM : "HelveticaNeue-Medium","Roboto-Medium";
+  @fontFamilyL : "HelveticaNeue-Light","Roboto-Light";
+  @fontFamily : "HelveticaNeue","Roboto";
+  @fontFamilySerif : "Times New Roman", "Times";
+  @fontFamilyHeader : "ArquitectaBold";
+  @fontFamilyHeaderB : "ArquitectaBlack";
+  @fontFamilyHeaderL : "ArquitectaLight";
+  @borderStandard : (@touchBase / @touchBase) solid;
+
+// UI ELEMENTS ==============================
+  button {
+    display: block;
+    width: 100%;
+    height: @touchBase;
+    min-height: @touchBase;
+    line-height: 0.05;
+    text-align: center;
+    padding: @touchBase / 2;
+    border: none;
+    border-bottom: @borderStandard darken(@mainColorMedium,10%);
+    background: @mainColorMedium;
+    //font-family: @fontFamilyM;
+    //font-size: 15px;
+    font-family: @fontFamilyHeader;
+    font-size: 17px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: lighten(@mainColorLight,30%);
+  }
+  button.action {
+    font-family: @fontFamilyHeaderB;
+    text-transform: uppercase;
+    border-bottom: @borderStandard darken(@tintColor,10%);
+    background: @tintColor;
+    color: lighten(@tintColorLight,30%);
+  }
+  button.cancel {
+    font-family: @fontFamilyHeaderB;
+    border-bottom: @borderStandard darken(@cancelColor,10%);
+    background: @cancelColor;
+    text-transform: uppercase;
+    color: lighten(@cancelColorLight,30%);
+  }
+  button:last-child {
+    border-bottom: none;
+  }
+
+  // media
+  img {
+    //min-height: 100%;
+  }
+  img.shrinkTo50 {
+    max-width: 50% !important;
+  }
+
+  // text labels
+  .centeredText {
+    font-family: @fontFamilySerif;
+    font-style: italic;
+    font-size: 15px;
+    text-align: center;
+    padding: 1em 3.5em;
+  }
+  .centeredTextDouble {
+    font-family: @fontFamilySerif;
+    font-style: italic;
+    font-size: 15px;
+    text-align: center;
+    padding: 3em 3.5em 1em 3.5em;
+  }
+  .redColor {
+    color: @cancelColor !important;
+  }
+  .greenColor {
+    color: @successColor !important;
+  }
+  .op50 {
+    opacity: 0.5;
+  }
+
+  // form elements
+  fieldset {
+    display: block;
+    position: relative;
+    border: none;
+    margin: 0; padding: 0;
+    input:last-child {
+      //border-bottom: none;
+    }
+    input.topBorder {
+      border-top: @borderStandard darken(@appBG1,10%);
+    }
+  }
+  input {
+    -webkit-appearance: none;
+    display: block;
+    //font-family: @fontFamilyM;
+    //font-size: 15px;
+    font-family: @fontFamilyHeader;
+    font-size: 23px;
+    letter-spacing: 0.05em;
+    color: @mainColor;
+    text-align: center;
+    width: 100%;
+    border: none; outline: none;
+    border-radius: 0;
+    border-bottom: @borderStandard darken(@appBG1,10%);
+    margin: 0;
+    padding: 0.5em 0em;
+    -webkit-user-select: initial !important;
+    -webkit-user-drag: initial !important;
+  }
+  input:focus {
+    background-color: @appBG;
+  }
+  input[type="range"]{
+    min-height: @touchBase;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    margin: auto;
+    max-width: 90%;
+    height: 0.2em;
+    background: rgba(red(@mainColor),green(@mainColor),blue(@mainColor),0.15);
+    border: none;
+    border-radius: 2px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: @touchBase - 4;
+    width: @touchBase - 4;
+    border-radius: 50%;
+    background: rgba(red(@mainColor),green(@mainColor),blue(@mainColor),0.65);
+    margin-top: 4+(-1 * (@touchBase/2));
+  }
+  .good {
+    .greenColor;
+  }
+  .bad {
+    .redColor;
+  }
+
+// TOUCH HANDLING ===========================
+  .touchable {
+    -webkit-transition: all 125ms @timingFunction;
+  }
+  .touched {
+    opacity: 0.3;
+  }
+
+
+// ANIMATION CLASSES ========================
+  .animate(@d:300ms){
+    -webkit-transition: all @d @timingFunction;
+  }
+  .animate300 {
+    .animate(300ms);
+  }
+  .animate500 {
+    .animate(500ms);
+  }
+
+  // wiggle/shake
+  @-webkit-keyframes shaker {
+    0% { -webkit-transform: translate(2px, 1px) rotate(0deg); }
+    10% { -webkit-transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { -webkit-transform: translate(-3px, 0px) rotate(1deg); }
+    30% { -webkit-transform: translate(0px, 2px) rotate(0deg); }
+    40% { -webkit-transform: translate(1px, -1px) rotate(1deg); }
+    50% { -webkit-transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { -webkit-transform: translate(-3px, 1px) rotate(0deg); }
+    70% { -webkit-transform: translate(2px, 1px) rotate(-1deg); }
+    80% { -webkit-transform: translate(-1px, -1px) rotate(1deg); }
+    90% { -webkit-transform: translate(2px, 2px) rotate(0deg); }
+    100% { -webkit-transform: translate(1px, -2px) rotate(-1deg); }
+  }
+  .shake {
+    display:inline-block;
+    -webkit-animation-name: shaker;
+    -webkit-animation-duration: 0.8s;
+    -webkit-transform-origin:50% 50%;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+  }
+
+  //loading spinner
+  .loader {
+    margin: 10em auto;
+    font-size: 4px;
+    position: relative;
+    text-indent: -9999em;
+    border-top: 1.5em solid rgba(red(@mainColor), green(@mainColor), blue(@mainColor), 0.2);
+    border-right: 1.5em solid rgba(red(@mainColor), green(@mainColor), blue(@mainColor), 0.2);
+    border-bottom: 1.5em solid rgba(red(@mainColor), green(@mainColor), blue(@mainColor), 0.2);
+    border-left: 1.5em solid rgba(red(@mainColor), green(@mainColor), blue(@mainColor), 0.6);
+    -webkit-animation: load8 0.75s infinite linear;
+    animation: load8 0.75s infinite linear;
+  }
+  .loader,
+  .loader:after {
+    border-radius: 50%;
+    width: 10em;
+    height: 10em;
+  }
+  @-webkit-keyframes load8 {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes load8 {
+    0% {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+
+
+// MAIN CLASSES =============================
+  .noShadow {
+    box-shadow: none !important;
+  }
+  .bottom {
+    -webkit-transform: translateY(100%) !important;
+  }
+  .top {
+    bottom: 100% !important;
+  }
+  .hidden {
+    display: none !important;
+  }
+  .clear {
+    opacity: 0 !important;
+  }
+  .centered {
+    text-align: center;
+  }
+  .marginBig {
+    margin: 20%;
+  }
+  .marginSmall {
+    margin: 5%;
+  }
+  .paddingBig {
+    padding: 20%;
+  }
+  .paddingSmall {
+    padding: 5%;
+  }
+
+// LAYOUT ===================================
+  * {
+    -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    box-sizing: border-box;
+    outline: none;
+  }
+
+  html {
+    width: 100%; height: 100%;
+  }
+
+  body {
+    -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
+    -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
+    -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
+    font-family: @fontFamily;
+    font-size: 15px;
+    width:100%; height:100%;
+    margin:0px; padding:0px;
+    color: @mainColor;
+    background-color: @globalBG;
+  }
+
+  .app {
+    .animate(300ms);
+    position: fixed;
+    display: block;
+    top: 0px; left: 0px;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background-color: @appBG;
+    background-image:linear-gradient(top, @appBG1 0%, @appBG 51%);
+    background-image:-webkit-linear-gradient(top, @appBG1 0%, @appBG 51%);
+    background-image:-ms-linear-gradient(top, @appBG1 0%, @appBG 51%);
+    background-image:-webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0, @appBG1),
+      color-stop(0.51, @appBG)
+      );
+      background-attachment:fixed;
+    -webkit-transform-origin: 50% 100%;
+  }
+  .app.tilt {
+    -webkit-transform: perspective( 290vh ) rotateX( 15deg );
+    -webkit-filter: brightness(0.75);
+  }
+
+  section.screen {
+    display: block;
+    top: 0px; left: 0px;
+    width: 100%; height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  section.screen[data-nav="true"]{
+    padding-top: @navBase;
+  }
+  section.screen[data-tabBar="true"]{
+    padding-bottom: @touchBase;
+  }
+
+  // nav layouts
+  nav.navBar {
+    position: absolute;
+    z-index: 500;
+    top: 0px; left: 0px;
+    width: 100%;
+    height: @navBase;
+    border-bottom: @borderStandard darken(@appBG,5%);
+    display: -webkit-flex;
+    -webkit-flex-direction: row;
+    -webkit-flex-wrap: nowrap;
+    -webkit-justify-content: center;
+    -webkit-align-content: center;
+    -webkit-align-items: center;
+    //background-color: rgba(red(@navBG),green(@navBG),blue(@navBG),0.95);
+    background-color: rgba(red(@appBG),green(@appBG),blue(@appBG),0.95);
+    div.left {
+      -webkit-order: 0;
+      -webkit-flex: 0 0 auto;
+      -webkit-align-self: stretch;
+      width: @navBase;
+      line-height: @navBase;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      i {
+        position: absolute;
+        top: 0px; left: 0px;
+        display: block;
+        width: @navBase;
+        height: @navBase;
+        line-height: @navBase;
+        font-style: normal;
+        text-align: center;
+        font-family: @fontFamilyHeader;
+        font-size: 1.5em;
+        letter-spacing: 0.05em;
+        img {
+          width: 100%;
+          height: auto;
+          vertical-align: center;
+        }
+      }
+    }
+    div.right {
+      -webkit-order: 0;
+      -webkit-flex: 1 0 auto;
+      -webkit-align-self: stretch;
+      text-align: right;
+      padding: @navBase / 3;
+      line-height: @navBase / 3;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: @fontFamilyHeader;
+      font-size: 1.1em;
+      letter-spacing: 0.05em;
+    }
+  }
+  nav.tabBar {
+    position: absolute;
+    z-index: 998;
+    bottom: 0px; left: 0px;
+    width: 100%; height: @touchBase + 1;
+    display: -webkit-flex;
+    -webkit-flex-direction: row;
+    -webkit-flex-wrap: nowrap;
+    -webkit-justify-content: space-around;
+    -webkit-align-content: center;
+    -webkit-align-items: center;
+    border-top: @borderStandard darken(@appBG,5%);
+    background-color: rgba(red(@appBG),green(@appBG),blue(@appBG),0.95);
+    .item {
+      -webkit-order: 0;
+      -webkit-flex: 0 1 auto;
+      -webkit-align-self: auto;
+      display: inline-block;
+      width: @touchBase;
+      height: @touchBase;
+      line-height: @touchBase;
+      text-align: center;
+      i {
+        display: inline-block;
+        width: @touchBase;
+        height: @touchBase;
+        line-height: @touchBase;
+        text-align: center;
+        font-style: normal;
+        img {
+          width: 100%;
+          min-width: 100%;
+          height: auto;
+        }
+        label {
+          display: none;
+        }
+      }
+    }
+  }
+
+  // flex layouts
+  .flex-v-container {
+    height: 100%; width: 100%;
+    display: -webkit-flex;
+    -webkit-flex-direction: column-reverse;
+    -webkit-flex-wrap: nowrap;
+    -webkit-justify-content: space-between;
+    -webkit-align-content: stretch;
+    -webkit-align-items: center;
+  }
+  .flex-item-top {
+    -webkit-order: 3;
+    -webkit-flex: 0 0 auto;
+    -webkit-align-self: stretch;
+  }
+  .flex-item-middle {
+    -webkit-order: 2;
+    -webkit-flex: 0 0 auto;
+    -webkit-align-self: stretch;
+  }
+  .flex-item-bottom {
+    -webkit-order: 1;
+    -webkit-flex: 0 0 auto;
+    -webkit-align-self: stretch;
+  }
+
+
+  // snap top or bottom groups
+  .topGroup {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+  }
+  .bottomGroup {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+  }
+
+
+// SCREENS =======================
+  #login.screen {
+    #startScreenLogo {
+      position: relative;
+      text-align: center;
+      //height: 1px;
+      img {
+        margin-top: 2em;
+        width: 75%;
+        height: auto;
+      }
+      .layer1, .layer2, .layer3 {
+        position: absolute;
+        top: 0px;
+      }
+    }
+  }
+
+  #start.screen {
+    // profile-style layout
+    ul {
+      //reset the ul
+      margin: 0; padding: 0;
+      list-style: none;
+      li {
+        position: relative;
+        display: block;
+        min-height: @touchBase;
+        font-family: @fontFamilyHeader;
+        font-size: 1.25em;
+        //border-bottom: @borderStandard darken(@appBG1,10%);
+        text-align: center;
+        overflow: hidden;
+        .front {
+          background-color: @appBG;
+          padding: 3rem 1rem;
+          margin: 1px 0px;
+        }
+        .front.touchable {
+          //put something here?
+          -webkit-transition:all 125ms cubic-bezier(0.11,1.1,0.97,1.2)
+        }
+        .front.touched {
+          opacity: 1 !important;
+          -webkit-transform: scale(0.95);
+        }
+        .back {
+          position: absolute;
+          top: 0px; left: 0px;
+          width: 100%; height: 100%;
+          z-index: -1;
+          text-align: right;
+          background-color: @appBG1;
+        }
+        i.avatar {
+          display: inline-block;
+          width: @touchBase * 2;
+          height: @touchBase * 2;
+          border-radius: @touchBase;
+          background-size: cover;
+          background-position: center center;
+        }
+        label.main {
+          display: block;
+          padding: 0.8rem 0rem 0rem 0rem;
+          font-family: @fontFamilyHeader;
+          font-size: 1.15em;
+          text-transform: uppercase;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          color: @tintColor;
+        }
+        label.sub {
+          display: block;
+          padding: 0rem 0rem 0.8rem 0rem;
+          font-family: @fontFamilyHeaderL;
+          font-size: 0.8em;
+          text-transform: uppercase;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          color: @mainColorMedium;
+        }
+        label.count {
+          padding: 0.75rem 0rem 0.8rem 0rem;
+          font-family: @fontFamilySerif;
+          font-style: italic;
+          font-size: 0.75em;
+          line-height: 1.25em;
+          vertical-align: baseline;
+          color: @mainColorMedium;
+        }
+      }
+      li:last-child {
+        border-bottom: none;
+      }
+      li.allDone {
+        i.avatar {
+          border: @borderStandard @successColor;
+        }
+        i.avatar::after {
+          font-family: "santa";
+          font-style: normal;
+          font-size: @touchBase / 3.5;
+          content: "\e80a";
+          color: @appBG;
+          position: relative;
+          display: block;
+          z-index: 3;
+          width: @touchBase / 2;
+          height: @touchBase / 2;
+          line-height: @touchBase / 2;
+          text-align: center;
+          top: (@touchBase * 2) - (@touchBase / 3);
+          left: (@touchBase) - (@touchBase / 4);
+          background-color: @successColor;
+          border-radius: @touchBase;
+        }
+        label.main {
+          color: @successColor;
+        }
+      }
+      li.shoppingDone {
+        i.avatar {
+          border: @borderStandard @tintColor;
+        }
+        i.avatar::after {
+          font-family: "santa";
+          font-style: normal;
+          font-size: @touchBase / 3.5;
+          content: "\e84e";
+          color: @appBG;
+          position: relative;
+          display: block;
+          z-index: 3;
+          width: @touchBase / 2;
+          height: @touchBase / 2;
+          line-height: @touchBase / 2;
+          text-align: center;
+          top: (@touchBase * 2) - (@touchBase / 3);
+          left: (@touchBase) - (@touchBase / 4);
+          background-color: @tintColor;
+          border-radius: @touchBase;
+        }
+      }
+      li.wrappingDone {
+        i.avatar {
+          border: @borderStandard @tintColor;
+        }
+        i.avatar::after {
+          font-family: "santa";
+          font-style: normal;
+          font-size: @touchBase / 3.5;
+          content: "\e853";
+          color: @appBG;
+          position: relative;
+          display: block;
+          z-index: 3;
+          width: @touchBase / 2;
+          height: @touchBase / 2;
+          line-height: @touchBase / 2;
+          text-align: center;
+          top: (@touchBase * 2) - (@touchBase / 3);
+          left: (@touchBase) - (@touchBase / 4);
+          background-color: @tintColor;
+          border-radius: @touchBase;
+        }
+      }
+    }
+    // end profile-style layout
+  }
+
+  #settings.screen {
+    .nameGroup {
+      text-align: center;
+      padding: 2em 0em;
+      font-size: 1.25em;
+      i.avatar, i.avatarTxt {
+        margin: 1em auto;
+        display: block;
+        width: @touchBase * 2;
+        height: @touchBase * 2;
+        border-radius: @touchBase;
+        background-size: cover;
+        background-position: center center;
+      }
+      i.avatarTxt {
+        background-color: @mainColorLight;
+        color: @appBG;
+        line-height: @touchBase * 2;
+        text-align: center;
+        text-transform: uppercase;
+        font-family: @fontFamilyHeaderL;
+        font-size: 2em;
+        font-style: normal;
+        padding-top: 3px;
+      }
+      label{
+        display: block;
+        font-family: @fontFamilyHeaderL;
+        font-size: 0.8em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: @mainColorMedium;
+      }
+      label.firstName, label.lastName {
+        font-family: @fontFamilyHeader;
+        font-size: 1.15em;
+        //color: @tintColor;
+      }
+      label.elfName {
+        font-family: @fontFamilySerif;
+        font-size: 1.15em;
+        font-style: italic;
+        text-transform: none;
+        color: @successColor;
+      }
+      label.elfName::before {
+        content: "~ ";
+        color: @mainColorMedium;
+      }
+      label.elfName::after {
+        content: " ~";
+        color: @mainColorMedium;
+      }
+    }
+  }
+
+  #wishList.screen {
+    ul {
+      //reset the ul
+      margin: 0; padding: 0;
+      list-style: none;
+      li {
+        position: relative;
+        display: block;
+        min-height: @touchBase;
+        font-family: @fontFamilyHeader;
+        font-size: 1.25em;
+        border-bottom: @borderStandard darken(@appBG1,10%);
+        overflow: hidden;
+        height: @touchBase * 1.9;
+        padding: 1.5em 1em 1.5em @touchBase * 1.9;
+        background-color: @appBG;
+        i.itemPhoto {
+          display: inline-block;
+          width: @touchBase * 1.5;
+          height: @touchBase * 1.5;
+          position: absolute;
+          top: @touchBase / 5;
+          left: @touchBase / 5;
+          background-size: cover;
+          background-position: center center;
+          border-radius: @touchBase / 5;
+        }
+        label {
+          display: block;
+        }
+        label.name {
+          font-family: @fontFamilyHeader;
+          letter-spacing: 0.02em;
+          font-size: 1.1em;
+          color: @tintColor;
+        }
+        label.description {
+          font-family: @fontFamilyHeaderL;
+          letter-spacing: 0.01em;
+          font-size: 0.9em;
+          color: @mainColorLight;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+
+// MODALS ========================
+  .modalOff {
+    box-shadow: none !important;
+    -webkit-transform: scale(0.9) translateY(130%) !important;
+  }
+  group.modalContainer {
+    //all modal styles must be in here
+    display: block;
+    z-index: 900;
+    position: fixed;
+    top: 0%; left: 0%;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.65);
+    .animate(300ms);
+    .modalView {
+      position:relative;
+      display: block;
+      top: 0px; left: 0px;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      toolbar {
+        position: absolute;
+        top: 0px; left: 0px;
+        width: 100%; height: @touchBase * 1.5;
+        display: -webkit-flex;
+        -webkit-flex-direction: row;
+        -webkit-flex-wrap: nowrap;
+        -webkit-justify-content: space-around;
+        -webkit-align-content: stretch;
+        -webkit-align-items: center;
+        left, right {
+          display: block;
+          -webkit-order: 0;
+          -webkit-flex: 0 0 auto;
+          -webkit-align-self: stretch;
+          height: @touchBase * 1.5;
+          line-height: @touchBase * 1.5;
+          i {
+            width: @touchBase * 1.5;
+            height: @touchBase * 1.5;
+            line-height: @touchBase * 1.5;
+            text-align: center;
+            font-style: normal;
+            font-family: 'santa';
+            font-size: 2em;
+            color: @appBG;
+            img {
+              max-height: 100%;
+              width: auto;
+            }
+          }
+        }
+      }
+      content {
+        display:block;
+        position: absolute;
+        top: @touchBase * 1.5; left: 0px; bottom: 0px;
+        width: 100%;
+        //height: 100%;
+        background-color: @modalBG;
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        title {
+          display: block;
+          width: 100%; height: @touchBase * 1.5;
+          line-height: @touchBase * 1.5;
+          text-align: center;
+          font-family: @fontFamilyHeader;
+          font-size: 1.15em;
+          text-transform: uppercase;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          color: @mainColor;
+        }
+      }
+    }
+
+  }
+
+  modal#mdl_item_create {
+    content {
+      #item_create_photoContainer {
+        padding: 0px; margin: 0px;
+        img {
+          width: 100%;
+          height: auto;
+        }
+      }
+    }
+  }
+
+// ACTION SHEETS =================
+  .actionSheetOff {
+    box-shadow: none !important;
+    -webkit-transform: scale(0.9) translateY(130%) !important;
+  }
+  group.actionSheetContainer {
+    //all modal styles must be in here
+    display: block;
+    z-index: 900;
+    position: fixed;
+    top: 0%; left: 0%;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background-color: @actionSheetBG;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.65);
+    .animate(300ms);
+    .modalView {
+      display: block;
+      top: 0px; left: 0px;
+      width: 100%; height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+  }

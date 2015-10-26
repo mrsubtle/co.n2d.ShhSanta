@@ -1,0 +1,42 @@
+[
+  {
+    "objectId" : "123jh1k23",
+    "eventAt" : 1419375600000,
+    "createdAt" : 1417536563283,
+    "updatedAt" : 1417536563283,
+    "title" : "Bennett Family Secret Santa",
+    "description" : "Totally awesome secret santa event at the Bennett Family's home on St Johns.  Call or email if you don't know where it is.",
+    "spendLimit" : 60.00,
+    "invitations" : []
+  },
+  {
+    "objectId" : "123jh1k22",
+    "eventAt" : 1419292800000,
+    "createdAt" : 1417536863383,
+    "updatedAt" : 1417536863383,
+    "title" : "Gosselin Family",
+    "description" : "Gosselin Family Christmas @ the Bennett Household.",
+    "spendLimit" : 60.00,
+    "invitations" : []
+  },
+  {
+    "objectId" : "123jh1k21",
+    "eventAt" : 1419724800000,
+    "createdAt" : 1417536563283,
+    "updatedAt" : 1417536563283,
+    "title" : "Christmas with the Smiths",
+    "description" : "Party with friends of Ellie's",
+    "spendLimit" : 55.00,
+    "invitations" : []
+  },
+  {
+    "objectId" : "123jh1k20",
+    "eventAt" : 1419303600000,
+    "createdAt" : 1417536563283,
+    "updatedAt" : 1417536563283,
+    "title" : "CTi Secret Santa Party",
+    "description" : "Richard's work Xmas party",
+    "spendLimit" : 30.00,
+    "invitations" : []
+  }
+]
