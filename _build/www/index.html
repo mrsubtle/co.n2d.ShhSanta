@@ -16,10 +16,11 @@
     </head>
     <body>
         <div class="app">
-          <nav id="top" class="navBar hidden">
+          <nav id="top" class="navBar hideTop">
             <div class="left">
               <i id="btn_disclosure" class="hidden clear touchable"><img src="img/ico/ico_nav_menu-512.svg"></i>
               <i id="btn_back" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
+              <i id="btn_back_eventDetail" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
               <i id="btn_addItem" class="hidden clear touchable"><img src="img/ico/ico_nav_add-512.svg"></i>
               <i id="btn_addEvent" class="hidden clear touchable"><img src="img/ico/ico_nav_add-512.svg"></i>
             </div>
@@ -41,7 +42,7 @@
                 </div>
                 <form id="frm_Login">
                   <fieldset>
-                    <input id="txt_username" type="text" placeholder="Elf name" class="topBorder" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required>
+                    <input id="txt_username" type="email" placeholder="email@server.net" class="topBorder" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required>
                     <input id="txt_password" type="password" placeholder="Password" class="" required>
                   </fieldset>
                   <button type="submit" class="touchable action">Sign in</button>
@@ -121,6 +122,25 @@
               <!-- //EVENT LIST POPULATED HERE// -->
             </ul>
           </section>
+          <section id="eventDetail" class="screen hidden" data-title="Event Details" data-nav="true" data-nav-icon="btn_back_eventDetail" data-tabbar="false">
+            <!-- //EVENT DETAIL HERE// -->
+            <div class="detail"></div>
+            <list-header class="flexContainer flexContainerRow">
+              <span class="flexItem flexItemElastic label">In like Finn</span>
+              <span class="flexItem attendanceGoing count">0</span>
+            </list-header>
+            <ul id="attendanceGoing"></ul>
+            <list-header class="flexContainer flexContainerRow">
+              <span class="flexItem flexItemElastic label">Party Poopers</span>
+              <span class="flexItem attendanceNotGoing count">0</span>
+            </list-header>
+            <ul id="attendanceNotGoing"></ul>
+            <list-header class="flexContainer flexContainerRow">
+              <span class="flexItem flexItemElastic label">Who the heck knows?</span>
+              <span class="flexItem attendanceUnknown count">0</span>
+            </list-header>
+            <ul id="attendanceUnknown"></ul>
+          </section>
           <section id="item" class="screen hidden">
           </section>
           <section id="settings" class="screen hidden" data-title="Loading Settings..." data-nav="true" data-tabbar="true">
@@ -135,7 +155,7 @@
             </div>
             <button id="btn_logout" class="touchable">Log out</button>
           </section>
-          <nav id="tab" class="tabBar hidden">
+          <nav id="tab" class="tabBar hideBottom">
             <div class="item touchable" data-screen="start">
              <i>
                <img src="img/ico/ico_tab_santa-512.svg" class="off hidden">
@@ -269,18 +289,16 @@
                 </fieldset>
                 <fieldset>
                   <div class="centeredTextDouble">
-                    any other special details?
+                    when is it?
                   </div>
-                  <textarea id="txt_description" class="topBorder">
-                    Address?
-                    Dress code?
-                  </textarea>
+                  <input type="datetime-local" id="txt_date" placeholder="Pick a date" class="topBorder" required>
                 </fieldset>
                 <fieldset>
                   <div class="centeredTextDouble">
-                    when is it?
+                    any other special details?
                   </div>
-                  <input type="datetime-local" id="txt_date" placeholder="Pick a date" class="topBorder">
+                  <input type="text" id="txt_limit" placeholder="Spend limit? ($/person)" pattern="[0-9]*" class="topBorder">
+                  <textarea id="txt_description" placeholder="Address? Dress code?" class=""></textarea>
                 </fieldset>
                 <!--//TODO: remove comments to enable photo uploads for events
                 <fieldset>
@@ -333,11 +351,42 @@
           <div class="loader">Loading...</div>
         </script>
         <script type="text/template" id="tpl_events_listItem">
-          <li>
-            <i id="eventIcon" class="event"><%= date.getDate() %></i>
+          <li class="touchable" data-id="<%= id %>">
+            <label id="eventDate" class="date"><%= moment(date).fromNow() %></label>
             <label id="eventTitle" class="title"><%= title %></label>
             <label id="eventDescription" class="description"><%= description %></label>
-            <label id="eventSpendLimit" class="spendLimit"><%= spendLimit %></label>
+            <label id="eventSpendLimit" class="spendLimit">$<span class="amount"><%= spendLimit %></span> limit</label>
+          </li>
+        </script>
+        <script type="text/template" id="tpl_eventDetail">
+          <div class="eventDetails" data-id="<%= id %>">
+            <fieldset class="flexContainer flexContainerRow">
+              <label for="txt_date" class="flexItem">Date</label>
+              <input type="datetime-local" id="txt_date" value="<%= date %>" disabled class="flexItem flexItemElastic">
+            </fieldset>
+            <fieldset class="flexContainer flexContainerRow">
+              <label for="txt_title" class="flexItem">Title</label>
+              <input type="text" id="txt_title" value="<%= title %>" disabled class="flexItem flexItemElastic">
+            </fieldset>
+            <fieldset class="flexContainer flexContainerRow">
+              <label for="txt_spendLimit" class="flexItem">Spend limit</label>
+              <input type="text" id="txt_spendLimit" value="<%= spendLimit %>" disabled class="flexItem flexItemElastic">
+            </fieldset>
+            <fieldset class="flexContainer flexContainerColumn">
+              <textarea id="txt_description" disabled class="flexItem flexItemElastic"><%= description %></textarea>
+            </fieldset>
+          </div>
+        </script>
+        <script type="text/template" id="tpl_eventDetail_attendanceItem">
+          <li class="attendee" data-id="<%= id %>">
+            <% if(isOwner){ %><div class="ownerDot">party boss</div><% } %>
+            <div class="name <% if(isOwner){ print('owner'); } %>"><%= name %></div>
+            <div class="email"><%= email %></div>
+          </li>
+        </script>
+        <script type="text/template" id="tpl_eventDetail_attendanceItem_empty">
+          <li class="attendee empty" data-id="0">
+            No attendees in this group
           </li>
         </script>
         <script type="text/template" id="tpl_wishList_listItem">
@@ -368,6 +417,11 @@
             <div class="back clear">
               stuff
             </div>
+          </li>
+        </script>
+        <script type="text/template" id="tpl_start_listItem_empty">
+          <li class="empty">
+            No one to buy for yet, Santa!
           </li>
         </script>
         <script type="text/template" id="tpl_userProfile">

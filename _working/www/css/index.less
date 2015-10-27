@@ -26,10 +26,10 @@
   @successColorDark : darken(@successColor,20%);
   @successColorLight : lighten(@successColor,20%);
   @timingFunction : cubic-bezier(.11,1,.97,1);
-  @fontFamilyB : "HelveticaNeue-Bold","Roboto-Bold";
-  @fontFamilyM : "HelveticaNeue-Medium","Roboto-Medium";
-  @fontFamilyL : "HelveticaNeue-Light","Roboto-Light";
-  @fontFamily : "HelveticaNeue","Roboto";
+  @fontFamilyB : "AvenirNext-Bold","Roboto-Bold";
+  @fontFamilyM : "AvenirNext-DemiBold","Roboto-Medium";
+  @fontFamilyL : "AvenirNext-UltraLight","Roboto-Light";
+  @fontFamily : "AvenirNext-Regular","Roboto";
   @fontFamilySerif : "Times New Roman", "Times";
   @fontFamilyHeader : "ArquitectaBold";
   @fontFamilyHeaderB : "ArquitectaBlack";
@@ -443,6 +443,8 @@
     -webkit-align-items: center;
     //background-color: rgba(red(@navBG),green(@navBG),blue(@navBG),0.95);
     background-color: rgba(red(@appBG),green(@appBG),blue(@appBG),0.95);
+    opacity: 1;
+    .animate500();
     div.left {
       -webkit-order: 0;
       -webkit-flex: 0 0 auto;
@@ -486,6 +488,10 @@
       font-size: 1.1em;
       letter-spacing: 0.05em;
     }
+    &.hideTop {
+      -webkit-transform: translateY((@navBase * -1));
+      opacity: 0;
+    }
   }
   nav.tabBar {
     position: absolute;
@@ -500,6 +506,7 @@
     -webkit-align-items: center;
     border-top: @borderStandard darken(@appBG,5%);
     background-color: rgba(red(@appBG),green(@appBG),blue(@appBG),0.95);
+    .animate500();
     .item {
       -webkit-order: 0;
       -webkit-flex: 0 1 auto;
@@ -525,6 +532,10 @@
           display: none;
         }
       }
+    }
+    &.hideBottom {
+      -webkit-transform: translateY(@touchBase + 1);
+      opacity: 0;
     }
   }
 
@@ -666,6 +677,13 @@
           vertical-align: baseline;
           color: @mainColorMedium;
         }
+        &.empty {
+          padding: 1rem 1rem 2rem 1rem;
+          text-align: center;
+          font-family: @fontFamilyM;
+          font-size: 0.75em;
+          color: darken(@appBG, 15%);
+        }
       }
       li:last-child {
         border-bottom: none;
@@ -804,6 +822,97 @@
     }
   }
 
+  #events.screen {
+    ul#eventList {
+      //list reset
+      margin: 0; padding: 0;
+      list-style: none;
+      li {
+        position: relative;
+        display: block;
+        margin: 0;
+        padding: 1rem;
+        min-height: @touchBase;
+        font-family: @fontFamily;
+        font-size: 1.15em;
+        background-color: @appBG;
+        border-bottom: @borderStandard darken(@appBG1,10%);
+        label {
+          display: block;
+        }
+        label.date {
+          font-size: .9em;
+        }
+        label.spendLimit {
+          font-family: @fontFamilyL;
+          .amount {
+            font-family: @fontFamilyM;
+          }
+        }
+      }
+    }
+  }
+
+  #eventDetail.screen {
+    list-header {
+      display: block;
+      position: relative;
+      padding: 1.5rem 1rem 0.7rem 1rem;
+      color: darken(@appBG1, 25%);
+      font-family: @fontFamilyB;
+      font-size: 0.65em;
+      border-bottom: @borderStandard darken(@appBG1,10%);
+      text-transform: uppercase;
+      .count {
+        font-size: 1.4em;
+      }
+    }
+    ul {
+      //list reset
+      margin: 0; padding: 0;
+      list-style: none;
+      li {
+        position: relative;
+        display: block;
+        margin: 0;
+        padding: 1rem 4.5rem 1rem 1rem;
+        min-height: @touchBase;
+        font-family: @fontFamily;
+        font-size: 1.15em;
+        background-color: @appBG;
+        border-bottom: @borderStandard darken(@appBG1,10%);
+        div.email {
+          font-size: .8em;
+        }
+        div.ownerDot {
+          display: inline-block;
+          position: absolute;
+          padding: 0.2rem 0.5rem;
+          top: 1rem;
+          right: 1rem;
+          color: @appBG;
+          font-family: @fontFamilyB;
+          font-size: 0.6em;
+          border-radius: 1rem;
+          background-color: @tintColor;
+        }
+        div.name {
+          font-family: @fontFamilyB;
+          &.owner {
+            color: @tintColor;
+          }
+        }
+        &.empty {
+          padding: 1rem 1rem 2rem 1rem;
+          text-align: center;
+          font-family: @fontFamilyM;
+          font-size: 0.75em;
+          color: darken(@appBG, 15%);
+        }
+      }
+    }
+  }
+
   #wishList.screen {
     ul {
       //reset the ul
@@ -812,13 +921,12 @@
       li {
         position: relative;
         display: block;
-        min-height: @touchBase;
+        min-height: ((@touchBase * 1.5) + ((@touchBase / 5) * 2) );
         font-family: @fontFamilyHeader;
         font-size: 1.25em;
         border-bottom: @borderStandard darken(@appBG1,10%);
-        overflow: hidden;
-        height: @touchBase * 1.9;
-        padding: 1.5em 1em 1.5em @touchBase * 1.9;
+        //height: @touchBase * 1.9;
+        padding: 1em 1em 1em @touchBase * 1.9;
         background-color: @appBG;
         i.itemPhoto {
           display: inline-block;
@@ -841,11 +949,10 @@
           color: @tintColor;
         }
         label.description {
-          font-family: @fontFamilyHeaderL;
+          font-family: @fontFamily;
           letter-spacing: 0.01em;
           font-size: 0.9em;
           color: @mainColorLight;
-          text-transform: uppercase;
         }
       }
     }
@@ -890,6 +997,7 @@
           height: @touchBase * 1.5;
           line-height: @touchBase * 1.5;
           i {
+            display: block;
             width: @touchBase * 1.5;
             height: @touchBase * 1.5;
             line-height: @touchBase * 1.5;

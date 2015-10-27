@@ -1,0 +1,10 @@
+{
+  "applications": {
+    "SecretSanta": {
+      "applicationId": "8dbOiuDO7wXfYQ6D0Wk7GhuZRaLPjQOJlvTpligz"
+    },
+    "_default": {
+      "link": "SecretSanta"
+    }
+  }
+}

@@ -440,35 +440,42 @@ var modals = {
       }).promise();
     },
     render : function(){
+      //set the time of the event to be now
+        var currentDate = new Date();
+        // Find the current time zone's offset in milliseconds.
+        var timezoneOffset = currentDate.getTimezoneOffset() * 60 * 1000;
+        // Subtract the time zone offset from the current UTC date, and pass
+        //  that into the Date constructor to get a date whose UTC date/time is
+        //  adjusted by timezoneOffset for display purposes.
+        var localDate = new Date(currentDate.getTime() - timezoneOffset);
+        // Get that local date's ISO date string and remove the Z.
+        var localDateISOString = localDate.toISOString().replace('Z', '');
+        // Finally, set the input's value to that timezone-less string.
+        $(modals.mdl_event_create.el + ' #txt_date').val(localDateISOString);
       //unhide the appropriate modal
       $(modals.mdl_event_create.el).removeClass('hidden');
       //animate modal container
       $('group.modalContainer').removeClass('modalOff');
     },
     setData : function(){
+      var eAt = moment($(modals.mdl_event_create.el + ' #txt_date').val()).local().valueOf();
       var Event = Parse.Object.extend("Event");
       var newEvent = new Event();
       newEvent.set('createdBy',Parse.User.current());
       newEvent.set('title',$(modals.mdl_event_create.el+" #txt_title").val());
-      newItem.set('description',$(modals.mdl_event_create.el+" #txt_description").val());
-      newItem.set('upc',parseInt($(modals.mdl_event_create.el+" #txt_upc").val()));
-      newItem.set('rating',parseInt($(modals.mdl_event_create.el+" #txt_rating").val()));
-      newItem.set('lastSeenAt',$(modals.mdl_event_create.el+" #txt_lastSeenAt").val());
-      newItem.set('estPrice',parseInt($(modals.mdl_event_create.el+" #txt_estPrice").val()));
-      if($('#mdl_event_create #item_create_photoContainer img').length != 0){
-        var t = $('#mdl_event_create #item_create_photoContainer img').attr('src');
-        var base64data = t.slice("data:image/png;base64,".length);
-        var image = new Parse.File('item.png',{ base64 : base64data });
-        newItem.set('photo', image);
-      }
-      newItem.save(null,{
-        success : function(newItem){
-          user.wishList.push(newItem);
-          pages.wishList.init();
-          modals.mdl_event_create.hide();
+      newEvent.set('description',$(modals.mdl_event_create.el+" #txt_description").val());
+      newEvent.set('eventAt',new Date(eAt));
+      newEvent.set('spendLimit',parseInt($(modals.mdl_event_create.el+" #txt_limit").val()));
+      newEvent.set('isLocked',false);
+      newEvent.save(null,{
+        success : function(newEvent){
+          user.getEvents(true).done(function(){
+            pages.events.render();
+            modals.mdl_event_create.hide();
+          });
         },
-        error : function(newItem,error){
-          app.e("Couldn't save that item.  We'll look into it ASAP!");
+        error : function(newEvent,error){
+          app.e("Couldn't save the event!  We'll look into it ASAP!");
           app.l(JSON.stringify(error,null,2),2);
         }
       });
@@ -523,7 +530,7 @@ var pages = {
           $('#lbl_loginError').addClass('bad');
           // The login failed. Check error to see why.
           if(error.code == 101){
-            $('#lbl_loginError').html('nope!');
+            $('#lbl_loginError').html('bad email or password!');
             setTimeout(function(){
               $('#lbl_loginError').addClass('clear');
             },5000);
@@ -650,7 +657,8 @@ var pages = {
             $('.screen#start #santaList').append(template(v));
           });
         } else {
-          $('.screen#start #santaList').html("No people for you to buy for, Santa.");
+          var emptyTpl = _.template( $('#tpl_start_listItem_empty').html() );
+          $('.screen#start #santaList').html( emptyTpl({}) );
         }
         render.resolve();
       }).promise();
@@ -777,39 +785,187 @@ var pages = {
     }
   },
   events : {
-    init : function(){
-      pages.events.remE().done(pages.events.addE);
+    init : function(forceDataUpdate){
+      pages.events.getData(forceDataUpdate).done(function(){
+        pages.events.render();
+      });
     },
     addE : function(){
       return $.Deferred(function(a){
+        app.addE();
         $('nav#top #btn_addEvent').hammer().on('tap',function(){
           modals.mdl_event_create.show();
+        });
+        $('#events.screen #eventList li').hammer().on('tap',function(){
+          var eID = $(this).data('id');
+          app.l('Tapped Attendance ID: '+eID,1);
+          var ParseAttendance = _.find(user.eventList, function(obj) {
+              return obj.get('event').id == eID; 
+          });
+          pages.eventDetail.init(ParseAttendance.get('event'));
         });
         a.resolve();
       }).promise();
     },
     remE : function(){
       return $.Deferred(function(r){
+        app.remE();
         $('nav#top #btn_addEvent').hammer().off('tap');
         r.resolve();
+      }).promise();
+    },
+    render: function(){
+      if ( user.eventList.length > 0 ) {
+        var eventTpl = _.template( $('#tpl_events_listItem').html() );
+        $('#events.screen #eventList').html("");
+        _.each(user.eventList, function(o,i,a){
+          var object = {
+            id: o.get('event').id,
+            date: o.get('event').get('eventAt'),
+            title: o.get('event').get('title'),
+            description: o.get('event').get('description'),
+            spendLimit: o.get('event').get('spendLimit')
+          };
+          $('#events.screen #eventList').append(eventTpl(object));
+        });
+      } else {
+        $('#events.screen #eventList').html('No events yet.');
+      }
+      pages.events.remE().done(pages.events.addE);
+    },
+    getData: function(forceDataUpdate){
+      return $.Deferred(function(gd){
+        user.getEvents(forceDataUpdate).done(function(){
+          gd.resolve();
+        }).fail(function(error){
+          gd.reject(error);
+        });
       }).promise();
     }
   },
   eventDetail : {
-    init : function(){},
-    addE : function(){},
-    remE : function(){},
-    render : function(){},
-    getData : function(){}
-  },
-  itemCreate : {
-    init : function(){},
-    addE : function(){
-
+    init : function(ParseEventObjectToLoad){
+      //this function assumes you are passing the actual event object to render/query.
+      //NOT simply the ID
+      app.l('Init detail for eventID: '+ParseEventObjectToLoad.id,1);
+      if(typeof ParseEventObjectToLoad != "undefined"){
+        pages.eventDetail.getAttendanceForEvent(ParseEventObjectToLoad).done(function(attendanceArray){
+          pages.eventDetail.render(ParseEventObjectToLoad);
+          pages.eventDetail.renderAttendance(attendanceArray);
+        });
+      }
     },
-    remE : function(){},
-    render : function(){},
-    setData : function(){}
+    addE : function(){
+      return $.Deferred(function(a){
+        app.addE();
+        $('nav#top #btn_back_eventDetail').hammer().on('tap', function(){
+          app.showScreen($('#events.screen'));
+        });
+        a.resolve();
+      }).promise();
+    },
+    remE : function(){
+      return $.Deferred(function(r){
+        app.remE();
+        $('nav#top #btn_back_eventDetail').hammer().off('tap');
+        r.resolve();
+      }).promise();
+    },
+    render : function(retrievedParseEventData){
+      pages.eventDetail.remE().then(pages.eventDetail.addE);
+      app.showScreen($('#eventDetail.screen'));
+    },
+    getAttendanceForEvent : function(ParseEvent){
+      app.l('Retreiving Attendance for eventID: '+ParseEvent.id,1);
+      return $.Deferred(function(getAttendanceForEvent){
+        var Attendance = Parse.Object.extend("Attendance");
+        var attendanceQuery = new Parse.Query(Attendance);
+        attendanceQuery.equalTo('event', ParseEvent);
+        attendanceQuery.include('attendee');
+        attendanceQuery.find({
+          success: function(attendanceArray){
+            getAttendanceForEvent.resolve(attendanceArray);
+          },
+          error: function(e){
+            app.e("Wat?! I can't find anyone for that event.  But I'll keep looking, and you can try again in a bit, ok? Ok.");
+            app.l(JSON.stringify(e),2);
+            getAttendanceForEvent.reject(e);
+          }
+        });
+      }).promise();
+    },
+    renderAttendance : function(attendanceArray){
+      var attendeeTpl = _.template( $('#tpl_eventDetail_attendanceItem').html() );
+      var attendeeEmptyTpl = _.template( $('#tpl_eventDetail_attendanceItem_empty').html() );
+      $('#eventDetail.screen ul#attendanceGoing').html(attendeeEmptyTpl({}));
+      $('#eventDetail.screen ul#attendanceNotGoing').html(attendeeEmptyTpl({}));
+      $('#eventDetail.screen ul#attendanceUnknown').html(attendeeEmptyTpl({}));
+      var aGoing = [];
+      var aNotGoing = [];
+      var aUnknown = [];
+      _.each(attendanceArray, function(o,i,a){
+        if (o.get('status') == 1 || o.get('status') == 2){
+          aGoing.push(o);
+        } else if(o.get('status') == 0) {
+          aNotGoing.push(o);
+        } else {
+          aUnknown.push(o);
+        }
+      });
+      if(aGoing.length > 0){
+        $('#eventDetail.screen ul#attendanceGoing').html("");
+        $('#eventDetail.screen .attendanceGoing.count').html(aGoing.length);
+        _.each(aGoing, function(o,i,a){
+          $('#eventDetail.screen ul#attendanceGoing').append(attendeeTpl({
+            id : o.get('attendee').id,
+            isOwner : o.get('status') == 2 ? true : false,
+            name : o.get('attendee').get('displayName'),
+            email : o.get('attendee').get('email')
+          }));
+        });
+      }
+      if(aNotGoing.length > 0){
+        $('#eventDetail.screen ul#attendanceNotGoing').html("");
+        $('#eventDetail.screen .attendanceNotGoing.count').html(aNotGoing.length);
+        _.each(aNotGoing, function(o,i,a){
+          $('#eventDetail.screen ul#attendanceNotGoing').append(attendeeTpl({
+            id : o.get('attendee').id,
+            isOwner : o.get('status') == 2 ? true : false,
+            name : o.get('attendee').get('name'),
+            email : o.get('attendee').get('email')
+          }));
+        });
+      }
+      if(aUnknown.length > 0){
+        $('#eventDetail.screen ul#attendanceUnknown').html("");
+        $('#eventDetail.screen .attendanceUnknown.count').html(aUnknown.length);
+        _.each(aUnknown, function(o,i,a){
+          $('#eventDetail.screen ul#attendanceUnknown').append(attendeeTpl({
+            id : o.get('attendee').id,
+            isOwner : o.get('status') == 2 ? true : false,
+            name : o.get('attendee').get('name'),
+            email : o.get('attendee').get('email')
+          }));
+        });
+      }
+    },
+    getData : function(ParseEventObjectToLoad){
+      app.l('Retreiving data for eventID: '+ParseEventObjectToLoad.id,1);
+      return $.Deferred(function(getData){
+        var Event = Parse.Object.extend("Event");
+        var eventDetailQuery = new Parse.Query(Event);
+        eventDetailQuery.get(ParseEventObjectToLoad.id, {
+          success: function(event){
+            getData.resolve(event);
+          },
+          error: function(e){
+            app.e("Wat?! I can't find that event.  But I'll keep looking, and you can try again in a bit, ok? Ok.");
+            app.l(JSON.stringify(e),2);
+            getData.reject(e);
+          }
+        });
+      }).promise();
+    }
   },
   itemDetail : {
     init : function(){},
@@ -1066,10 +1222,14 @@ var app = {
     }
 
     if(s.data("nav")==true){
-      $('nav#top').removeClass('hidden');
+      $('nav#top').removeClass('hideTop');
+    } else {
+      $('nav#top').addClass('hideTop');
     }
     if(s.data("tabbar")==true){
-      $('nav#tab').removeClass('hidden');
+      $('nav#tab').removeClass('hideBottom');
+    } else {
+      $('nav#tab').addClass('hideBottom');
     }
   },
   s: function(message,type){
@@ -1187,6 +1347,38 @@ var user = {
   santaListUpdatedAt : new Date(2000,01,01),
   eventList : [],
   eventListUpdatedAt : new Date(2000,01,01),
+  getEvents : function(forceDataUpdate){
+    app.l('Getting user\'s events...',1);
+    return $.Deferred(function(getEvents){
+      if (forceDataUpdate || user.eventListUpdatedAt <= new Date().subMinutes(15)) {
+
+        //Get data from Parse
+        var Attendance = Parse.Object.extend("Attendance");
+        var attendanceQuery = new Parse.Query(Attendance);
+        attendanceQuery.equalTo('attendee', Parse.User.current());
+        attendanceQuery.include('event');
+        attendanceQuery.ascending('createdAt');
+        attendanceQuery.find({
+          success: function(r){
+            user.eventList = r;
+            user.eventListUpdatedAt = new Date();
+            app.l('...got user\'s events FROM PARSE',1);
+            getEvents.resolve(user.eventList);
+          },
+          error: function(e){
+            //TODO
+            //Tie error to master logging system
+            console.error(e);
+            app.e("Wowsa! I can't find your events right now! Try again in a few minutes, ok?");
+            getEvents.reject(e);
+          }
+        });
+      } else {
+        app.l('...got user\'s events FROM CACHE',1);
+        getEvents.resolve(user.eventList);
+      }
+    }).promise();
+  },
   wishList : [],
   wishListUpdatedAt : new Date(2000,01,01)
 };
