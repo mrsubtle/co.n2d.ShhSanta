@@ -110,17 +110,29 @@
           </section>
           <section id="wishList" class="screen hidden" data-title="Your Wish List" data-nav="true" data-nav-icon="btn_addItem" data-tabbar="true">
             <ul id="wishList">
-              <!-- //EVENT LIST POPULATED HERE// -->
+              <!-- //WISH LIST POPULATED HERE// -->
+              <div class="loader">Loading...</div>
             </ul>
           </section>
-          <section id="events" class="screen hidden" data-title="Events &amp; Invitations" data-nav="true" data-nav-icon="btn_addEvent" data-tabbar="true">
-            <!--<button-group class="flexContainer flexContainerRow">
-              <button class="flexItem flexItemElastic touchable">Join Event</button>
-              <button class="flexItem flexItemElastic action touchable">Create Event</button>
-            </button-group>-->
-            <ul id="eventList">
-              <!-- //EVENT LIST POPULATED HERE// -->
-            </ul>
+          <section id="events" class="screen hidden" data-title="Calendar" data-nav="true" data-nav-icon="btn_addEvent" data-tabbar="true">
+            <content class="tab-content">
+              <ul id="eventList" class="tab-target hidden">
+                <!-- //EVENT LIST POPULATED HERE// -->
+                <div class="loader">Loading...</div>
+              </ul>
+              <ul id="invitationList" class="tab-target hidden">
+                <!-- //INVITATION LIST POPULATED HERE// -->
+                <div class="loader">Loading...</div>
+              </ul>
+            </content>
+            <tab-group>
+              <tab class="active" data-for="eventList">
+                <label>Events</label>
+              </tab>
+              <tab data-for="invitationList">
+                <label>Invitations</label><badge class="hidden"></badge>
+              </tab>
+            </tab-group>
           </section>
           <section id="eventDetail" class="screen hidden" data-title="Event Details" data-nav="true" data-nav-icon="btn_back_eventDetail" data-tabbar="false">
             <!-- //EVENT DETAIL HERE// -->
@@ -156,28 +168,28 @@
             <button id="btn_logout" class="touchable">Log out</button>
           </section>
           <nav id="tab" class="tabBar hideBottom">
-            <div class="item touchable" data-screen="start">
+            <div class="item start touchable" data-screen="start">
              <i>
                <img src="img/ico/ico_tab_santa-512.svg" class="off hidden">
                <img src="img/ico/ico_tab_santa-on-512.svg" class="on hidden">
              </i>
              <label>Santa List</label>
             </div>
-            <div class="item touchable" data-screen="wishList">
+            <div class="item wishList touchable" data-screen="wishList">
              <i>
                <img src="img/ico/ico_tab_gift-512.svg" class="off hidden">
                <img src="img/ico/ico_tab_gift-on-512.svg" class="on hidden">
              </i>
              <label>Wish List</label>
             </div>
-            <div class="item touchable" data-screen="events">
+            <div class="item events touchable" data-screen="events">
              <i>
                <img src="img/ico/ico_tab_calendar-512.svg" class="off hidden">
                <img src="img/ico/ico_tab_calendar-on-512.svg" class="on hidden">
              </i>
              <label>Events</label>
             </div>
-            <div class="item touchable" data-screen="settings">
+            <div class="item settings touchable" data-screen="settings">
              <i>
                <img src="img/ico/ico_tab_snowflake-512.svg" class="off hidden">
                <img src="img/ico/ico_tab_snowflake-on-512.svg" class="on hidden">
@@ -351,11 +363,39 @@
           <div class="loader">Loading...</div>
         </script>
         <script type="text/template" id="tpl_events_listItem">
-          <li class="touchable" data-id="<%= id %>">
-            <label id="eventDate" class="date"><%= moment(date).fromNow() %></label>
-            <label id="eventTitle" class="title"><%= title %></label>
-            <label id="eventDescription" class="description"><%= description %></label>
-            <label id="eventSpendLimit" class="spendLimit">$<span class="amount"><%= spendLimit %></span> limit</label>
+          <li class="event touchable" data-id="<%= id %>">
+            <card>
+              <label id="eventDate" class="date">
+                <%= moment(date).fromNow() %>
+                <actual><%= util.formatDate(date) %></actual>
+              </label>
+              <label id="eventTitle" class="title"><%= title %></label>
+              <label id="eventDescription" class="hidden description"><%= description %></label>
+              <label id="eventSpendLimit" class="spendLimit">~&nbsp;&nbsp;$<span class="amount"><%= spendLimit %></span>&nbsp;&nbsp;~</label>
+            </card>
+          </li>
+        </script>
+        <script type="text/template" id="tpl_events_listItem_empty">
+          <li class="empty" data-id="0">
+            No events yet, why not create one?
+          </li>
+        </script>
+        <script type="text/template" id="tpl_invitation_listItem">
+          <li class="invitation touchable" data-id="<%= id %>">
+            <card>
+              <label id="eventDate" class="date">
+                <%= moment(date).fromNow() %>
+                <actual><%= util.formatDate(date) %></actual>
+              </label>
+              <label id="eventTitle" class="title"><%= title %></label>
+              <label id="eventDescription" class="hidden description"><%= description %></label>
+              <label id="eventSpendLimit" class="spendLimit">~&nbsp;&nbsp;$<span class="amount"><%= spendLimit %></span>&nbsp;&nbsp;~</label>
+            </card>
+          </li>
+        </script>
+        <script type="text/template" id="tpl_invitation_listItem_empty">
+          <li class="empty" data-id="0">
+            No invitations... yet!
           </li>
         </script>
         <script type="text/template" id="tpl_eventDetail">

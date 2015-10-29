@@ -53,169 +53,173 @@ var modals = {
     },
     show : function(){
       $('.app').toggleClass('tilt');
-      modals.mdl_item_create.remE();
-      modals.mdl_item_create.addE();
-      modals.mdl_item_create.render();
+      modals.mdl_item_create.remE().done(modals.mdl_item_create.addE().done(modals.mdl_item_create.render));
+    },
+    addE : function() {
+      return $.Deferred(function(a){
+        $(modals.mdl_item_create.el + ' #frm_item_create').on('submit',function(e){
+          e.preventDefault();
+        });
+        $(modals.mdl_item_create.el + ' #btn_cancel').hammer().on('tap',function(e){
+          modals.mdl_item_create.hide();
+          e.preventDefault();
+        });
+        $(modals.mdl_item_create.el + ' #btn_save').hammer().on('tap',function(e){
+          modals.mdl_item_create.setData();
+          e.preventDefault();
+        });
+        $(modals.mdl_item_create.el + ' #txt_upc').on('blur',function(e){
+          var upc = $(modals.mdl_item_create.el + ' #txt_upc').val();
+          if(upc != "" || upc != null){
+            try {
+              util.getDataUPC(upc,function(d){
+                $(modals.mdl_item_create.el + ' #lbl_barcodeStatus').html('...item found!');
+                //if an image is available, pre-load the image
+                if( d.images.length >= 1 ){
+                  util.convertImgToBase64(d.images[0],function(base64string){
+                    var v = {
+                      uri : base64string
+                    };
+                    var tpl = _.template( $('#tpl_item_create_photo').html() );
+                    $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
+                    $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass("hidden");
+                  });
+                }
+                //populate the item name
+                $(modals.mdl_item_create.el + ' #txt_name').val(d.name);
+              },function(e){
+                var obj = $(modals.mdl_item_create.el + ' #lbl_barcodeStatus');
+                var objMsg = obj.html();
+                obj.html('...item info not found. :(');
+                setTimeout(function(){
+                  obj.html(objMsg);
+                },3000);
+              });
+            } catch (e) {
+              //DEBUG
+              console.log(e);
+            }
+          }
+        });
+        $(modals.mdl_item_create.el + ' #btn_scanBarcode').hammer().on('tap',function(e){
+          var lblO = $(modals.mdl_item_create.el + ' #frm_item_create #lbl_barcodeStatus');
+          var tmpLbl = lblO.html();
+          lblO.html( $('#tpl_loading').html() );
+          //scan that code!
+          cordova.plugins.barcodeScanner.scan(
+            function (result) {
+              if(result.cancelled == 0){
+                lblO.html('...successful scan...');
+                $('#frm_item_create #txt_upc').val(result.text);
+                var upc = result.text;
+                if(upc != "" || upc != null){
+                  util.getDataUPC(upc,function(d){
+                    //if an image is available, pre-load the image
+                    if( d.images.length >= 1 ){
+                      util.convertImgToBase64(d.images[0],function(base64string){
+                        var v = {
+                          uri : base64string
+                        };
+                        var tpl = _.template( $('#tpl_item_create_photo').html() );
+                        $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
+                        $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass("hidden");
+                      });
+                    }
+                    //populate the item name
+                    $(modals.mdl_item_create.el + ' #txt_name').val(d.name);
+
+                  },function(e){
+                    //DEBUG
+                    console.log(e);
+                  });
+                }
+              } else {
+                lblO.html(tmpLbl);
+              }
+              //DEBUG
+              console.log(result);
+            },
+            function (error) {
+              lblO.html(tmpLbl);
+              app.e("Oops! Scan seems to have failed, but don't worry - we'll fix it. Eventiually.");
+              //DEBUG
+              console.log(error);
+            }
+          );
+          e.preventDefault();
+        });
+        $(modals.mdl_item_create.el + ' #btn_takeItemPhoto').hammer().on('tap',function(e){
+          navigator.camera.getPicture(function(imgData){
+            //success!
+            var v = {
+              uri : "data:image/png;base64," + imgData
+            };
+            var tpl = _.template( $('#tpl_item_create_photo').html() );
+            $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
+            $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass("hidden");
+          }, function(error){
+            //fail :(
+            app.e('Can\'t take a picture.  I don\'t know why.  Do you?');
+          }, {
+            quality: 80,
+            destinationType: Camera.DestinationType.DATA_URL,
+            sourceType: Camera.PictureSourceType.CAMERA,
+            allowEdit: true,
+            targetWidth: 1024,
+            targetHeight: 1024,
+            encodingType: Camera.EncodingType.PNG,
+            cameraDirection: Camera.Direction.BACK
+          });
+          e.preventDefault();
+        });
+        $(modals.mdl_item_create.el + ' #btn_selectItemPhoto').hammer().on('tap',function(e){
+          navigator.camera.getPicture(function(imgData){
+            //success!
+            var v = {
+              uri : "data:image/png;base64," + imgData
+            };
+            var tpl = _.template( $('#tpl_item_create_photo').html() );
+            $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
+            $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass('hidden');
+          }, function(error){
+            //fail :(
+            app.e("Umm... This is embarassing. I can't open the gallery.  I don't know why.  Do you?");
+          }, {
+            quality: 80,
+            destinationType: Camera.DestinationType.DATA_URL,
+            sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+            allowEdit: true,
+            targetWidth: 1024,
+            targetHeight: 1024,
+            encodingType: Camera.EncodingType.PNG
+          });
+          e.preventDefault();
+        });
+        $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').hammer().on('tap',function(e){
+          $(modals.mdl_item_create.el + ' #item_create_photoContainer').html('');
+          $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').addClass('hidden');
+          e.preventDefault();
+        });
+        a.resolve();
+      }).promise();
+    },
+    remE : function() {
+      return $.Deferred(function(r){
+        $(modals.mdl_item_create.el + ' #frm_item_create').off('submit');
+        $(modals.mdl_item_create.el + ' #btn_cancel').hammer().off('tap');
+        $(modals.mdl_item_create.el + ' #btn_save').hammer().off('tap');
+        $(modals.mdl_item_create.el + ' #txt_upc').off('blur');
+        $(modals.mdl_item_create.el + ' #btn_scanBarcode').hammer().off('tap');
+        $(modals.mdl_item_create.el + ' #btn_takeItemPhoto').hammer().off('tap');
+        $(modals.mdl_item_create.el + ' #btn_selectItemPhoto').hammer().off('tap');
+        $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').hammer().off('tap');
+        r.resolve();
+      }).promise();
+    },
+    render : function(){
       $(modals.mdl_item_create.el + ' content').scrollTop(0);
       $(modals.mdl_item_create.el + ' #item_create_photoContainer').html('');
       $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').addClass("hidden");
-    },
-    addE : function() {
-      $(modals.mdl_item_create.el + ' #frm_item_create').on('submit',function(e){
-        e.preventDefault();
-      });
-      $(modals.mdl_item_create.el + ' #btn_cancel').hammer().on('tap',function(e){
-        modals.mdl_item_create.hide();
-        e.preventDefault();
-      });
-      $(modals.mdl_item_create.el + ' #btn_save').hammer().on('tap',function(e){
-        modals.mdl_item_create.setData();
-        e.preventDefault();
-      });
-      $(modals.mdl_item_create.el + ' #txt_upc').on('blur',function(e){
-        var upc = $(modals.mdl_item_create.el + ' #txt_upc').val();
-        if(upc != "" || upc != null){
-          try {
-            util.getDataUPC(upc,function(d){
-              $(modals.mdl_item_create.el + ' #lbl_barcodeStatus').html('...item found!');
-              //if an image is available, pre-load the image
-              if( d.images.length >= 1 ){
-                util.convertImgToBase64(d.images[0],function(base64string){
-                  var v = {
-                    uri : base64string
-                  };
-                  var tpl = _.template( $('#tpl_item_create_photo').html() );
-                  $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
-                  $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass("hidden");
-                });
-              }
-              //populate the item name
-              $(modals.mdl_item_create.el + ' #txt_name').val(d.name);
-            },function(e){
-              var obj = $(modals.mdl_item_create.el + ' #lbl_barcodeStatus');
-              var objMsg = obj.html();
-              obj.html('...item info not found. :(');
-              setTimeout(function(){
-                obj.html(objMsg);
-              },3000);
-            });
-          } catch (e) {
-            //DEBUG
-            console.log(e);
-          }
-        }
-      });
-      $(modals.mdl_item_create.el + ' #btn_scanBarcode').hammer().on('tap',function(e){
-        var lblO = $(modals.mdl_item_create.el + ' #frm_item_create #lbl_barcodeStatus');
-        var tmpLbl = lblO.html();
-        lblO.html( $('#tpl_loading').html() );
-        //scan that code!
-        cordova.plugins.barcodeScanner.scan(
-          function (result) {
-            if(result.cancelled == 0){
-              lblO.html('...successful scan...');
-              $('#frm_item_create #txt_upc').val(result.text);
-              var upc = result.text;
-              if(upc != "" || upc != null){
-                util.getDataUPC(upc,function(d){
-                  //if an image is available, pre-load the image
-                  if( d.images.length >= 1 ){
-                    util.convertImgToBase64(d.images[0],function(base64string){
-                      var v = {
-                        uri : base64string
-                      };
-                      var tpl = _.template( $('#tpl_item_create_photo').html() );
-                      $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
-                      $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass("hidden");
-                    });
-                  }
-                  //populate the item name
-                  $(modals.mdl_item_create.el + ' #txt_name').val(d.name);
-
-                },function(e){
-                  //DEBUG
-                  console.log(e);
-                });
-              }
-            } else {
-              lblO.html(tmpLbl);
-            }
-            //DEBUG
-            console.log(result);
-          },
-          function (error) {
-            lblO.html(tmpLbl);
-            app.e("Oops! Scan seems to have failed, but don't worry - we'll fix it. Eventiually.");
-            //DEBUG
-            console.log(error);
-          }
-        );
-        e.preventDefault();
-      });
-      $(modals.mdl_item_create.el + ' #btn_takeItemPhoto').hammer().on('tap',function(e){
-        navigator.camera.getPicture(function(imgData){
-          //success!
-          var v = {
-            uri : "data:image/png;base64," + imgData
-          };
-          var tpl = _.template( $('#tpl_item_create_photo').html() );
-          $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
-          $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass("hidden");
-        }, function(error){
-          //fail :(
-          app.e('Can\'t take a picture.  I don\'t know why.  Do you?');
-        }, {
-          quality: 80,
-          destinationType: Camera.DestinationType.DATA_URL,
-          sourceType: Camera.PictureSourceType.CAMERA,
-          allowEdit: true,
-          targetWidth: 1024,
-          targetHeight: 1024,
-          encodingType: Camera.EncodingType.PNG,
-          cameraDirection: Camera.Direction.BACK
-        });
-        e.preventDefault();
-      });
-      $(modals.mdl_item_create.el + ' #btn_selectItemPhoto').hammer().on('tap',function(e){
-        navigator.camera.getPicture(function(imgData){
-          //success!
-          var v = {
-            uri : "data:image/png;base64," + imgData
-          };
-          var tpl = _.template( $('#tpl_item_create_photo').html() );
-          $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
-          $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass('hidden');
-        }, function(error){
-          //fail :(
-          app.e("Umm... This is embarassing. I can't open the gallery.  I don't know why.  Do you?");
-        }, {
-          quality: 80,
-          destinationType: Camera.DestinationType.DATA_URL,
-          sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
-          allowEdit: true,
-          targetWidth: 1024,
-          targetHeight: 1024,
-          encodingType: Camera.EncodingType.PNG
-        });
-        e.preventDefault();
-      });
-      $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').hammer().on('tap',function(e){
-        $(modals.mdl_item_create.el + ' #item_create_photoContainer').html('');
-        $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').addClass('hidden');
-        e.preventDefault();
-      });
-    },
-    remE : function() {
-      $(modals.mdl_item_create.el + ' #frm_item_create').off('submit');
-      $(modals.mdl_item_create.el + ' #btn_cancel').hammer().off('tap');
-      $(modals.mdl_item_create.el + ' #btn_save').hammer().off('tap');
-      $(modals.mdl_item_create.el + ' #txt_upc').off('blur');
-      $(modals.mdl_item_create.el + ' #btn_scanBarcode').hammer().off('tap');
-      $(modals.mdl_item_create.el + ' #btn_takeItemPhoto').hammer().off('tap');
-      $(modals.mdl_item_create.el + ' #btn_selectItemPhoto').hammer().off('tap');
-      $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').hammer().off('tap');
-    },
-    render : function(){
       //unhide the appropriate modal
       $(modals.mdl_item_create.el).removeClass('hidden');
       //animate modal container
@@ -629,6 +633,9 @@ var pages = {
           );
         })
       });
+      pages.events.getData().done(function(){
+        pages.events.render();
+      });
     },
     addE : function(){
       return $.Deferred(function(a){
@@ -705,15 +712,12 @@ var pages = {
     init : function(){
       pages.wishList.getData().done(function(){
         pages.wishList.render().done(function(){
-          pages.wishList.remE().then(
-            pages.wishList.addE
-          ).then(
-            app.remE().then(app.addE)
-          );
-        })
+          pages.wishList.remE().done(pages.wishList.addE);
+        });
       });
     },
     addE : function(){
+      app.addE();
       console.log('addE');
       return $.Deferred(function(a){
         $('nav#top #btn_addItem').hammer().on('tap',function(){
@@ -723,6 +727,7 @@ var pages = {
       }).promise();
     },
     remE : function(){
+      app.remE();
       console.log('remE');
       return $.Deferred(function(r){
         $('nav#top #btn_addItem').hammer().off('tap');
@@ -796,6 +801,11 @@ var pages = {
         $('nav#top #btn_addEvent').hammer().on('tap',function(){
           modals.mdl_event_create.show();
         });
+        $('#events.screen tab-group tab').hammer().on('tap',function(){
+          $('#events.screen tab-group tab').removeClass('active');
+          $(this).addClass('active');
+          pages.events.tabCheck();
+        });
         $('#events.screen #eventList li').hammer().on('tap',function(){
           var eID = $(this).data('id');
           app.l('Tapped Attendance ID: '+eID,1);
@@ -811,25 +821,52 @@ var pages = {
       return $.Deferred(function(r){
         app.remE();
         $('nav#top #btn_addEvent').hammer().off('tap');
+        $('#events.screen tab-group tab').hammer().off('tap');
+        $('#events.screen #eventList li').hammer().off('tap');
         r.resolve();
       }).promise();
     },
+    tabCheck : function(){
+      $('#events.screen .tab-target').addClass('hidden');
+      $('#events.screen tab-group tab').each(function(i,o){
+        if($(this).hasClass('active')){
+          $('#events.screen #'+$(this).data('for')+'.tab-target').removeClass('hidden');
+        }
+      });
+    },
     render: function(){
-      if ( user.eventList.length > 0 ) {
-        var eventTpl = _.template( $('#tpl_events_listItem').html() );
-        $('#events.screen #eventList').html("");
-        _.each(user.eventList, function(o,i,a){
-          var object = {
-            id: o.get('event').id,
-            date: o.get('event').get('eventAt'),
-            title: o.get('event').get('title'),
-            description: o.get('event').get('description'),
-            spendLimit: o.get('event').get('spendLimit')
-          };
+      pages.events.tabCheck();
+      var eventTpl = _.template( $('#tpl_events_listItem').html() );
+      var eventEmptyTpl = _.template( $('#tpl_events_listItem_empty').html() );
+      var invitationTpl = _.template( $('#tpl_invitation_listItem').html() );
+      var invitationEmptyTpl = _.template( $('#tpl_invitation_listItem_empty').html() );
+      $('#events.screen #eventList').html("");
+      $('#events.screen #invitationList').html("");
+      _.each(user.eventList, function(o,i,a){
+        var object = {
+          id: o.get('event').id,
+          date: o.get('event').get('eventAt'),
+          title: o.get('event').get('title'),
+          description: o.get('event').get('description'),
+          spendLimit: o.get('event').get('spendLimit')
+        };
+        if (o.get('status') == 1 || o.get('status') == 2){
           $('#events.screen #eventList').append(eventTpl(object));
-        });
+        } else if(o.get('status') == 0){
+          $('#events.screen #invitationList').append(invitationTpl(object));
+        }
+      });
+      if ($('#events.screen #eventList li.event').length == 0){
+        $('#events.screen #eventList').html(eventEmptyTpl({}));
+      }
+      if ($('#events.screen #invitationList li.invitation').length == 0){
+        $('#events.screen tab[data-for="invitationList"] badge').html('');
+        $('#events.screen tab[data-for="invitationList"] badge').addClass('hidden');
+        $('#events.screen #invitationList').html(invitationEmptyTpl({}));
       } else {
-        $('#events.screen #eventList').html('No events yet.');
+        $('#events.screen tab[data-for="invitationList"] badge').html($('#events.screen #invitationList li.invitation').length);
+        $('#events.screen tab[data-for="invitationList"] badge').removeClass('hidden');
+        app.updateBadge($('nav.tabBar div.item.events'),$('#events.screen #invitationList li.invitation').length);
       }
       pages.events.remE().done(pages.events.addE);
     },
@@ -1338,6 +1375,13 @@ var app = {
   },
   onDeviceReady: function() {
     app.s('deviceready');
+  },
+  updateBadge : function(tabBarObject, badgeInteger){
+    if (badgeInteger == 0) {
+      tabBarObject.removeAttr('data-badge');
+    } else {
+      tabBarObject.attr('data-badge', badgeInteger);
+    }
   }
 };
 
@@ -1348,7 +1392,7 @@ var user = {
   eventList : [],
   eventListUpdatedAt : new Date(2000,01,01),
   getEvents : function(forceDataUpdate){
-    app.l('Getting user\'s events...',1);
+    app.l('Getting user\'s events and invitations...',1);
     return $.Deferred(function(getEvents){
       if (forceDataUpdate || user.eventListUpdatedAt <= new Date().subMinutes(15)) {
 
@@ -1362,7 +1406,7 @@ var user = {
           success: function(r){
             user.eventList = r;
             user.eventListUpdatedAt = new Date();
-            app.l('...got user\'s events FROM PARSE',1);
+            app.l('...got user\'s events and invitations FROM PARSE',1);
             getEvents.resolve(user.eventList);
           },
           error: function(e){
@@ -1374,7 +1418,7 @@ var user = {
           }
         });
       } else {
-        app.l('...got user\'s events FROM CACHE',1);
+        app.l('...got user\'s events and invitations FROM CACHE',1);
         getEvents.resolve(user.eventList);
       }
     }).promise();
@@ -1511,6 +1555,9 @@ var util = {
     return fn + " " + ln
   },
   shake : null,
+  formatDate : function(date){
+    return moment(date).format('dddd, MMM Do YYYY [at] h:mm A');
+  },
   getDataUPCold : function(upc){
 
     var oauth = OAuth({

@@ -15,7 +15,7 @@
   @successColor : rgb(53,226,143);
   @touchBase : 50px;
   @navBase : @touchBase * 1.5;
-  @navBG : darken(@appBG,10%);
+  @navBG : rgba(red(@appBG),green(@appBG),blue(@appBG),0.95);
   @mainColorMedium : lighten(@mainColor,20%);
   @mainColorLight : lighten(@mainColor,40%);
   @mainColorDark : darken(@mainColor,10%);
@@ -74,6 +74,62 @@
     border-bottom: none;
   }*/
 
+  tab-group {
+    .flexContainer;
+    .flexContainerRow;
+    position: absolute;
+    top: @navBase; left:0;
+    width: 100%;
+    height: @touchBase;
+    padding:0;
+    background-color: @navBG;
+    tab {
+      .flexContainer;
+      .flexContainerRow;
+      .flexItem;
+      .flexItemElastic;
+      height: @touchBase;
+      color: @mainColorLight;
+      border-bottom: @borderStandard rgba(0,0,0,0);
+      font-family: @fontFamilyM;
+      font-size: 0.75em;
+      text-transform: uppercase;
+      &.active {
+        color: @tintColor;
+        border-bottom: @borderStandard @tintColorLight;
+      }
+      > * {
+        .flexItem;
+      }
+      badge {
+        display: inline-block;
+        margin: 0.5rem;
+        width: (@touchBase / 3); height: (@touchBase / 3);
+        line-height: ((@touchBase / 3) + 2);
+        overflow: hidden;
+        text-align: center;
+        background-color: @cancelColor;
+        color: @appBG;
+        font-family: @fontFamilyM;
+        font-size: 0.65rem;
+        border-radius: 2rem;
+      }
+    }
+  }
+
+  list-header {
+    display: block;
+    position: relative;
+    padding: 1.5rem 1rem 0.7rem 1rem;
+    color: darken(@appBG1, 25%);
+    font-family: @fontFamilyB;
+    font-size: 0.65em;
+    border-bottom: @borderStandard darken(@appBG1,10%);
+    text-transform: uppercase;
+    .count {
+      font-size: 1.4em;
+    }
+  }
 
   // media
   img {
@@ -442,7 +498,7 @@
     -webkit-align-content: center;
     -webkit-align-items: center;
     //background-color: rgba(red(@navBG),green(@navBG),blue(@navBG),0.95);
-    background-color: rgba(red(@appBG),green(@appBG),blue(@appBG),0.95);
+    background-color: @navBG;
     opacity: 1;
     .animate500();
     div.left {
@@ -512,6 +568,7 @@
       -webkit-flex: 0 1 auto;
       -webkit-align-self: auto;
       display: inline-block;
+      position: relative;
       width: @touchBase;
       height: @touchBase;
       line-height: @touchBase;
@@ -531,6 +588,20 @@
         label {
           display: none;
         }
+      }
+      &[data-badge]:after {
+        content: attr(data-badge);
+        position: absolute;
+        top: -0.3rem; right: -0.1rem;
+        width: (@touchBase / 3); height: (@touchBase / 3);
+        line-height: ((@touchBase / 3) + 2);
+        overflow: hidden;
+        text-align: center;
+        background-color: @cancelColor;
+        color: @appBG;
+        font-family: @fontFamilyM;
+        font-size: 0.65rem;
+        border-radius: 2rem;
       }
     }
     &.hideBottom {
@@ -823,50 +894,96 @@
   }
 
   #events.screen {
-    ul#eventList {
+    overflow: hidden;
+    content {
+      display: block;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      padding: (@navBase + @touchBase) 0 @touchBase 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    ul {
       //list reset
       margin: 0; padding: 0;
       list-style: none;
       li {
         position: relative;
         display: block;
-        margin: 0;
-        padding: 1rem;
-        min-height: @touchBase;
-        font-family: @fontFamily;
-        font-size: 1.15em;
-        background-color: @appBG;
-        border-bottom: @borderStandard darken(@appBG1,10%);
+        margin: 1rem;
+        padding: 0;
+        card {
+          position: relative;
+          display: block;
+          padding: 1rem;
+          background-color: @appBG;
+          min-height: @touchBase;
+          font-family: @fontFamily;
+          font-size: 1.15em;
+          border: @borderStandard darken(@appBG1,1%);
+          border-radius: 0.2rem;
+        }
+        card:after{
+          content:"";
+          position:absolute;
+          z-index:-1;
+          box-shadow:0 0 4rem rgba(0,0,0,0.8);
+          bottom: 2rem;
+          left:   10%;
+          right:  10%;
+          width:  80%;
+          height: 10%;
+          border-radius:100%;
+        }
         label {
           display: block;
+          text-align: center;
         }
         label.date {
-          font-size: .9em;
+          font-size: 0.7em;
+          font-family: @fontFamilySerif;
+          font-style: italic;
+          margin: 1.5rem 0;
+          actual {
+            display: block;
+            padding: 0.3rem 0 0 0;
+            font-size: 0.8em;
+            font-family: @fontFamilyM;
+            font-style: normal;
+            color: @mainColorLight;
+          }
+        }
+        label.title {
+          font-size: 1.6em;
+          font-family: @fontFamilyHeaderL;
+          color: @tintColor;
+          text-transform: uppercase;
         }
         label.spendLimit {
-          font-family: @fontFamilyL;
+          font-size: 0.7em;
+          font-family: @fontFamilySerif;
+          font-style: italic;
+          margin: 1.5rem 0;
           .amount {
-            font-family: @fontFamilyM;
+            font-size: 1.2em;
+            font-weight: bold;
           }
+        }
+        &.empty {
+          padding: 1rem 1rem 2rem 1rem;
+          text-align: center;
+          font-family: @fontFamilyM;
+          font-size: 0.75em;
+          color: darken(@appBG, 15%);
         }
       }
     }
   }
 
   #eventDetail.screen {
-    list-header {
-      display: block;
-      position: relative;
-      padding: 1.5rem 1rem 0.7rem 1rem;
-      color: darken(@appBG1, 25%);
-      font-family: @fontFamilyB;
-      font-size: 0.65em;
-      border-bottom: @borderStandard darken(@appBG1,10%);
-      text-transform: uppercase;
-      .count {
-        font-size: 1.4em;
-      }
-    }
     ul {
       //list reset
       margin: 0; padding: 0;
@@ -883,6 +1000,7 @@
         border-bottom: @borderStandard darken(@appBG1,10%);
         div.email {
           font-size: .8em;
+          color: @mainColorLight;
         }
         div.ownerDot {
           display: inline-block;
@@ -943,15 +1061,13 @@
           display: block;
         }
         label.name {
-          font-family: @fontFamilyHeader;
-          letter-spacing: 0.02em;
-          font-size: 1.1em;
+          font-family: @fontFamilyM;
           color: @tintColor;
         }
         label.description {
           font-family: @fontFamily;
           letter-spacing: 0.01em;
-          font-size: 0.9em;
+          font-size: 0.8em;
           color: @mainColorLight;
         }
       }
