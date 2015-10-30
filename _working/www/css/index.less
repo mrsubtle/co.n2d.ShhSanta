@@ -182,9 +182,9 @@
     display: block;
     //font-family: @fontFamilyM;
     //font-size: 15px;
-    font-family: @fontFamilyHeader;
-    font-size: 23px;
-    letter-spacing: 0.05em;
+    font-family: @fontFamily;
+    font-size: 1.3rem;
+    //letter-spacing: 0.05em;
     color: @mainColor;
     text-align: center;
     width: 100%;
@@ -224,8 +224,8 @@
     display: block;
     letter-spacing: 0.05em;
     color: @mainColor;
-    font-family: @fontFamilyHeader;
-    font-size: 19px;
+    font-family: @fontFamily;
+    font-size: 1.3rem;
     text-align: center;
     width: 100%;
     height: 20vh;
@@ -398,21 +398,21 @@
         -ms-flex-pack: distribute !important;
         justify-content: space-around !important;
       }
-      .flexItem {
-        -webkit-order: 0 !important;
-        -ms-flex-order: 0 !important;
-        order: 0 !important;
-        -webkit-flex: 0 0 auto !important;
-        -ms-flex: 0 0 auto !important;
-        flex: 0 0 auto !important;
-        -webkit-align-self: auto !important;
-        -ms-flex-item-align: auto !important;
-        align-self: auto !important;
-        &.flexItemElastic {
-          -webkit-flex: 1 1 auto !important;
-          -ms-flex: 1 1 auto !important;
-          flex: 1 1 auto !important;
-        }
+    }
+    .flexItem {
+      -webkit-order: 0 !important;
+      -ms-flex-order: 0 !important;
+      order: 0 !important;
+      -webkit-flex: 0 0 auto !important;
+      -ms-flex: 0 0 auto !important;
+      flex: 0 0 auto !important;
+      -webkit-align-self: auto !important;
+      -ms-flex-item-align: auto !important;
+      align-self: auto !important;
+      &.flexItemElastic {
+        -webkit-flex: 1 1 auto !important;
+        -ms-flex: 1 1 auto !important;
+        flex: 1 1 auto !important;
       }
     }
 
@@ -925,6 +925,18 @@
           font-size: 1.15em;
           border: @borderStandard darken(@appBG1,1%);
           border-radius: 0.2rem;
+          .animate300();
+          loader-container {
+            display: none;
+            position: absolute;
+            top:0; left:0;
+            bottom:0; right: 0;
+            background-color: rgba(red(@appBG),green(@appBG),blue(@appBG),0.75);
+            border-radius: 0.2rem;
+            .loader {
+              .flexItem;
+            }
+          }
         }
         card:after{
           content:"";
@@ -979,11 +991,37 @@
           font-size: 0.75em;
           color: darken(@appBG, 15%);
         }
+        &.invitation {
+          card {
+            background-image: url(../img/bg_invitation_top-left.png), url(../img/bg_invitation_bottom-right.png);
+            background-repeat: no-repeat, no-repeat;
+            background-size: 20%, 20%;
+            background-position: 0% 0%, 100% 100%;
+          }
+        }
+        &.loading {
+          card {
+            loader-container {
+              .flexContainer;
+            }
+          }
+        }
       }
     }
   }
 
   #eventDetail.screen {
+    content {
+      display: block;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      padding: (@navBase + @touchBase) 0 @touchBase 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
     ul {
       //list reset
       margin: 0; padding: 0;
@@ -1027,6 +1065,19 @@
           font-size: 0.75em;
           color: darken(@appBG, 15%);
         }
+      }
+    }
+    form {
+      input[type="text"], textarea {
+        text-align: left;
+        padding-left: 1rem;
+      }
+      input[type="datetime-local"] {
+        text-align: right;
+        padding-right: 1rem;
+      }
+      input.noEdit, textarea.noEdit {
+        -webkit-user-select: none;
       }
     }
   }

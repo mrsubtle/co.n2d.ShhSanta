@@ -9,8 +9,8 @@
         <!-- WEBFONTS -->
           <!-- Arquitecta -->
           <link rel="stylesheet" type="text/css" href="fonts/arquitecta.css" />
-          <!-- Santa glyphs -->
-          <link rel="stylesheet" type="text/css" href="css/santa-embedded.css" />
+          <!-- Santa glyph font
+          <link rel="stylesheet" type="text/css" href="css/santa-embedded.css" /> -->
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <title>Shh Santa!</title>
     </head>
@@ -96,10 +96,6 @@
             </form>
           </section>
           <section id="start" class="screen hidden" data-title="Santa's Shopping List" data-nav="true" data-nav-icon="btn_disclosure" data-tabbar="true">
-            <!--<button-group class="flexContainer flexContainerRow">
-              <button class="flexItem flexItemElastic touchable">Join Event</button>
-              <button class="flexItem flexItemElastic action touchable">Create Event</button>
-            </button-group>-->
             <ul id="santaList">
               <!-- //SANTA LIST POPULATED HERE// -->
               <div class="loader">Loading...</div>
@@ -137,21 +133,45 @@
           <section id="eventDetail" class="screen hidden" data-title="Event Details" data-nav="true" data-nav-icon="btn_back_eventDetail" data-tabbar="false">
             <!-- //EVENT DETAIL HERE// -->
             <div class="detail"></div>
-            <list-header class="flexContainer flexContainerRow">
-              <span class="flexItem flexItemElastic label">In like Finn</span>
-              <span class="flexItem attendanceGoing count">0</span>
-            </list-header>
-            <ul id="attendanceGoing"></ul>
-            <list-header class="flexContainer flexContainerRow">
-              <span class="flexItem flexItemElastic label">Party Poopers</span>
-              <span class="flexItem attendanceNotGoing count">0</span>
-            </list-header>
-            <ul id="attendanceNotGoing"></ul>
-            <list-header class="flexContainer flexContainerRow">
-              <span class="flexItem flexItemElastic label">Who the heck knows?</span>
-              <span class="flexItem attendanceUnknown count">0</span>
-            </list-header>
-            <ul id="attendanceUnknown"></ul>
+            <content class="tab-content">
+              <div id="detail" class="tab-target">
+                <form id="eventDetail">
+                  <fieldset>
+                    <input type="text" id="txt_title" placeholder="Event title" class="topBorder noEdit" >
+                    <input type="datetime-local" id="txt_date" placeholder="Event date" class="noEdit" >
+                  </fieldset>
+                  <fieldset>
+                    <input type="text" id="txt_spendLimit" placeholder="Spending limit" class="topBorder noEdit" >
+                    <textarea id="txt_description" placeholder="Event details/description" class="noEdit" ></textarea>
+                  </fieldset>
+                </form>
+              </div>
+              <div id="attendance" class="tab-target">
+                <list-header class="flexContainer flexContainerRow">
+                  <span class="flexItem flexItemElastic label">In like Finn</span>
+                  <span class="flexItem attendanceGoing count">0</span>
+                </list-header>
+                <ul id="attendanceGoing"></ul>
+                <list-header class="flexContainer flexContainerRow">
+                  <span class="flexItem flexItemElastic label">Party Poopers</span>
+                  <span class="flexItem attendanceNotGoing count">0</span>
+                </list-header>
+                <ul id="attendanceNotGoing"></ul>
+                <list-header class="flexContainer flexContainerRow">
+                  <span class="flexItem flexItemElastic label">Who the heck knows?</span>
+                  <span class="flexItem attendanceUnknown count">0</span>
+                </list-header>
+                <ul id="attendanceUnknown"></ul>
+              </div>
+            </content>
+            <tab-group>
+              <tab class="active" data-for="detail">
+                <label>Detail</label><badge class="hidden"></badge>
+              </tab>
+              <tab data-for="attendance">
+                <label>Attendance</label>
+              </tab>
+            </tab-group>
           </section>
           <section id="item" class="screen hidden">
           </section>
@@ -372,6 +392,7 @@
               <label id="eventTitle" class="title"><%= title %></label>
               <label id="eventDescription" class="hidden description"><%= description %></label>
               <label id="eventSpendLimit" class="spendLimit">~&nbsp;&nbsp;$<span class="amount"><%= spendLimit %></span>&nbsp;&nbsp;~</label>
+              <loader-container><% var lt = _.template($('#tpl_loading').html()); print(lt({}));  %></loader-container>
             </card>
           </li>
         </script>
@@ -390,6 +411,7 @@
               <label id="eventTitle" class="title"><%= title %></label>
               <label id="eventDescription" class="hidden description"><%= description %></label>
               <label id="eventSpendLimit" class="spendLimit">~&nbsp;&nbsp;$<span class="amount"><%= spendLimit %></span>&nbsp;&nbsp;~</label>
+              <loader-container><% var lt = _.template($('#tpl_loading').html()); print(lt({}));  %></loader-container>
             </card>
           </li>
         </script>

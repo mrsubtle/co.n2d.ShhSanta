@@ -808,6 +808,16 @@ var pages = {
         });
         $('#events.screen #eventList li').hammer().on('tap',function(){
           var eID = $(this).data('id');
+          $(this).addClass('loading');
+          app.l('Tapped Attendance ID: '+eID,1);
+          var ParseAttendance = _.find(user.eventList, function(obj) {
+              return obj.get('event').id == eID; 
+          });
+          pages.eventDetail.init(ParseAttendance.get('event'));
+        });
+        $('#events.screen #invitationList li').hammer().on('tap',function(){
+          var eID = $(this).data('id');
+          $(this).addClass('loading');
           app.l('Tapped Attendance ID: '+eID,1);
           var ParseAttendance = _.find(user.eventList, function(obj) {
               return obj.get('event').id == eID; 
@@ -823,6 +833,7 @@ var pages = {
         $('nav#top #btn_addEvent').hammer().off('tap');
         $('#events.screen tab-group tab').hammer().off('tap');
         $('#events.screen #eventList li').hammer().off('tap');
+        $('#events.screen #invitationList li').hammer().off('tap');
         r.resolve();
       }).promise();
     },
@@ -887,6 +898,8 @@ var pages = {
       app.l('Init detail for eventID: '+ParseEventObjectToLoad.id,1);
       if(typeof ParseEventObjectToLoad != "undefined"){
         pages.eventDetail.getAttendanceForEvent(ParseEventObjectToLoad).done(function(attendanceArray){
+          $('#eventDetail.screen li').removeClass('loading');
+          pages.eventDetail.tabCheck();
           pages.eventDetail.render(ParseEventObjectToLoad);
           pages.eventDetail.renderAttendance(attendanceArray);
         });
@@ -895,6 +908,11 @@ var pages = {
     addE : function(){
       return $.Deferred(function(a){
         app.addE();
+        $('#eventDetail.screen tab-group tab').hammer().on('tap',function(){
+          $('#eventDetail.screen tab-group tab').removeClass('active');
+          $(this).addClass('active');
+          pages.eventDetail.tabCheck();
+        });
         $('nav#top #btn_back_eventDetail').hammer().on('tap', function(){
           app.showScreen($('#events.screen'));
         });
@@ -904,11 +922,36 @@ var pages = {
     remE : function(){
       return $.Deferred(function(r){
         app.remE();
+        $('#eventDetail.screen tab-group tab').hammer().off('tap');
         $('nav#top #btn_back_eventDetail').hammer().off('tap');
         r.resolve();
       }).promise();
     },
+    tabCheck : function(){
+      $('#eventDetail.screen .tab-target').addClass('hidden');
+      $('#eventDetail.screen tab-group tab').each(function(i,o){
+        if($(this).hasClass('active')){
+          $('#eventDetail.screen #'+$(this).data('for')+'.tab-target').removeClass('hidden');
+        }
+      });
+    },
     render : function(retrievedParseEventData){
+      //prepare the event date value for the datetime-local input element
+        var d = retrievedParseEventData.get('eventAt');
+        // Find the current time zone's offset in milliseconds.
+        var timezoneOffset = d.getTimezoneOffset() * 60 * 1000;
+        // Subtract the time zone offset from the current UTC date, and pass
+        //  that into the Date constructor to get a date whose UTC date/time is
+        //  adjusted by timezoneOffset for display purposes.
+        var localDate = new Date(d.getTime() - timezoneOffset);
+        // Get that local date's ISO date string and remove the Z.
+        var localDateISOString = localDate.toISOString().replace('Z', '');
+      //populate the data fields
+      $('#eventDetail.screen form#eventDetail #txt_title').val(retrievedParseEventData.get('title'));
+      $('#eventDetail.screen form#eventDetail #txt_date').val(localDateISOString);
+      $('#eventDetail.screen form#eventDetail #txt_spendLimit').val(retrievedParseEventData.get('spendLimit'));
+      $('#eventDetail.screen form#eventDetail #txt_description').val(retrievedParseEventData.get('description'));
+      //check if Event Admin, if so, enable editing
       pages.eventDetail.remE().then(pages.eventDetail.addE);
       app.showScreen($('#eventDetail.screen'));
     },

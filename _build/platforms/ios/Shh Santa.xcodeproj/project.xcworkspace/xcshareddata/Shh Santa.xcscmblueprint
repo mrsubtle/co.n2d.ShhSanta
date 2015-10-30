@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "7D2A8CCEFCFC47DC8F4E06FFF3CA6260CCFF3221",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "7D2A8CCEFCFC47DC8F4E06FFF3CA6260CCFF3221" : 0,
+    "36840EBA302F74A9981AD4617C14378F8FD6C370" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "9F27355A-1FCB-485D-8AA7-6F41727C12E4",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "7D2A8CCEFCFC47DC8F4E06FFF3CA6260CCFF3221" : "co.n2d.ShhSanta\/",
+    "36840EBA302F74A9981AD4617C14378F8FD6C370" : ""
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Shh Santa",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "_build\/platforms\/ios\/Shh Santa.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/richard-bennett-cti\/Royale.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "36840EBA302F74A9981AD4617C14378F8FD6C370"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/mrsubtle\/co.n2d.ShhSanta.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "7D2A8CCEFCFC47DC8F4E06FFF3CA6260CCFF3221"
+    }
+  ]
+}
