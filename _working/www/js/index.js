@@ -738,18 +738,23 @@ var pages = {
       return $.Deferred(function(render){
         app.l('Render wish list',1);
         $('#wishList.screen #wishList').html('');
-        _.each(user.wishList,function(o,i,a){
-          //DEBUG
-          //console.log(v);
-          var t = _.template($('#tpl_wishList_listItem').html());
-          var d = {
-            objectId : o.get('objectId'),
-            name : o.get('name'),
-            description : o.get('description'),
-            photoURL : o.get('photo').url()
-          };
-          $('#wishList.screen #wishList').append(t(d));
-        });
+        if(user.wishList.length > 0){
+          _.each(user.wishList,function(o,i,a){
+            //DEBUG
+            //console.log(v);
+            var t = _.template($('#tpl_wishList_listItem').html());
+            var d = {
+              objectId : o.get('objectId'),
+              name : o.get('name'),
+              description : o.get('description'),
+              photoURL : o.get('photo').url()
+            };
+            $('#wishList.screen #wishList').append(t(d));
+          });
+        } else {
+          var t = _.template($('#tpl_wishList_listItem_empty').html());
+          $('#wishList.screen #wishList').html(t({}));
+        }
         render.resolve()
       }).promise();
     },
@@ -863,7 +868,7 @@ var pages = {
         };
         if (o.get('status') == 1 || o.get('status') == 2){
           $('#events.screen #eventList').append(eventTpl(object));
-        } else if(o.get('status') == 0){
+        } else if(o.get('status') == 99){
           $('#events.screen #invitationList').append(invitationTpl(object));
         }
       });
@@ -893,28 +898,68 @@ var pages = {
   },
   eventDetail : {
     init : function(ParseEventObjectToLoad){
+      var loadTime = new Date();
       //this function assumes you are passing the actual event object to render/query.
       //NOT simply the ID
       app.l('Init detail for eventID: '+ParseEventObjectToLoad.id,1);
       if(typeof ParseEventObjectToLoad != "undefined"){
         pages.eventDetail.getAttendanceForEvent(ParseEventObjectToLoad).done(function(attendanceArray){
-          $('#eventDetail.screen li').removeClass('loading');
-          pages.eventDetail.tabCheck();
-          pages.eventDetail.render(ParseEventObjectToLoad);
-          pages.eventDetail.renderAttendance(attendanceArray);
+          var doneTime = new Date();
+          var interval = (1000 - (doneTime-loadTime));
+          //add attendance to event object
+          ParseEventObjectToLoad.attendance = attendanceArray;
+          setTimeout(function(){
+            $('#eventDetail.screen li').removeClass('loading');
+            pages.eventDetail.tabCheck();
+            pages.eventDetail.render(ParseEventObjectToLoad);
+            pages.eventDetail.renderAttendance(attendanceArray);
+          },interval < 0 ? 0 : interval);
         });
       }
     },
-    addE : function(){
+    addE : function(eventObject){
       return $.Deferred(function(a){
         app.addE();
+        $('#eventDetail.screen form#eventDetail').on('submit', function(e){
+          $(this).data('dirty', util.formIsDirty($(this)));
+          e.preventDefault();
+        });
+        $('#eventDetail.screen form#eventDetail input, #eventDetail.screen form#eventDetail textarea').on('propertychange change click keyup input paste', function(){
+          if($(this).data('original') != $(this).val()){
+            $(this).data('dirty', true);
+          }
+        });
         $('#eventDetail.screen tab-group tab').hammer().on('tap',function(){
           $('#eventDetail.screen tab-group tab').removeClass('active');
           $(this).addClass('active');
           pages.eventDetail.tabCheck();
         });
         $('nav#top #btn_back_eventDetail').hammer().on('tap', function(){
-          app.showScreen($('#events.screen'));
+          var dirty = util.formIsDirty($('#eventDetail.screen form#eventDetail'));
+          if (dirty) {
+            navigator.notification.confirm(
+              "You've made some changes, it seems.",//message
+              function(buttonIndex){
+                //buttonIndex is 1-based
+                //alert was dismissed
+                switch(buttonIndex){
+                  case 1:
+                    pages.eventDetail.updateEvent(eventObject).done(function(){
+                      app.showScreen($('#events.screen'));
+                    });
+                    break;
+                  case 2:
+                    app.showScreen($('#events.screen'));
+                    break;
+                  default:
+                }
+              },//callback
+              "Save changes?",//[title]
+              ["Yes please!","No thanks."]//[buttonNames]
+            );
+          } else {
+            app.showScreen($('#events.screen'));
+          }
         });
         a.resolve();
       }).promise();
@@ -922,6 +967,8 @@ var pages = {
     remE : function(){
       return $.Deferred(function(r){
         app.remE();
+        $('#eventDetail.screen form#eventDetail').off('submit');
+        $('#eventDetail.screen form#eventDetail input, #eventDetail.screen form#eventDetail textarea').off('propertychange change click keyup input paste');
         $('#eventDetail.screen tab-group tab').hammer().off('tap');
         $('nav#top #btn_back_eventDetail').hammer().off('tap');
         r.resolve();
@@ -936,23 +983,34 @@ var pages = {
       });
     },
     render : function(retrievedParseEventData){
-      //prepare the event date value for the datetime-local input element
-        var d = retrievedParseEventData.get('eventAt');
-        // Find the current time zone's offset in milliseconds.
-        var timezoneOffset = d.getTimezoneOffset() * 60 * 1000;
-        // Subtract the time zone offset from the current UTC date, and pass
-        //  that into the Date constructor to get a date whose UTC date/time is
-        //  adjusted by timezoneOffset for display purposes.
-        var localDate = new Date(d.getTime() - timezoneOffset);
-        // Get that local date's ISO date string and remove the Z.
-        var localDateISOString = localDate.toISOString().replace('Z', '');
-      //populate the data fields
-      $('#eventDetail.screen form#eventDetail #txt_title').val(retrievedParseEventData.get('title'));
-      $('#eventDetail.screen form#eventDetail #txt_date').val(localDateISOString);
-      $('#eventDetail.screen form#eventDetail #txt_spendLimit').val(retrievedParseEventData.get('spendLimit'));
-      $('#eventDetail.screen form#eventDetail #txt_description').val(retrievedParseEventData.get('description'));
-      //check if Event Admin, if so, enable editing
-      pages.eventDetail.remE().then(pages.eventDetail.addE);
+      //check if current user is event admin
+      var isAdmin = false;
+      var eventAdmins = [];
+      _.each(retrievedParseEventData.attendance,function(o,i,a){
+        if(o.get('status') == 2){
+          eventAdmins.push(o);
+        }
+        if (o.get('status') == 2 && o.get('attendee').id == Parse.User.current().id){
+          isAdmin = true;
+        }
+      });
+      var obj = {
+        title : retrievedParseEventData.get('title'),
+        date : retrievedParseEventData.get('eventAt'),
+        dateString : util.formatDateForDTL(retrievedParseEventData.get('eventAt')),
+        spendLimit : retrievedParseEventData.get('spendLimit'),
+        description : retrievedParseEventData.get('description'),
+        isEventAdmin : isAdmin
+      };
+      //load detail template
+      var edFormTpl = _.template( $('#tpl_eventDetail').html() );
+      $('#eventDetail.screen #detail.tab-target').html( edFormTpl(obj) );
+      if (isAdmin) {
+        $('#eventDetail.screen #attendance form#sendInvitation').removeClass('hidden');
+      } else {
+        $('#eventDetail.screen #attendance form#sendInvitation').addClass('hidden');
+      }
+      pages.eventDetail.remE().then(pages.eventDetail.addE(retrievedParseEventData));
       app.showScreen($('#eventDetail.screen'));
     },
     getAttendanceForEvent : function(ParseEvent){
@@ -983,6 +1041,9 @@ var pages = {
       var aGoing = [];
       var aNotGoing = [];
       var aUnknown = [];
+      $('#eventDetail.screen .attendanceGoing.count').html(aGoing.length);
+      $('#eventDetail.screen .attendanceNotGoing.count').html(aNotGoing.length);
+      $('#eventDetail.screen .attendanceUnknown.count').html(aUnknown.length);
       _.each(attendanceArray, function(o,i,a){
         if (o.get('status') == 1 || o.get('status') == 2){
           aGoing.push(o);
@@ -1042,6 +1103,25 @@ var pages = {
             app.e("Wat?! I can't find that event.  But I'll keep looking, and you can try again in a bit, ok? Ok.");
             app.l(JSON.stringify(e),2);
             getData.reject(e);
+          }
+        });
+      }).promise();
+    },
+    updateEvent : function(eventObject){
+      return $.Deferred(function(ue){
+        eventObject.set('title', $('#eventDetail.screen form#eventDetail #txt_title').val());
+        eventObject.set('eventAt', util.DTLToDate($('#eventDetail.screen form#eventDetail #txt_date').val()));
+        eventObject.set('spendLimit', parseInt($('#eventDetail.screen form#eventDetail #txt_spendLimit').val()));
+        eventObject.set('description', $('#eventDetail.screen form#eventDetail #txt_description').val());
+        eventObject.save({
+          success: function(){
+            app.l('Updated event '+eventObject.id,1);
+            ue.resolve();
+          },
+          error: function(error){
+            app.l(JSON.stringify(error),2);
+            app.e('Wat!? I couldn\'t save your changes.  I R THA DUM.');
+            ue.reject();
           }
         });
       }).promise();
@@ -1600,6 +1680,36 @@ var util = {
   shake : null,
   formatDate : function(date){
     return moment(date).format('dddd, MMM Do YYYY [at] h:mm A');
+  },
+  formatDateForDTL : function(date){
+    //prepare the event date value for the datetime-local input element
+    //
+    // Find the current time zone's offset in milliseconds.
+    var timezoneOffset = date.getTimezoneOffset() * 60 * 1000;
+    // Subtract the time zone offset from the current UTC date, and pass
+    //  that into the Date constructor to get a date whose UTC date/time is
+    //  adjusted by timezoneOffset for display purposes.
+    var localDate = new Date(date.getTime() - timezoneOffset);
+    // Get that local date's ISO date string and remove the Z.
+    return localDate.toISOString().replace('Z', '');
+  },
+  DTLToDate : function(ISODateStringFromDTL){
+    return new Date(moment(ISODateStringFromDTL).local().valueOf());
+  },
+  formIsDirty : function(formObject){
+    var isDirty = false;
+    formObject.find('input').each(function(i,v){
+      if ($(this).data('dirty') == true) {
+        isDirty = true;
+      }
+    });
+    formObject.find('textarea').each(function(i,v){
+      if ($(this).data('dirty') == true) {
+        isDirty = true;
+      }
+    });
+
+    return isDirty;
   },
   getDataUPCold : function(upc){
 

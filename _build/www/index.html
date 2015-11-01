@@ -1,504 +1,497 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <!-- WEBFONTS -->
-          <!-- Arquitecta -->
-          <link rel="stylesheet" type="text/css" href="fonts/arquitecta.css" />
-          <!-- Santa glyph font
-          <link rel="stylesheet" type="text/css" href="css/santa-embedded.css" /> -->
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Shh Santa!</title>
-    </head>
-    <body>
-        <div class="app">
-          <nav id="top" class="navBar hideTop">
-            <div class="left">
-              <i id="btn_disclosure" class="hidden clear touchable"><img src="img/ico/ico_nav_menu-512.svg"></i>
-              <i id="btn_back" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
-              <i id="btn_back_eventDetail" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
-              <i id="btn_addItem" class="hidden clear touchable"><img src="img/ico/ico_nav_add-512.svg"></i>
-              <i id="btn_addEvent" class="hidden clear touchable"><img src="img/ico/ico_nav_add-512.svg"></i>
-            </div>
-            <div class="right">Shh Santa!</div>
-          </nav>
-          <section id="login" class="screen hidden">
-            <div class="flex-v-container">
-              <div class="flex-item-top">
-                <div id="startScreenLogo">
-                  <img src="img/santa-base-580x480.svg" width="580" height="480" alt="">
-                  <div class="layer2">
-                    <img src="img/santa-stacheNose-580x480.svg" class="shakeable" width="580" height="480" alt="">
-                  </div>
-                </div>
-              </div>
-              <div class="flex-item-middle">
-                <div class="centeredText">
-                  welcome back, little Elf
-                </div>
-                <form id="frm_Login">
-                  <fieldset>
-                    <input id="txt_username" type="email" placeholder="email@server.net" class="topBorder" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required>
-                    <input id="txt_password" type="password" placeholder="Password" class="" required>
-                  </fieldset>
-                  <button type="submit" class="touchable action">Sign in</button>
-                  <div id="lbl_loginError" class="centeredText clear">&nbsp</div>
-                </form>
-              </div>
-              <div class="flex-item-bottom">
-                <!--<div class="centeredText">
-                  ho there, new user
-                </div>-->
-                <button id="btn_signup" data-screen="signup" class="touchable">New? Create an account</button>
+  <head>
+      <meta charset="utf-8" />
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="msapplication-tap-highlight" content="no" />
+      <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+      <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+      <!-- WEBFONTS -->
+        <!-- Arquitecta -->
+        <link rel="stylesheet" type="text/css" href="fonts/arquitecta.css" />
+        <!-- Santa glyph font
+        <link rel="stylesheet" type="text/css" href="css/santa-embedded.css" /> -->
+      <link rel="stylesheet" type="text/css" href="css/index.css" />
+      <title>Shh Santa!</title>
+  </head>
+  <body>
+    <div class="app">
+      <nav id="top" class="navBar hideTop">
+        <div class="left">
+          <i id="btn_disclosure" class="hidden clear touchable"><img src="img/ico/ico_nav_menu-512.svg"></i>
+          <i id="btn_back" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
+          <i id="btn_back_eventDetail" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
+          <i id="btn_addItem" class="hidden clear touchable"><img src="img/ico/ico_nav_add-512.svg"></i>
+          <i id="btn_addEvent" class="hidden clear touchable"><img src="img/ico/ico_nav_add-512.svg"></i>
+        </div>
+        <div class="right">Shh Santa!</div>
+      </nav>
+      <section id="login" class="screen hidden">
+        <div class="flex-v-container">
+          <div class="flex-item-top">
+            <div id="startScreenLogo">
+              <img src="img/santa-base-580x480.svg" width="580" height="480" alt="">
+              <div class="layer2">
+                <img src="img/santa-stacheNose-580x480.svg" class="shakeable" width="580" height="480" alt="">
               </div>
             </div>
-          </section>
-          <section id="signup" class="screen hidden">
-            <form id="frm_signup">
-              <div class="centeredText">
-                &nbsp;
-              </div>
+          </div>
+          <div class="flex-item-middle">
+            <div class="centeredText">
+              welcome back, little Elf
+            </div>
+            <form id="frm_Login">
               <fieldset>
-                <div class="centeredText">
-                  oh hai! what's your Human name?
-                </div>
-                <input id="txt_firstName" type="text" placeholder="First name" class="topBorder" spellcheck="false" required>
-                <input id="txt_lastName" type="text" placeholder="Last name" class="" spellcheck="false" required>
-                <div class="centeredText">
-                  what's your Elf name?
-                </div>
-                <input id="txt_elfName" type="text" placeholder="Elf name" class="topBorder" contenteditable="true" spellcheck="false" required>
-                <div class="centeredText">
-                  &nbsp;
-                </div>
-                <div class="centeredText">
-                  what's your email?
-                </div>
-                <input id="txt_email" type="email" placeholder="email@server.net" class="topBorder" spellcheck="false" required>
-                <div class="centeredText">
-                  &nbsp;
-                </div>
-                <div class="centeredText">
-                  enter and confirm a password
-                </div>
-                <input id="txt_password" type="password" placeholder="Password" class="topBorder" required>
-                <input id="txt_passwordConfirm" type="password" placeholder="Confirm password" class="" required>
-                <button id="btn_submit-signup" type="submit" class="touchable action" disabled="disabled">Create your account</button>
-                <div id="lbl_signupError" class="redColor centeredText clear">
-                  &nbsp;
-                </div>
+                <input id="txt_username" type="email" placeholder="email@server.net" class="topBorder" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required>
+                <input id="txt_password" type="password" placeholder="Password" class="" required>
               </fieldset>
-              <button id="btn_cancel" for="frm_signup" type="reset" class="touchable cancel">Cancel</button>
+              <button type="submit" class="touchable action">Sign in</button>
+              <div id="lbl_loginError" class="centeredText clear">&nbsp</div>
             </form>
-          </section>
-          <section id="start" class="screen hidden" data-title="Santa's Shopping List" data-nav="true" data-nav-icon="btn_disclosure" data-tabbar="true">
-            <ul id="santaList">
-              <!-- //SANTA LIST POPULATED HERE// -->
-              <div class="loader">Loading...</div>
-            </ul>
-          </section>
-          <section id="personWishList" class="screen hidden" data-title="Wish List" data-nav="true" data-nav-icon="btn_back" data-tabbar="true">
-            something
-          </section>
-          <section id="wishList" class="screen hidden" data-title="Your Wish List" data-nav="true" data-nav-icon="btn_addItem" data-tabbar="true">
-            <ul id="wishList">
-              <!-- //WISH LIST POPULATED HERE// -->
-              <div class="loader">Loading...</div>
-            </ul>
-          </section>
-          <section id="events" class="screen hidden" data-title="Calendar" data-nav="true" data-nav-icon="btn_addEvent" data-tabbar="true">
-            <content class="tab-content">
-              <ul id="eventList" class="tab-target hidden">
-                <!-- //EVENT LIST POPULATED HERE// -->
-                <div class="loader">Loading...</div>
-              </ul>
-              <ul id="invitationList" class="tab-target hidden">
-                <!-- //INVITATION LIST POPULATED HERE// -->
-                <div class="loader">Loading...</div>
-              </ul>
-            </content>
-            <tab-group>
-              <tab class="active" data-for="eventList">
-                <label>Events</label>
-              </tab>
-              <tab data-for="invitationList">
-                <label>Invitations</label><badge class="hidden"></badge>
-              </tab>
-            </tab-group>
-          </section>
-          <section id="eventDetail" class="screen hidden" data-title="Event Details" data-nav="true" data-nav-icon="btn_back_eventDetail" data-tabbar="false">
-            <!-- //EVENT DETAIL HERE// -->
-            <div class="detail"></div>
-            <content class="tab-content">
-              <div id="detail" class="tab-target">
-                <form id="eventDetail">
-                  <fieldset>
-                    <input type="text" id="txt_title" placeholder="Event title" class="topBorder noEdit" >
-                    <input type="datetime-local" id="txt_date" placeholder="Event date" class="noEdit" >
-                  </fieldset>
-                  <fieldset>
-                    <input type="text" id="txt_spendLimit" placeholder="Spending limit" class="topBorder noEdit" >
-                    <textarea id="txt_description" placeholder="Event details/description" class="noEdit" ></textarea>
-                  </fieldset>
-                </form>
-              </div>
-              <div id="attendance" class="tab-target">
-                <list-header class="flexContainer flexContainerRow">
-                  <span class="flexItem flexItemElastic label">In like Finn</span>
-                  <span class="flexItem attendanceGoing count">0</span>
-                </list-header>
-                <ul id="attendanceGoing"></ul>
-                <list-header class="flexContainer flexContainerRow">
-                  <span class="flexItem flexItemElastic label">Party Poopers</span>
-                  <span class="flexItem attendanceNotGoing count">0</span>
-                </list-header>
-                <ul id="attendanceNotGoing"></ul>
-                <list-header class="flexContainer flexContainerRow">
-                  <span class="flexItem flexItemElastic label">Who the heck knows?</span>
-                  <span class="flexItem attendanceUnknown count">0</span>
-                </list-header>
-                <ul id="attendanceUnknown"></ul>
-              </div>
-            </content>
-            <tab-group>
-              <tab class="active" data-for="detail">
-                <label>Detail</label><badge class="hidden"></badge>
-              </tab>
-              <tab data-for="attendance">
-                <label>Attendance</label>
-              </tab>
-            </tab-group>
-          </section>
-          <section id="item" class="screen hidden">
-          </section>
-          <section id="settings" class="screen hidden" data-title="Loading Settings..." data-nav="true" data-tabbar="true">
-            <div id="userProfile">
-              <div class="loader">Loading...</div>
+          </div>
+          <div class="flex-item-bottom">
+            <!--<div class="centeredText">
+              ho there, new user
+            </div>-->
+            <button id="btn_signup" data-screen="signup" class="touchable">New? Create an account</button>
+          </div>
+        </div>
+      </section>
+      <section id="signup" class="screen hidden">
+        <form id="frm_signup">
+          <div class="centeredText">
+            &nbsp;
+          </div>
+          <fieldset>
+            <div class="centeredText">
+              oh hai! what's your Human name?
             </div>
+            <input id="txt_firstName" type="text" placeholder="First name" class="topBorder" spellcheck="false" required>
+            <input id="txt_lastName" type="text" placeholder="Last name" class="" spellcheck="false" required>
+            <div class="centeredText">
+              what's your Elf name?
+            </div>
+            <input id="txt_elfName" type="text" placeholder="Elf name" class="topBorder" contenteditable="true" spellcheck="false" required>
             <div class="centeredText">
               &nbsp;
             </div>
             <div class="centeredText">
-              tired of our shennanigans?
+              what's your email?
             </div>
-            <button id="btn_logout" class="touchable">Log out</button>
-          </section>
-          <nav id="tab" class="tabBar hideBottom">
-            <div class="item start touchable" data-screen="start">
-             <i>
-               <img src="img/ico/ico_tab_santa-512.svg" class="off hidden">
-               <img src="img/ico/ico_tab_santa-on-512.svg" class="on hidden">
-             </i>
-             <label>Santa List</label>
-            </div>
-            <div class="item wishList touchable" data-screen="wishList">
-             <i>
-               <img src="img/ico/ico_tab_gift-512.svg" class="off hidden">
-               <img src="img/ico/ico_tab_gift-on-512.svg" class="on hidden">
-             </i>
-             <label>Wish List</label>
-            </div>
-            <div class="item events touchable" data-screen="events">
-             <i>
-               <img src="img/ico/ico_tab_calendar-512.svg" class="off hidden">
-               <img src="img/ico/ico_tab_calendar-on-512.svg" class="on hidden">
-             </i>
-             <label>Events</label>
-            </div>
-            <div class="item settings touchable" data-screen="settings">
-             <i>
-               <img src="img/ico/ico_tab_snowflake-512.svg" class="off hidden">
-               <img src="img/ico/ico_tab_snowflake-on-512.svg" class="on hidden">
-             </i>
-             <label>Settings</label>
-            </div>
-          </nav>
-        </div>
-
-        <group class="actionSheetContainer actionSheetOff">
-          <article id="appManager" class="actionSheet">
-            <ul class="upper">
-              <li>Log out</li>
-            </ul>
-            <ul class="lower">
-              <li class="cancel">Cancel</li>
-            </ul>
-          </article>
-        </group>
-
-        <group class="modalContainer modalOff">
-          <modal id="mdl_item_create" class="modalView hidden">
-            <toolbar class="modalNav">
-              <left>
-                <i id="btn_cancel" class="touchable">
-                  <img src="img/ico/ico_modal_cancel-512.svg" width="512" height="512">
-                </i>
-              </left>
-              <right>
-                <i id="btn_save" class="touchable">
-                  <img src="img/ico/ico_modal_save-512.svg" width="512" height="512">
-                </i>
-              </right>
-            </toolbar>
-            <content>
-              <title>Add to wish list...</title>
-              <form id="frm_item_create">
-                <fieldset>
-                  <div id="lbl_barcodeStatus" class="centeredText">
-                    ...by scanning a barcode...
-                  </div>
-                  <button id="btn_scanBarcode" class="touchable">Tap to Scan</button>
-                  <input type="text" id="txt_upc" placeholder="##########" pattern="[0-9]*" class="">
-                </fieldset>
-                <fieldset>
-                  <div class="centeredTextDouble">
-                    tell me about it
-                  </div>
-                  <input type="text" id="txt_name" placeholder="What is it?" class="topBorder" required>
-                  <input type="text" id="txt_description" placeholder="Have any more info?" class="">
-                </fieldset>
-                <fieldset>
-                  <div class="centeredTextDouble">
-                    how bad to you want it?
-                  </div>
-                  <input type="range" id="txt_rating" min="1" max="10000" class="topBorder">
-                  <div class="centeredText op50">
-                    yatinybit <img src="img/ico/ico_inline_doubleArrow-2048x250.svg" alt="" style="width: 100px; height: auto; vertical-align: middle;" align="bottom"> omgsobad
-                  </div>
-                </fieldset>
-                <fieldset>
-                  <div class="centeredTextDouble">
-                    where to find it?
-                  </div>
-                  <input type="text" id="txt_lastSeenAt" placeholder="Last seen at..." class="topBorder">
-                  <input type="text" id="txt_estPrice" placeholder="...for about" pattern="[0-9]*" class="">
-                </fieldset>
-                <fieldset>
-                  <div class="centeredText">
-                    &nbsp;
-                  </div>
-                  <buttonGroup>
-                    <button id="btn_takeItemPhoto" class="touchable">Take a photo</button>
-                    <button id="btn_selectItemPhoto" class="touchable">Select from gallery</button>
-                  </buttonGroup>
-                  <div id="item_create_photoContainer" class=""></div>
-                  <button id="btn_deleteItemPhoto" class="cancel hidden touchable">Remove Photo</button>
-                </fieldset>
-                <div id="" class="centeredTextDouble">
-                  P.S.: tap the checkmark up top if you're done!
-                </div>
-                <div class="centeredText">
-                  &nbsp;
-                </div>
-              </form>
-            </content>
-          </modal>
-          <modal id="mdl_event_create" class="modalView hidden">
-            <toolbar class="modalNav">
-              <left>
-                <i id="btn_cancel" class="touchable">
-                  <img src="img/ico/ico_modal_cancel-512.svg" width="512" height="512">
-                </i>
-              </left>
-              <right>
-                <i id="btn_save" class="touchable">
-                  <img src="img/ico/ico_modal_save-512.svg" width="512" height="512">
-                </i>
-              </right>
-            </toolbar>
-            <content>
-              <title>Create new event</title>
-              <form id="frm_event_create">
-                <fieldset>
-                  <div class="centeredTextDouble">
-                    what do you want to call it?
-                  </div>
-                  <input type="text" id="txt_title" placeholder="Gosselin family Christmas" class="topBorder" required>
-                </fieldset>
-                <fieldset>
-                  <div class="centeredTextDouble">
-                    when is it?
-                  </div>
-                  <input type="datetime-local" id="txt_date" placeholder="Pick a date" class="topBorder" required>
-                </fieldset>
-                <fieldset>
-                  <div class="centeredTextDouble">
-                    any other special details?
-                  </div>
-                  <input type="text" id="txt_limit" placeholder="Spend limit? ($/person)" pattern="[0-9]*" class="topBorder">
-                  <textarea id="txt_description" placeholder="Address? Dress code?" class=""></textarea>
-                </fieldset>
-                <!--//TODO: remove comments to enable photo uploads for events
-                <fieldset>
-                  <div class="centeredText">
-                    &nbsp;
-                  </div>
-                  <buttonGroup>
-                    <button id="btn_takeItemPhoto" class="touchable">Take a photo</button>
-                    <button id="btn_selectItemPhoto" class="touchable">Select from gallery</button>
-                  </buttonGroup>
-                  <div id="item_create_photoContainer" class=""></div>
-                  <button id="btn_deleteItemPhoto" class="cancel hidden touchable">Remove Photo</button>
-                </fieldset>-->
-                <div id="" class="centeredTextDouble">
-                  P.S.: tap the checkmark up top if you're done!
-                </div>
-                <div class="centeredText">
-                  &nbsp;
-                </div>
-              </form>
-            </content>
-          </modal>
-        </group>
-
-        <!-- Cordova JS -->
-        <script type="text/javascript" src="cordova.js"></script>
-        <!-- Additional libraries -->
-        <script src="js/lib/underscore-min.js"></script>
-        <script src="js/lib/backbone-min.js"></script>
-        <script src="js/lib/jquery-2.1.1.min.js"></script>
-        <script src="js/lib/oauth-1.0a.js"></script>
-        <script src="js/lib/hammer.min.js"></script>
-        <script src="js/lib/jquery.hammer.js"></script>
-        <!-- http://barcode-coder.com/en/barcode-jquery-plugin-201.html -->
-        <script src="js/lib/jquery-barcode.min.js"></script>
-        <script src="js/lib/parse-1.6.4.min.js"></script>
-        <script src="js/lib/moment.min.js"></script>
-        <script src="js/lib/shake.js"></script>
-        <!-- Custom JS -->
-        <script type="text/javascript" src="js/index.min.js"></script>
-        <script type="text/javascript">
-          //init Parse SDK
-          Parse.initialize("8dbOiuDO7wXfYQ6D0Wk7GhuZRaLPjQOJlvTpligz", "W8Xqx4QxsfW6sNwZSAksDyHp7ycLHfu8CMI7hU7A");
-          //init app
-          app.init();
-        </script>
-
-        <!-- underscore.js DOM templates -->
-        <script type="text/template" id="tpl_loading">
-          <div class="loader">Loading...</div>
-        </script>
-        <script type="text/template" id="tpl_events_listItem">
-          <li class="event touchable" data-id="<%= id %>">
-            <card>
-              <label id="eventDate" class="date">
-                <%= moment(date).fromNow() %>
-                <actual><%= util.formatDate(date) %></actual>
-              </label>
-              <label id="eventTitle" class="title"><%= title %></label>
-              <label id="eventDescription" class="hidden description"><%= description %></label>
-              <label id="eventSpendLimit" class="spendLimit">~&nbsp;&nbsp;$<span class="amount"><%= spendLimit %></span>&nbsp;&nbsp;~</label>
-              <loader-container><% var lt = _.template($('#tpl_loading').html()); print(lt({}));  %></loader-container>
-            </card>
-          </li>
-        </script>
-        <script type="text/template" id="tpl_events_listItem_empty">
-          <li class="empty" data-id="0">
-            No events yet, why not create one?
-          </li>
-        </script>
-        <script type="text/template" id="tpl_invitation_listItem">
-          <li class="invitation touchable" data-id="<%= id %>">
-            <card>
-              <label id="eventDate" class="date">
-                <%= moment(date).fromNow() %>
-                <actual><%= util.formatDate(date) %></actual>
-              </label>
-              <label id="eventTitle" class="title"><%= title %></label>
-              <label id="eventDescription" class="hidden description"><%= description %></label>
-              <label id="eventSpendLimit" class="spendLimit">~&nbsp;&nbsp;$<span class="amount"><%= spendLimit %></span>&nbsp;&nbsp;~</label>
-              <loader-container><% var lt = _.template($('#tpl_loading').html()); print(lt({}));  %></loader-container>
-            </card>
-          </li>
-        </script>
-        <script type="text/template" id="tpl_invitation_listItem_empty">
-          <li class="empty" data-id="0">
-            No invitations... yet!
-          </li>
-        </script>
-        <script type="text/template" id="tpl_eventDetail">
-          <div class="eventDetails" data-id="<%= id %>">
-            <fieldset class="flexContainer flexContainerRow">
-              <label for="txt_date" class="flexItem">Date</label>
-              <input type="datetime-local" id="txt_date" value="<%= date %>" disabled class="flexItem flexItemElastic">
-            </fieldset>
-            <fieldset class="flexContainer flexContainerRow">
-              <label for="txt_title" class="flexItem">Title</label>
-              <input type="text" id="txt_title" value="<%= title %>" disabled class="flexItem flexItemElastic">
-            </fieldset>
-            <fieldset class="flexContainer flexContainerRow">
-              <label for="txt_spendLimit" class="flexItem">Spend limit</label>
-              <input type="text" id="txt_spendLimit" value="<%= spendLimit %>" disabled class="flexItem flexItemElastic">
-            </fieldset>
-            <fieldset class="flexContainer flexContainerColumn">
-              <textarea id="txt_description" disabled class="flexItem flexItemElastic"><%= description %></textarea>
-            </fieldset>
-          </div>
-        </script>
-        <script type="text/template" id="tpl_eventDetail_attendanceItem">
-          <li class="attendee" data-id="<%= id %>">
-            <% if(isOwner){ %><div class="ownerDot">party boss</div><% } %>
-            <div class="name <% if(isOwner){ print('owner'); } %>"><%= name %></div>
-            <div class="email"><%= email %></div>
-          </li>
-        </script>
-        <script type="text/template" id="tpl_eventDetail_attendanceItem_empty">
-          <li class="attendee empty" data-id="0">
-            No attendees in this group
-          </li>
-        </script>
-        <script type="text/template" id="tpl_wishList_listItem">
-          <li id="<%= objectId %>" class="touchable">
-            <i class="itemPhoto" style="background-image:url('<%= photoURL %>')"></i>
-            <label class="name"><%= name %></label>
-            <label class="description"><%= description %></label>
-          </li>
-        </script>
-        <script type="text/template" id="tpl_item_create_photo">
-          <img src="<%= uri %>" width="1024" height="1024" align="absmiddle">
-        </script>
-        <script type="text/template" id="tpl_start_listItem">
-          <li
-            id="<%= objectId %>"
-            class="<% if((isDoneShopping == true) && (isDoneWrapping == false)){print('shoppingDone ');} else if((isDoneShopping == false) && (isDoneWrapping == true)){print('wrappingDone ');} else if((isDoneShopping == true) && (isDoneWrapping == true)){print('allDone ');} %>"
-            >
-            <div
-              id="<%= objectId %>"
-              class="front touchable"
-              >
-              <!--<i class="bg" style="background-image:url('<%= recipientPicture.m %>');"></i>-->
-              <i class="avatar" style="background-image:url('<%= recipientPicture.m %>');"></i>
-              <label class="main"><%= recipientDisplayName %></label>
-              <label class="sub"><%= eventTitle %></label>
-              <label class="count"><%= moment(eventAt).fromNow() %></label>
-            </div>
-            <div class="back clear">
-              stuff
-            </div>
-          </li>
-        </script>
-        <script type="text/template" id="tpl_start_listItem_empty">
-          <li class="empty">
-            No one to buy for yet, Santa!
-          </li>
-        </script>
-        <script type="text/template" id="tpl_userProfile">
-          <div id="<%= objectId %>" class="nameGroup">
-            <% if(avatar != null){ %>
-              <i class="avatar" style="background-image:url('<%= avatar %>');"></i>
-            <% } else { %>
-              <i class="avatarTxt"><%= firstName.substr(0,1) %><%= lastName.substr(0,1) %></i>
-            <% } %>
-            <label class="firstName"><%= firstName %> <%= lastName %></label>
+            <input id="txt_email" type="email" placeholder="email@server.net" class="topBorder" spellcheck="false" required>
             <div class="centeredText">
-              aka
+              &nbsp;
             </div>
-            <label class="elfName"><%= elfName %></label>
+            <div class="centeredText">
+              enter and confirm a password
+            </div>
+            <input id="txt_password" type="password" placeholder="Password" class="topBorder" required>
+            <input id="txt_passwordConfirm" type="password" placeholder="Confirm password" class="" required>
+            <button id="btn_submit-signup" type="submit" class="touchable action" disabled="disabled">Create your account</button>
+            <div id="lbl_signupError" class="redColor centeredText clear">
+              &nbsp;
+            </div>
+          </fieldset>
+          <button id="btn_cancel" for="frm_signup" type="reset" class="touchable cancel">Cancel</button>
+        </form>
+      </section>
+      <section id="start" class="screen hidden" data-title="Santa's Shopping List" data-nav="true" data-nav-icon="btn_disclosure" data-tabbar="true">
+        <ul id="santaList">
+          <!-- //SANTA LIST POPULATED HERE// -->
+          <div class="loader">Loading...</div>
+        </ul>
+      </section>
+      <section id="personWishList" class="screen hidden" data-title="Wish List" data-nav="true" data-nav-icon="btn_back" data-tabbar="true">
+        something
+      </section>
+      <section id="wishList" class="screen hidden" data-title="Your Wish List" data-nav="true" data-nav-icon="btn_addItem" data-tabbar="true">
+        <ul id="wishList">
+          <!-- //WISH LIST POPULATED HERE// -->
+          <div class="loader">Loading...</div>
+        </ul>
+      </section>
+      <section id="events" class="screen hidden" data-title="Calendar" data-nav="true" data-nav-icon="btn_addEvent" data-tabbar="true">
+        <content class="tab-content">
+          <ul id="eventList" class="tab-target hidden">
+            <!-- //EVENT LIST POPULATED HERE// -->
+            <div class="loader">Loading...</div>
+          </ul>
+          <ul id="invitationList" class="tab-target hidden">
+            <!-- //INVITATION LIST POPULATED HERE// -->
+            <div class="loader">Loading...</div>
+          </ul>
+        </content>
+        <tab-group>
+          <tab class="active" data-for="eventList">
+            <label>Events</label>
+          </tab>
+          <tab data-for="invitationList">
+            <label>Invitations</label><badge class="hidden"></badge>
+          </tab>
+        </tab-group>
+      </section>
+      <section id="eventDetail" class="screen hidden" data-title="Event Details" data-nav="true" data-nav-icon="btn_back_eventDetail" data-tabbar="false">
+        <!-- //EVENT DETAIL HERE// -->
+        <div class="detail"></div>
+        <content class="tab-content">
+          <div id="detail" class="tab-target"></div>
+          <div id="attendance" class="tab-target">
+            <form id="sendInvitation" class="hidden">
+              <fieldset>
+                <input id="txt_email" type="email" placeholder="email@server.net">
+                <button id="btn_send" type="submit" class="action">Send Invitation</button>
+              </fieldset>
+            </form>
+            <list-header class="flexContainer flexContainerRow">
+              <span class="flexItem flexItemElastic label">In like Finn</span>
+              <span class="flexItem attendanceGoing count">0</span>
+            </list-header>
+            <ul id="attendanceGoing"></ul>
+            <list-header class="flexContainer flexContainerRow">
+              <span class="flexItem flexItemElastic label">Party Poopers</span>
+              <span class="flexItem attendanceNotGoing count">0</span>
+            </list-header>
+            <ul id="attendanceNotGoing"></ul>
+            <list-header class="flexContainer flexContainerRow">
+              <span class="flexItem flexItemElastic label">Who the heck knows?</span>
+              <span class="flexItem attendanceUnknown count">0</span>
+            </list-header>
+            <ul id="attendanceUnknown"></ul>
           </div>
-        </script>
-    </body>
+        </content>
+        <tab-group>
+          <tab class="active" data-for="detail">
+            <label>Detail</label><badge class="hidden"></badge>
+          </tab>
+          <tab data-for="attendance">
+            <label>Attendance</label>
+          </tab>
+        </tab-group>
+      </section>
+      <section id="item" class="screen hidden">
+      </section>
+      <section id="settings" class="screen hidden" data-title="Loading Settings..." data-nav="true" data-tabbar="true">
+        <div id="userProfile">
+          <div class="loader">Loading...</div>
+        </div>
+        <div class="centeredText">
+          &nbsp;
+        </div>
+        <div class="centeredText">
+          tired of our shennanigans?
+        </div>
+        <button id="btn_logout" class="touchable">Log out</button>
+      </section>
+      <nav id="tab" class="tabBar hideBottom">
+        <div class="item start touchable" data-screen="start">
+         <i>
+           <img src="img/ico/ico_tab_santa-512.svg" class="off hidden">
+           <img src="img/ico/ico_tab_santa-on-512.svg" class="on hidden">
+         </i>
+         <label>Santa List</label>
+        </div>
+        <div class="item wishList touchable" data-screen="wishList">
+         <i>
+           <img src="img/ico/ico_tab_gift-512.svg" class="off hidden">
+           <img src="img/ico/ico_tab_gift-on-512.svg" class="on hidden">
+         </i>
+         <label>Wish List</label>
+        </div>
+        <div class="item events touchable" data-screen="events">
+         <i>
+           <img src="img/ico/ico_tab_calendar-512.svg" class="off hidden">
+           <img src="img/ico/ico_tab_calendar-on-512.svg" class="on hidden">
+         </i>
+         <label>Events</label>
+        </div>
+        <div class="item settings touchable" data-screen="settings">
+         <i>
+           <img src="img/ico/ico_tab_snowflake-512.svg" class="off hidden">
+           <img src="img/ico/ico_tab_snowflake-on-512.svg" class="on hidden">
+         </i>
+         <label>Settings</label>
+        </div>
+      </nav>
+    </div>
+
+    <group class="actionSheetContainer actionSheetOff">
+      <article id="appManager" class="actionSheet">
+        <ul class="upper">
+          <li>Log out</li>
+        </ul>
+        <ul class="lower">
+          <li class="cancel">Cancel</li>
+        </ul>
+      </article>
+    </group>
+
+    <group class="modalContainer modalOff">
+      <modal id="mdl_item_create" class="modalView hidden">
+        <toolbar class="modalNav">
+          <left>
+            <i id="btn_cancel" class="touchable">
+              <img src="img/ico/ico_modal_cancel-512.svg" width="512" height="512">
+            </i>
+          </left>
+          <right>
+            <i id="btn_save" class="touchable">
+              <img src="img/ico/ico_modal_save-512.svg" width="512" height="512">
+            </i>
+          </right>
+        </toolbar>
+        <content>
+          <title>Add to wish list...</title>
+          <form id="frm_item_create">
+            <fieldset>
+              <div id="lbl_barcodeStatus" class="centeredText">
+                ...by scanning a barcode...
+              </div>
+              <button id="btn_scanBarcode" class="touchable">Tap to Scan</button>
+              <input type="text" id="txt_upc" placeholder="##########" pattern="[0-9]*" class="">
+            </fieldset>
+            <fieldset>
+              <div class="centeredTextDouble">
+                tell me about it
+              </div>
+              <input type="text" id="txt_name" placeholder="What is it?" class="topBorder" required>
+              <input type="text" id="txt_description" placeholder="Have any more info?" class="">
+            </fieldset>
+            <fieldset>
+              <div class="centeredTextDouble">
+                how bad to you want it?
+              </div>
+              <input type="range" id="txt_rating" min="1" max="10000" class="topBorder">
+              <div class="centeredText op50">
+                yatinybit <img src="img/ico/ico_inline_doubleArrow-2048x250.svg" alt="" style="width: 100px; height: auto; vertical-align: middle;" align="bottom"> omgsobad
+              </div>
+            </fieldset>
+            <fieldset>
+              <div class="centeredTextDouble">
+                where to find it?
+              </div>
+              <input type="text" id="txt_lastSeenAt" placeholder="Last seen at..." class="topBorder">
+              <input type="text" id="txt_estPrice" placeholder="...for about" pattern="[0-9]*" class="">
+            </fieldset>
+            <fieldset>
+              <div class="centeredText">
+                &nbsp;
+              </div>
+              <buttonGroup>
+                <button id="btn_takeItemPhoto" class="touchable">Take a photo</button>
+                <button id="btn_selectItemPhoto" class="touchable">Select from gallery</button>
+              </buttonGroup>
+              <div id="item_create_photoContainer" class=""></div>
+              <button id="btn_deleteItemPhoto" class="cancel hidden touchable">Remove Photo</button>
+            </fieldset>
+            <div id="" class="centeredTextDouble">
+              P.S.: tap the checkmark up top if you're done!
+            </div>
+            <div class="centeredText">
+              &nbsp;
+            </div>
+          </form>
+        </content>
+      </modal>
+      <modal id="mdl_event_create" class="modalView hidden">
+        <toolbar class="modalNav">
+          <left>
+            <i id="btn_cancel" class="touchable">
+              <img src="img/ico/ico_modal_cancel-512.svg" width="512" height="512">
+            </i>
+          </left>
+          <right>
+            <i id="btn_save" class="touchable">
+              <img src="img/ico/ico_modal_save-512.svg" width="512" height="512">
+            </i>
+          </right>
+        </toolbar>
+        <content>
+          <title>Create new event</title>
+          <form id="frm_event_create">
+            <fieldset>
+              <div class="centeredTextDouble">
+                what do you want to call it?
+              </div>
+              <input type="text" id="txt_title" placeholder="Gosselin family Christmas" class="topBorder" required>
+            </fieldset>
+            <fieldset>
+              <div class="centeredTextDouble">
+                when is it?
+              </div>
+              <input type="datetime-local" id="txt_date" placeholder="Pick a date" class="topBorder" required>
+            </fieldset>
+            <fieldset>
+              <div class="centeredTextDouble">
+                any other special details?
+              </div>
+              <input type="text" id="txt_limit" placeholder="Spend limit? ($/person)" pattern="[0-9]*" class="topBorder">
+              <textarea id="txt_description" placeholder="Address? Dress code?" class=""></textarea>
+            </fieldset>
+            <!--//TODO: remove comments to enable photo uploads for events
+            <fieldset>
+              <div class="centeredText">
+                &nbsp;
+              </div>
+              <buttonGroup>
+                <button id="btn_takeItemPhoto" class="touchable">Take a photo</button>
+                <button id="btn_selectItemPhoto" class="touchable">Select from gallery</button>
+              </buttonGroup>
+              <div id="item_create_photoContainer" class=""></div>
+              <button id="btn_deleteItemPhoto" class="cancel hidden touchable">Remove Photo</button>
+            </fieldset>-->
+            <div id="" class="centeredTextDouble">
+              P.S.: tap the checkmark up top if you're done!
+            </div>
+            <div class="centeredText">
+              &nbsp;
+            </div>
+          </form>
+        </content>
+      </modal>
+    </group>
+
+    <!-- Cordova JS -->
+    <script type="text/javascript" src="cordova.js"></script>
+    <!-- Additional libraries -->
+    <script src="js/lib/underscore-min.js"></script>
+    <script src="js/lib/backbone-min.js"></script>
+    <script src="js/lib/jquery-2.1.1.min.js"></script>
+    <script src="js/lib/oauth-1.0a.js"></script>
+    <script src="js/lib/hammer.min.js"></script>
+    <script src="js/lib/jquery.hammer.js"></script>
+    <!-- http://barcode-coder.com/en/barcode-jquery-plugin-201.html -->
+    <script src="js/lib/jquery-barcode.min.js"></script>
+    <script src="js/lib/parse-1.6.4.min.js"></script>
+    <script src="js/lib/moment.min.js"></script>
+    <script src="js/lib/shake.js"></script>
+    <!-- Custom JS -->
+    <script type="text/javascript" src="js/index.min.js"></script>
+    <script type="text/javascript">
+      //init Parse SDK
+      Parse.initialize("8dbOiuDO7wXfYQ6D0Wk7GhuZRaLPjQOJlvTpligz", "W8Xqx4QxsfW6sNwZSAksDyHp7ycLHfu8CMI7hU7A");
+      //init app
+      app.init();
+    </script>
+
+    <!-- underscore.js DOM templates -->
+    <script type="text/template" id="tpl_loading">
+      <div class="loader">Loading...</div>
+    </script>
+    <script type="text/template" id="tpl_events_listItem">
+      <li class="event touchable" data-id="<%= id %>">
+        <card>
+          <label id="eventDate" class="date">
+            <%= moment(date).fromNow() %>
+            <actual><%= util.formatDate(date) %></actual>
+          </label>
+          <label id="eventTitle" class="title"><%= title %></label>
+          <label id="eventDescription" class="hidden description"><%= description %></label>
+          <label id="eventSpendLimit" class="spendLimit">~&nbsp;&nbsp;$<span class="amount"><%= spendLimit %></span>&nbsp;&nbsp;~</label>
+          <loader-container><% var lt = _.template($('#tpl_loading').html()); print(lt({}));  %></loader-container>
+        </card>
+      </li>
+    </script>
+    <script type="text/template" id="tpl_events_listItem_empty">
+      <li class="empty" data-id="0">
+        No events yet, why not create one?
+      </li>
+    </script>
+    <script type="text/template" id="tpl_invitation_listItem">
+      <li class="invitation touchable" data-id="<%= id %>">
+        <card>
+          <label id="eventDate" class="date">
+            <%= moment(date).fromNow() %>
+            <actual><%= util.formatDate(date) %></actual>
+          </label>
+          <label id="eventTitle" class="title"><%= title %></label>
+          <label id="eventDescription" class="hidden description"><%= description %></label>
+          <label id="eventSpendLimit" class="spendLimit">~&nbsp;&nbsp;$<span class="amount"><%= spendLimit %></span>&nbsp;&nbsp;~</label>
+          <loader-container><% var lt = _.template($('#tpl_loading').html()); print(lt({}));  %></loader-container>
+        </card>
+      </li>
+    </script>
+    <script type="text/template" id="tpl_invitation_listItem_empty">
+      <li class="empty" data-id="0">
+        No invitations... yet!
+      </li>
+    </script>
+    <script type="text/template" id="tpl_eventDetail">
+      <form id="eventDetail" data-dirty="false">
+        <fieldset>
+          <input type="text" id="txt_title" placeholder="Event title" class="noEdit" value="<%= title %>" <% if(!isEventAdmin){ print("readonly"); } %> data-original="<%= title %>" data-dirty="false">
+          <input type="datetime-local" id="txt_date" placeholder="Event date" class="noEdit" value="<%= dateString %>" <% if(!isEventAdmin){ print('readonly'); } %>  data-original="<%= dateString %>" data-dirty="false">
+        </fieldset>
+        <fieldset>
+          <input type="text" id="txt_spendLimit" placeholder="Spending limit" class="topBorder noEdit" value="<%= spendLimit %>" pattern="[0-9]*" <% if(!isEventAdmin){ print("readonly"); } %>  data-original="<%= spendLimit %>" data-dirty="false">
+          <textarea id="txt_description" placeholder="Event description" class="noEdit" <% if(!isEventAdmin){ print("readonly"); } %>  data-original="<%= description %>" data-dirty="false"><%= description %></textarea>
+        </fieldset>
+      </form>
+    </script>
+    <script type="text/template" id="tpl_eventDetail_attendanceItem">
+      <li class="attendee" data-id="<%= id %>">
+        <% if(isOwner){ %><div class="ownerDot">party boss</div><% } %>
+        <div class="name <% if(isOwner){ print('owner'); } %>"><%= name %></div>
+        <div class="email"><%= email %></div>
+      </li>
+    </script>
+    <script type="text/template" id="tpl_eventDetail_attendanceItem_empty">
+      <li class="attendee empty" data-id="0">
+        No attendees in this group
+      </li>
+    </script>
+    <script type="text/template" id="tpl_wishList_listItem">
+      <li id="<%= objectId %>" class="touchable">
+        <i class="itemPhoto" style="background-image:url('<%= photoURL %>')"></i>
+        <label class="name"><%= name %></label>
+        <label class="description"><%= description %></label>
+      </li>
+    </script>
+    <script type="text/template" id="tpl_wishList_listItem_empty">
+      <li class="empty" data-id="0">
+        No items in your wish list!<br>Better add some, so people know what to buy you!
+      </li>
+    </script>
+    <script type="text/template" id="tpl_item_create_photo">
+      <img src="<%= uri %>" width="1024" height="1024" align="absmiddle">
+    </script>
+    <script type="text/template" id="tpl_start_listItem">
+      <li
+        id="<%= objectId %>"
+        class="<% if((isDoneShopping == true) && (isDoneWrapping == false)){print('shoppingDone ');} else if((isDoneShopping == false) && (isDoneWrapping == true)){print('wrappingDone ');} else if((isDoneShopping == true) && (isDoneWrapping == true)){print('allDone ');} %>"
+        >
+        <div
+          id="<%= objectId %>"
+          class="front touchable"
+          >
+          <!--<i class="bg" style="background-image:url('<%= recipientPicture.m %>');"></i>-->
+          <i class="avatar" style="background-image:url('<%= recipientPicture.m %>');"></i>
+          <label class="main"><%= recipientDisplayName %></label>
+          <label class="sub"><%= eventTitle %></label>
+          <label class="count"><%= moment(eventAt).fromNow() %></label>
+        </div>
+        <div class="back clear">
+          stuff
+        </div>
+      </li>
+    </script>
+    <script type="text/template" id="tpl_start_listItem_empty">
+      <li class="empty">
+        No one to buy for yet, Santa!
+      </li>
+    </script>
+    <script type="text/template" id="tpl_userProfile">
+      <div id="<%= objectId %>" class="nameGroup">
+        <% if(avatar != null){ %>
+          <i class="avatar" style="background-image:url('<%= avatar %>');"></i>
+        <% } else { %>
+          <i class="avatarTxt"><%= firstName.substr(0,1) %><%= lastName.substr(0,1) %></i>
+        <% } %>
+        <label class="firstName"><%= firstName %> <%= lastName %></label>
+        <div class="centeredText">
+          aka
+        </div>
+        <label class="elfName"><%= elfName %></label>
+      </div>
+    </script>
+  </body>
 </html>
