@@ -42,19 +42,33 @@ var as = {
         $(as.as_eventDetail_invitation.el).addClass('hidden');
       });
       $('group.actionSheetContainer').addClass('actionSheetOff');
-      $('.app').toggleClass('tilt');
+      $('.app').removeClass('tilt');
     },
     show : function(){
-      $('.app').toggleClass('tilt');
+      $('.app').addClass('tilt');
       as.as_eventDetail_invitation.remE().done(as.as_eventDetail_invitation.addE().done(as.as_eventDetail_invitation.render));
     },
     addE : function(){
       return $.Deferred(function(a){
+        $(as.as_eventDetail_invitation.el + ' #btn_destroyAttendanceItem').hammer().on('tap', function(){
+          as.as_eventDetail_invitation.destroyAttendance(user.currentAttendanceID).done(function(){
+            console.log('Destroyed');
+            pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
+              as.as_eventDetail_invitation.hide();
+              pages.eventDetail.renderAttendance(attendanceArray);
+            });
+          });
+        });
+        $(as.as_eventDetail_invitation.el + ' #btn_cancel_attendance').hammer().on('tap', function(){
+          as.as_eventDetail_invitation.hide();
+        });
         a.resolve();
       }).promise();
     },
     remE : function(){
       return $.Deferred(function(r){
+        $(as.as_eventDetail_invitation.el + ' #btn_destroyAttendanceItem').hammer().off('tap');
+        $(as.as_eventDetail_invitation.el + ' #btn_cancel_attendance').hammer().off('tap');
         r.resolve();
       }).promise();
     },
@@ -64,8 +78,33 @@ var as = {
       //animate modal container
       $('group.actionSheetContainer').removeClass('actionSheetOff');
     },
-    destroyAttendance : function(attendanceObject){
-
+    destroyAttendance : function(attendanceObjectID){
+      return $.Deferred(function(da){
+        if (typeof attendanceObjectID != "undefined") {
+          var Attendance = Parse.Object.extend("Attendance");
+          var attendanceQuery = new Parse.Query(Attendance);
+          attendanceQuery.get(attendanceObjectID, {
+            success: function(attendanceObject) {
+              attendanceObject..destroy({
+                success: function(myObject) {
+                  // The object was deleted from the Parse Cloud.
+                  da.resolve();
+                },
+                error: function(error) {
+                  app.e("Oh no! I couldn't remove that invitation! Try again in a few minutes.");
+                  app.l(JSON.stringify(error),2);
+                  da.reject(error);
+                }
+              });
+            },
+            error: function(error) {
+              app.e("Oh no! I couldn't find that invitation to recall it! Try again in a few minutes.");
+              app.l(JSON.stringify(error),2);
+              da.reject(error);
+            }
+          });
+        }
+      }).promise();
     }
   }
 };
@@ -1043,6 +1082,8 @@ var pages = {
         });
         $('#eventDetail.screen ul li.attendee').hammer().on('tap', function(){
           app.l('Loading actionsheet for Attendance: '+$(this).data('aid'),1);
+          user.currentAttendanceID = $(this).data('aid');
+          as.as_eventDetail_invitation.show();
         });
         a.resolve();
       }).promise();
@@ -1687,6 +1728,7 @@ var user = {
     }).promise();
   },
   currentEvent : {},
+  currentAttendanceID : "",
   wishList : [],
   wishListUpdatedAt : new Date(2000,01,01),
   tx : {

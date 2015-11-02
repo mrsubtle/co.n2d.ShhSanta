@@ -215,20 +215,24 @@
 
     <group class="actionSheetContainer actionSheetOff">
       <article id="appManager" class="actionSheet hidden">
-        <ul class="upper">
-          <li>Log out</li>
-        </ul>
-        <ul class="lower">
-          <li class="cancel">Cancel</li>
-        </ul>
+        <container class="flexContainer flexContainerColumnEnd">
+          <ul class="upper">
+            <li class="touchable">Log out</li>
+          </ul>
+          <ul class="lower">
+            <li class="touchable cancel">Cancel</li>
+          </ul>
+        </container>
       </article>
       <article id="as_eventDetail_invitation" class="actionSheet hidden">
-        <ul class="upper">
-          <li>Recall Invitation</li>
-        </ul>
-        <ul class="lower">
-          <li class="cancel">Cancel</li>
-        </ul>
+        <container class="flexContainer flexContainerColumnEnd">
+          <ul class="upper">
+            <li id="btn_destroyAttendanceItem" class="touchable">Recall invitation</li>
+          </ul>
+          <ul class="lower">
+            <li id="btn_cancel_attendance" class="touchable cancel">Cancel</li>
+          </ul>
+        </container>
       </article>
     </group>
 
