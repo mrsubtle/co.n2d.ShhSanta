@@ -33,6 +33,42 @@
     return this;
   }
 
+var as = {
+  as_eventDetail_invitation : {
+    el : "#as_eventDetail_invitation",
+    hide : function(){
+      this.remE();
+      $('group.actionSheetContainer').one('webkittransitionend transitionend',function(){
+        $(as.as_eventDetail_invitation.el).addClass('hidden');
+      });
+      $('group.actionSheetContainer').addClass('actionSheetOff');
+      $('.app').toggleClass('tilt');
+    },
+    show : function(){
+      $('.app').toggleClass('tilt');
+      as.as_eventDetail_invitation.remE().done(as.as_eventDetail_invitation.addE().done(as.as_eventDetail_invitation.render));
+    },
+    addE : function(){
+      return $.Deferred(function(a){
+        a.resolve();
+      }).promise();
+    },
+    remE : function(){
+      return $.Deferred(function(r){
+        r.resolve();
+      }).promise();
+    },
+    render : function(){
+      //unhide the appropriate as content
+      $(as.as_eventDetail_invitation.el).removeClass('hidden');
+      //animate modal container
+      $('group.actionSheetContainer').removeClass('actionSheetOff');
+    },
+    destroyAttendance : function(attendanceObject){
+
+    }
+  }
+};
 
 var modals = {
   mdl_item_create : {
@@ -58,6 +94,9 @@ var modals = {
     addE : function() {
       return $.Deferred(function(a){
         $(modals.mdl_item_create.el + ' #frm_item_create').on('submit',function(e){
+          if (user.tx.item == false) {
+            modals.mdl_item_create.setData();
+          }
           e.preventDefault();
         });
         $(modals.mdl_item_create.el + ' #btn_cancel').hammer().on('tap',function(e){
@@ -65,7 +104,9 @@ var modals = {
           e.preventDefault();
         });
         $(modals.mdl_item_create.el + ' #btn_save').hammer().on('tap',function(e){
-          modals.mdl_item_create.setData();
+          if (user.tx.item == false) {
+            modals.mdl_item_create.setData();
+          }
           e.preventDefault();
         });
         $(modals.mdl_item_create.el + ' #txt_upc').on('blur',function(e){
@@ -226,6 +267,7 @@ var modals = {
       $('group.modalContainer').removeClass('modalOff');
     },
     setData : function(){
+      user.tx.item = true;
       var Item = Parse.Object.extend("Item");
       var newItem = new Item();
       newItem.set('owner',Parse.User.current());
@@ -243,11 +285,13 @@ var modals = {
       }
       newItem.save(null,{
         success : function(newItem){
+          user.tx.item = false;
           user.wishList.push(newItem);
           pages.wishList.init();
           modals.mdl_item_create.hide();
         },
         error : function(newItem,error){
+          user.tx.item = false;
           app.e("Couldn't save that item.  We'll look into it ASAP!");
           app.l(JSON.stringify(error,null,2),2);
         }
@@ -284,7 +328,9 @@ var modals = {
     addE : function() {
       return $.Deferred(function(a){
         $(modals.mdl_event_create.el + ' #frm_event_create').on('submit',function(e){
-          modals.mdl_event_create.setData();
+          if (user.tx.event == false) {
+            modals.mdl_event_create.setData();
+          }
           e.preventDefault();
         });
         $(modals.mdl_event_create.el + ' #btn_cancel').hammer().on('tap',function(e){
@@ -292,7 +338,9 @@ var modals = {
           e.preventDefault();
         });
         $(modals.mdl_event_create.el + ' #btn_save').hammer().on('tap',function(e){
-          modals.mdl_event_create.setData();
+          if (user.tx.event == false) {
+            modals.mdl_event_create.setData();
+          }
           e.preventDefault();
         });
         $(modals.mdl_event_create.el + ' #txt_upc').on('blur',function(e){
@@ -462,6 +510,7 @@ var modals = {
       $('group.modalContainer').removeClass('modalOff');
     },
     setData : function(){
+      user.tx.event = true;
       var eAt = moment($(modals.mdl_event_create.el + ' #txt_date').val()).local().valueOf();
       var Event = Parse.Object.extend("Event");
       var newEvent = new Event();
@@ -473,12 +522,14 @@ var modals = {
       newEvent.set('isLocked',false);
       newEvent.save(null,{
         success : function(newEvent){
+          user.tx.event = false;
           user.getEvents(true).done(function(){
             pages.events.render();
             modals.mdl_event_create.hide();
           });
         },
         error : function(newEvent,error){
+          user.tx.event = false;
           app.e("Couldn't save the event!  We'll look into it ASAP!");
           app.l(JSON.stringify(error,null,2),2);
         }
@@ -906,8 +957,8 @@ var pages = {
           setTimeout(function(){
             $('#eventDetail.screen li').removeClass('loading');
             pages.eventDetail.tabCheck();
-            pages.eventDetail.render(ParseEventObjectToLoad);
             pages.eventDetail.renderAttendance(attendanceArray);
+            pages.eventDetail.render(ParseEventObjectToLoad);
           },interval < 0 ? 0 : interval);
         });
       }
@@ -915,48 +966,6 @@ var pages = {
     addE : function(eventObject){
       return $.Deferred(function(a){
         app.addE();
-        $('#eventDetail.screen form#sendInvitation').on('submit', function(e){
-          var email = $('#eventDetail.screen form#sendInvitation #txt_email').val();
-          var re = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-          if (re.test(email)){
-            console.log('VALID');
-            var Attendance = Parse .Object.extend("Attendance");
-            var attend = new Attendance();
-            attend.set('email', email);
-            attend.set('event', user.currentEvent);
-            attend.set('status', 99); //0 = not going, 1 = going, 2 = organiser, 99 = not set
-            attend.save(null,{
-              success: function(attendanceObject){
-                app.l('Created Attendance Object');
-                app.n("Sent!", "Your invitation is zooming through the Interwebs!", function(){
-                  $('#eventDetail.screen form#sendInvitation')[0].reset();
-                  pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
-                    pages.eventDetail.renderAttendance(attendanceArray);
-                  });
-                });
-              },
-              error: function(error){
-                app.e('Couldn\'t send the invitation! We\'re looking into it though!');
-                app.l(JSON.stringify(error),2);
-              }
-            });
-          }
-          e.preventDefault();
-        });
-        $('#eventDetail.screen form#eventDetail').on('submit', function(e){
-          $(this).data('dirty', util.formIsDirty($(this)));
-          e.preventDefault();
-        });
-        $('#eventDetail.screen form#eventDetail input, #eventDetail.screen form#eventDetail textarea').on('propertychange change click keyup input paste', function(){
-          if($(this).data('original') != $(this).val()){
-            $(this).data('dirty', true);
-          }
-        });
-        $('#eventDetail.screen tab-group tab').hammer().on('tap',function(){
-          $('#eventDetail.screen tab-group tab').removeClass('active');
-          $(this).addClass('active');
-          pages.eventDetail.tabCheck();
-        });
         $('nav#top #btn_back_eventDetail').hammer().on('tap', function(){
           var dirty = util.formIsDirty($('#eventDetail.screen form#eventDetail'));
           if (dirty) {
@@ -983,17 +992,73 @@ var pages = {
           } else {
             app.showScreen($('#events.screen'));
           }
+          //app.showScreen($('#events.screen'));
+        });
+        $('#eventDetail.screen form#sendInvitation').on('submit', function(e){
+          var email = $('#eventDetail.screen form#sendInvitation #txt_email').val();
+          var re = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+          if (re.test(email) && user.tx.attendance == false){
+            //DEBUG
+            console.log('VALID');
+            user.tx.attendance = true;
+            var Attendance = Parse .Object.extend("Attendance");
+            var attend = new Attendance();
+            attend.set('email', email);
+            attend.set('event', user.currentEvent);
+            attend.set('status', 99); //0 = not going, 1 = going, 2 = organiser, 99 = not set
+            attend.save(null,{
+              success: function(attendanceObject){
+                user.tx.attendance = false;
+                app.l('Created Attendance Object');
+                app.n("Sent!", "Your invitation is zooming through the Interwebs!", function(){
+                  $('#eventDetail.screen form#sendInvitation')[0].reset();
+                  pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
+                    pages.eventDetail.renderAttendance(attendanceArray);
+                  });
+                });
+              },
+              error: function(error){
+                user.tx.attendance = false;
+                app.e('Couldn\'t send the invitation! We\'re looking into it though!');
+                app.l(JSON.stringify(error),2);
+              }
+            });
+          }
+          e.preventDefault();
+        });
+        $('#eventDetail.screen form#eventDetail').on('submit', function(e){
+          $(this).data('dirty', util.formIsDirty($(this)));
+          e.preventDefault();
+        });
+        $('#eventDetail.screen form#eventDetail input, #eventDetail.screen form#eventDetail textarea').on('propertychange change click keyup input paste', function(){
+          if($(this).data('original') != $(this).val()){
+            $(this).data('dirty', true);
+          }
+        });
+        $('#eventDetail.screen tab-group tab').hammer().on('tap',function(){
+          $('#eventDetail.screen tab-group tab').removeClass('active');
+          $(this).addClass('active');
+          $('input, textarea').blur();
+          pages.eventDetail.tabCheck();
+        });
+        $('#eventDetail.screen ul li.attendee').hammer().on('tap', function(){
+          app.l('Loading actionsheet for Attendance: '+$(this).data('aid'),1);
         });
         a.resolve();
       }).promise();
     },
     remE : function(){
       return $.Deferred(function(r){
+        //DEBUG
+        console.log('Start remE');
         app.remE();
+        $('nav#top #btn_back_eventDetail').hammer().off('tap');
         $('#eventDetail.screen form#eventDetail').off('submit');
         $('#eventDetail.screen form#eventDetail input, #eventDetail.screen form#eventDetail textarea').off('propertychange change click keyup input paste');
         $('#eventDetail.screen tab-group tab').hammer().off('tap');
-        $('nav#top #btn_back_eventDetail').hammer().off('tap');
+        $('#eventDetail.screen ul li.attendee').hammer().off('tap');
+        //DEBUG
+        console.log('End remE');
         r.resolve();
       }).promise();
     },
@@ -1006,6 +1071,8 @@ var pages = {
       });
     },
     render : function(retrievedParseEventData){
+      //DEBUG
+      console.log('Start render');
       //check if current user is event admin
       var isAdmin = false;
       var eventAdmins = [];
@@ -1034,8 +1101,13 @@ var pages = {
       } else {
         $('#eventDetail.screen #attendance form#sendInvitation').addClass('hidden');
       }
-      pages.eventDetail.remE().then(pages.eventDetail.addE(retrievedParseEventData));
-      app.showScreen($('#eventDetail.screen'));
+      pages.eventDetail.remE().done(function(){
+        pages.eventDetail.addE(user.currentEvent).done(function(){
+          app.showScreen($('#eventDetail.screen'));
+        });
+      });
+      //DEBUG
+      console.log('End render');
     },
     getAttendanceForEvent : function(ParseEvent){
       app.l('Retreiving Attendance for eventID: '+ParseEvent.id,1);
@@ -1134,23 +1206,9 @@ var pages = {
           $('#eventDetail.screen ul#attendanceUnknown').append(attendeeTpl(obj));
         });
       }
-      pages.eventDetail.remAttendanceE().done(pages.eventDetail.addAttendanceE);
-    },
-    addAttendanceE : function(){
-      return $.Deferred(function(aae){
-        app.addE();
-        $('#eventDetail.screen ul li.attendee').hammer().on('tap', function(){
-          app.l('Loading actionsheet for Attendance: '+$(this).data('aid'),1);
-        });
-        aae.resolve();
-      }).promise();
-    },
-    remAttendanceE : function(){
-      return $.Deferred(function(rae){
-        app.remE();
-        $('#eventDetail.screen ul li.attendee').hammer().off('tap');
-        rae.resolve();
-      }).promise();
+      pages.eventDetail.remE().done(function(){
+        pages.eventDetail.addE(user.currentEvent);
+      });
     },
     getData : function(ParseEventObjectToLoad){
       app.l('Retreiving data for eventID: '+ParseEventObjectToLoad.id,1);
@@ -1630,7 +1688,14 @@ var user = {
   },
   currentEvent : {},
   wishList : [],
-  wishListUpdatedAt : new Date(2000,01,01)
+  wishListUpdatedAt : new Date(2000,01,01),
+  tx : {
+    //transmission flags to prevent data-spamming
+    user : false,
+    event : false,
+    item : false,
+    attendance : false
+  }
 };
 
 //various utility functions

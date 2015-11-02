@@ -3,9 +3,8 @@
   <head>
       <meta charset="utf-8" />
       <meta name="format-detection" content="telephone=no" />
-      <meta name="msapplication-tap-highlight" content="no" />
-      <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-      <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+      <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 ", target-densitydpi=device-dpi"-->
+      <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
       <!-- WEBFONTS -->
         <!-- Arquitecta -->
         <link rel="stylesheet" type="text/css" href="fonts/arquitecta.css" />
@@ -215,9 +214,17 @@
     </div>
 
     <group class="actionSheetContainer actionSheetOff">
-      <article id="appManager" class="actionSheet">
+      <article id="appManager" class="actionSheet hidden">
         <ul class="upper">
           <li>Log out</li>
+        </ul>
+        <ul class="lower">
+          <li class="cancel">Cancel</li>
+        </ul>
+      </article>
+      <article id="as_eventDetail_invitation" class="actionSheet hidden">
+        <ul class="upper">
+          <li>Recall Invitation</li>
         </ul>
         <ul class="lower">
           <li class="cancel">Cancel</li>
