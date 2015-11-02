@@ -14,6 +14,7 @@ Parse.Cloud.afterSave("Event", function(request) {
     var Attendance = Parse.Object.extend("Attendance");
     var attend = new Attendance();
     attend.set('attendee', request.object.get("createdBy"));
+    attend.set('email', request.user.get("email"));
     attend.set('event', request.object);
     attend.set('status', 2); //0 = not going, 1 = going, 2 = organiser, 99 = not set
     attend.save(null,{
@@ -42,4 +43,21 @@ Parse.Cloud.afterDelete("Event", function(request) {
       console.error("Error finding related attendanceObjects " + error.code + ": " + error.message);
     }
   });
+});
+Parse.Cloud.beforeSave("Attendance", function(request, response){
+  if (typeof request.object.get('email') != "undefined") {
+    var email = request.object.get('email');
+    var User = Parse.Object.extend("User");
+    var userQuery = new Parse.Query(User);
+    userQuery.equalTo('email', email);
+    userQuery.first({
+      success: function(userResult){
+        request.object.set('attendee', userResult);
+        response.success();
+      },
+      error: function(e){
+        console.error(e);
+      }
+    });
+  }
 });

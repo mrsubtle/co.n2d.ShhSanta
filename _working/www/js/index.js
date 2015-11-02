@@ -551,7 +551,6 @@ var pages = {
     },
     addE : function(){
       $('#frm_signup').on('submit', function(e){
-        //app.l('Signup submitted');
         pages.signup.doSignUp();
         e.preventDefault();
       });
@@ -561,11 +560,6 @@ var pages = {
           $(this).select();
         }
       });
-      /*$('#frm_signup #txt_username').hammer().on('tap',function(){
-        if ($(this).val() == "" || $(this).val() == null){
-          $(this).val(util.generateElfName());
-        }
-      });*/
       $('#frm_signup #txt_passwordConfirm').on('keyup',function(){
         if($(this).val() == $('#frm_signup #txt_password').val()){
           $(this).removeClass('bad');
@@ -903,6 +897,7 @@ var pages = {
       //NOT simply the ID
       app.l('Init detail for eventID: '+ParseEventObjectToLoad.id,1);
       if(typeof ParseEventObjectToLoad != "undefined"){
+        user.currentEvent = ParseEventObjectToLoad;
         pages.eventDetail.getAttendanceForEvent(ParseEventObjectToLoad).done(function(attendanceArray){
           var doneTime = new Date();
           var interval = (1000 - (doneTime-loadTime));
@@ -920,6 +915,34 @@ var pages = {
     addE : function(eventObject){
       return $.Deferred(function(a){
         app.addE();
+        $('#eventDetail.screen form#sendInvitation').on('submit', function(e){
+          var email = $('#eventDetail.screen form#sendInvitation #txt_email').val();
+          var re = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+          if (re.test(email)){
+            console.log('VALID');
+            var Attendance = Parse .Object.extend("Attendance");
+            var attend = new Attendance();
+            attend.set('email', email);
+            attend.set('event', user.currentEvent);
+            attend.set('status', 99); //0 = not going, 1 = going, 2 = organiser, 99 = not set
+            attend.save(null,{
+              success: function(attendanceObject){
+                app.l('Created Attendance Object');
+                app.n("Sent!", "Your invitation is zooming through the Interwebs!", function(){
+                  $('#eventDetail.screen form#sendInvitation')[0].reset();
+                  pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
+                    pages.eventDetail.renderAttendance(attendanceArray);
+                  });
+                });
+              },
+              error: function(error){
+                app.e('Couldn\'t send the invitation! We\'re looking into it though!');
+                app.l(JSON.stringify(error),2);
+              }
+            });
+          }
+          e.preventDefault();
+        });
         $('#eventDetail.screen form#eventDetail').on('submit', function(e){
           $(this).data('dirty', util.formIsDirty($(this)));
           e.preventDefault();
@@ -995,6 +1018,7 @@ var pages = {
         }
       });
       var obj = {
+        id : retrievedParseEventData.id,
         title : retrievedParseEventData.get('title'),
         date : retrievedParseEventData.get('eventAt'),
         dateString : util.formatDateForDTL(retrievedParseEventData.get('eventAt')),
@@ -1057,38 +1081,76 @@ var pages = {
         $('#eventDetail.screen ul#attendanceGoing').html("");
         $('#eventDetail.screen .attendanceGoing.count').html(aGoing.length);
         _.each(aGoing, function(o,i,a){
-          $('#eventDetail.screen ul#attendanceGoing').append(attendeeTpl({
-            id : o.get('attendee').id,
+          var obj = {
+            aid : o.id,
+            id : "0",
             isOwner : o.get('status') == 2 ? true : false,
-            name : o.get('attendee').get('displayName'),
-            email : o.get('attendee').get('email')
-          }));
+            name : null,
+            email : o.get('email')
+          };
+          if (typeof o.get('attendee') != "undefined"){
+            obj.id = o.get('attendee').id;
+            obj.name = o.get('attendee').get('displayName');
+            obj.email = o.get('attendee').get('email');
+          }
+          $('#eventDetail.screen ul#attendanceGoing').append(attendeeTpl(obj));
         });
       }
       if(aNotGoing.length > 0){
         $('#eventDetail.screen ul#attendanceNotGoing').html("");
         $('#eventDetail.screen .attendanceNotGoing.count').html(aNotGoing.length);
         _.each(aNotGoing, function(o,i,a){
-          $('#eventDetail.screen ul#attendanceNotGoing').append(attendeeTpl({
-            id : o.get('attendee').id,
+          var obj = {
+            aid : o.id,
+            id : "0",
             isOwner : o.get('status') == 2 ? true : false,
-            name : o.get('attendee').get('name'),
-            email : o.get('attendee').get('email')
-          }));
+            name : null,
+            email : o.get('email')
+          };
+          if (typeof o.get('attendee') != "undefined"){
+            obj.id = o.get('attendee').id;
+            obj.name = o.get('attendee').get('displayName');
+            obj.email = o.get('attendee').get('email');
+          }
+          $('#eventDetail.screen ul#attendanceNotGoing').append(attendeeTpl(obj));
         });
       }
       if(aUnknown.length > 0){
         $('#eventDetail.screen ul#attendanceUnknown').html("");
         $('#eventDetail.screen .attendanceUnknown.count').html(aUnknown.length);
         _.each(aUnknown, function(o,i,a){
-          $('#eventDetail.screen ul#attendanceUnknown').append(attendeeTpl({
-            id : o.get('attendee').id,
+          var obj = {
+            aid : o.id,
+            id : "0",
             isOwner : o.get('status') == 2 ? true : false,
-            name : o.get('attendee').get('name'),
-            email : o.get('attendee').get('email')
-          }));
+            name : null,
+            email : o.get('email')
+          };
+          if (typeof o.get('attendee') != "undefined"){
+            obj.id = o.get('attendee').id;
+            obj.name = o.get('attendee').get('displayName');
+            obj.email = o.get('attendee').get('email');
+          }
+          $('#eventDetail.screen ul#attendanceUnknown').append(attendeeTpl(obj));
         });
       }
+      pages.eventDetail.remAttendanceE().done(pages.eventDetail.addAttendanceE);
+    },
+    addAttendanceE : function(){
+      return $.Deferred(function(aae){
+        app.addE();
+        $('#eventDetail.screen ul li.attendee').hammer().on('tap', function(){
+          app.l('Loading actionsheet for Attendance: '+$(this).data('aid'),1);
+        });
+        aae.resolve();
+      }).promise();
+    },
+    remAttendanceE : function(){
+      return $.Deferred(function(rae){
+        app.remE();
+        $('#eventDetail.screen ul li.attendee').hammer().off('tap');
+        rae.resolve();
+      }).promise();
     },
     getData : function(ParseEventObjectToLoad){
       app.l('Retreiving data for eventID: '+ParseEventObjectToLoad.id,1);
@@ -1447,6 +1509,23 @@ var app = {
       "Nuts."//[buttonNames]
     );
   },
+  n: function(title, message, callback){
+    if(typeof title == "undefined"){
+      title = "Ahoy-hoy!";
+    }
+    if(typeof message == "undefined"){
+      message = "Hello there! :)";
+    }
+    if(typeof callback == "undefined"){
+      callback = function(){}
+    }
+    navigator.notification.alert(
+      message,//message
+      callback,//callback
+      title,//[title]
+      "Okie dokie"//[buttonNames]
+    );
+  },
   // Bind any events that are required on startup. Common events are:
   // 'load', 'deviceready', 'offline', and 'online'.
   bindEvents: function() {
@@ -1521,8 +1600,11 @@ var user = {
 
         //Get data from Parse
         var Attendance = Parse.Object.extend("Attendance");
-        var attendanceQuery = new Parse.Query(Attendance);
-        attendanceQuery.equalTo('attendee', Parse.User.current());
+        var attendanceByAttendeeQuery = new Parse.Query(Attendance);
+        attendanceByAttendeeQuery.equalTo('attendee', Parse.User.current());
+        var attendanceByEmailQuery = new Parse.Query(Attendance);
+        attendanceByEmailQuery.equalTo('email', Parse.User.current().get('email'));
+        var attendanceQuery = new Parse.Query.or(attendanceByAttendeeQuery, attendanceByEmailQuery);
         attendanceQuery.include('event');
         attendanceQuery.ascending('createdAt');
         attendanceQuery.find({
@@ -1546,6 +1628,7 @@ var user = {
       }
     }).promise();
   },
+  currentEvent : {},
   wishList : [],
   wishListUpdatedAt : new Date(2000,01,01)
 };

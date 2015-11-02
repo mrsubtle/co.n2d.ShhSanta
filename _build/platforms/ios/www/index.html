@@ -138,7 +138,7 @@
           <div id="attendance" class="tab-target">
             <form id="sendInvitation" class="hidden">
               <fieldset>
-                <input id="txt_email" type="email" placeholder="email@server.net">
+                <input id="txt_email" type="email" placeholder="email@server.net" required>
                 <button id="btn_send" type="submit" class="action">Send Invitation</button>
               </fieldset>
             </form>
@@ -416,7 +416,7 @@
       </li>
     </script>
     <script type="text/template" id="tpl_eventDetail">
-      <form id="eventDetail" data-dirty="false">
+      <form id="eventDetail" data-dirty="false" data-id="<%= id %>">
         <fieldset>
           <input type="text" id="txt_title" placeholder="Event title" class="noEdit" value="<%= title %>" <% if(!isEventAdmin){ print("readonly"); } %> data-original="<%= title %>" data-dirty="false">
           <input type="datetime-local" id="txt_date" placeholder="Event date" class="noEdit" value="<%= dateString %>" <% if(!isEventAdmin){ print('readonly'); } %>  data-original="<%= dateString %>" data-dirty="false">
@@ -428,7 +428,7 @@
       </form>
     </script>
     <script type="text/template" id="tpl_eventDetail_attendanceItem">
-      <li class="attendee" data-id="<%= id %>">
+      <li class="touchable attendee" data-id="<%= id %>" data-aid="<%= aid %>">
         <% if(isOwner){ %><div class="ownerDot">party boss</div><% } %>
         <div class="name <% if(isOwner){ print('owner'); } %>"><%= name %></div>
         <div class="email"><%= email %></div>
