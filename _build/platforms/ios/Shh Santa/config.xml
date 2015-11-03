@@ -34,6 +34,9 @@
     <feature name="Vibration">
         <param name="ios-package" value="CDVVibration" />
     </feature>
+    <feature name="BarcodeScanner">
+        <param name="ios-package" value="CDVBarcodeScanner" />
+    </feature>
     <name>Shh Santa</name>
     <description>
         Hello World sample application that responds to the deviceready event.

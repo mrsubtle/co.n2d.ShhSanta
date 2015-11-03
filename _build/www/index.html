@@ -513,68 +513,70 @@
         style="background-image: url(<%= photoURL %>);"
         data-ownerid="<%= oid %>">
       </item>
-      <fieldset>
-        <field class="flexContainer flexContainerRow">
-          <label for="txt_name" class="flexItem">Name</label>
-          <input type="text"
-            id="txt_name"
-            placeholder="Doo-dad"
-            class="flexItem flexItemElastic"
-            value="<%= name %>"
-            <% if(!isOwner){ print("readonly"); } %>
-            data-original="<%= name %>"
-            data-dirty="false">
-        </field>
-        <field class="flexContainer flexContainerRow">
-          <label for="txt_description" class="flexItem">Description</label>
-          <input type="text"
-            id="txt_description"
-            placeholder="It's waaay cool"
-            class="flexItem flexItemElastic"
-            value="<%= description %>"
-            <% if(!isOwner){ print("readonly"); } %>
-            data-original="<%= description %>"
-            data-dirty="false">
-        </field>
-      </fieldset>
-      <fieldset>
-        <field class="flexContainer flexContainerRow">
-          <label for="txt_upc" class="flexItem">UPC</label>
-          <input type="text"
-            id="txt_upc"
-            placeholder="0123456789"
-            class="flexItem flexItemElastic"
-            value="<%= upc %>"
-            <% if(!isOwner){ print('readonly'); } %>
-            data-original="<%= upc %>"
-            data-dirty="false">
-        </field>
-      </fieldset>
-      <fieldset>
-        <field class="flexContainer flexContainerRow">
-          <label for="txt_lastSeenAt" class="flexItem">Last seen at</label>
-          <input type="text"
-            id="txt_lastSeenAt"
-            placeholder="Walmart maybe?"
-            class="flexItem flexItemElastic"
-            value="<%= lastSeenAt %>"
-            <% if(!isOwner){ print("readonly"); } %>
-            data-original="<%= lastSeenAt %>"
-            data-dirty="false">
-        </field>
-        <field class="flexContainer flexContainerRow">
-          <label for="txt_estPrice" class="flexItem">Estimated price</label>
-          <input type="text"
-            id="txt_estPrice"
-            placeholder="$ 0"
-            class="flexItem flexItemElastic"
-            value="<%= estPrice %>"
-            pattern="[0-9]*"
-            <% if(!isOwner){ print("readonly"); } %>
-            data-original="<%= estPrice %>"
-            data-dirty="false">
-        </field>
-      </fieldset>
+      <form id="frm_item">
+        <fieldset>
+          <field class="flexContainer flexContainerRow">
+            <label for="txt_name" class="flexItem">Name</label>
+            <input type="text"
+              id="txt_name"
+              placeholder="Doo-dad"
+              class="flexItem flexItemElastic"
+              value="<%= name %>"
+              <% if(!isOwner){ print("readonly"); } %>
+              data-original="<%= name %>"
+              data-dirty="false">
+          </field>
+          <field class="flexContainer flexContainerRow">
+            <label for="txt_description" class="flexItem">Description</label>
+            <input type="text"
+              id="txt_description"
+              placeholder="It's waaay cool"
+              class="flexItem flexItemElastic"
+              value="<%= description %>"
+              <% if(!isOwner){ print("readonly"); } %>
+              data-original="<%= description %>"
+              data-dirty="false">
+          </field>
+        </fieldset>
+        <fieldset>
+          <field class="flexContainer flexContainerRow">
+            <label for="txt_upc" class="flexItem">UPC</label>
+            <input type="text"
+              id="txt_upc"
+              placeholder="0123456789"
+              class="flexItem flexItemElastic"
+              value="<%= upc %>"
+              <% if(!isOwner){ print('readonly'); } %>
+              data-original="<%= upc %>"
+              data-dirty="false">
+          </field>
+        </fieldset>
+        <fieldset>
+          <field class="flexContainer flexContainerRow">
+            <label for="txt_lastSeenAt" class="flexItem">Last seen at</label>
+            <input type="text"
+              id="txt_lastSeenAt"
+              placeholder="Walmart maybe?"
+              class="flexItem flexItemElastic"
+              value="<%= lastSeenAt %>"
+              <% if(!isOwner){ print("readonly"); } %>
+              data-original="<%= lastSeenAt %>"
+              data-dirty="false">
+          </field>
+          <field class="flexContainer flexContainerRow">
+            <label for="txt_estPrice" class="flexItem">Estimated price</label>
+            <input type="text"
+              id="txt_estPrice"
+              placeholder="$ 0"
+              class="flexItem flexItemElastic"
+              value="<%= estPrice %>"
+              pattern="[0-9]*"
+              <% if(!isOwner){ print("readonly"); } %>
+              data-original="<%= estPrice %>"
+              data-dirty="false">
+          </field>
+        </fieldset>
+      </form>
     </script>
     <script type="text/template" id="tpl_start_listItem">
       <li

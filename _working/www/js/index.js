@@ -411,8 +411,10 @@ var modals = {
       newItem.set('estPrice',parseInt($(modals.mdl_item_create.el+" #txt_estPrice").val()));
       if($('#mdl_item_create #item_create_photoContainer img').length != 0){
         var t = $('#mdl_item_create #item_create_photoContainer img').attr('src');
-        var base64data = t.slice("data:image/jpeg;base64,".length);
-        var image = new Parse.File('item.jpg',{ base64 : base64data });
+        var a = ";base64,";
+        var e = t.slice((t.indexOf("/")+1),t.indexOf(";"));
+        var base64data = t.slice(t.indexOf(a) + a.length);
+        var image = new Parse.File('item.'+e,{ base64 : base64data });
         image.save().then(function(){
           newItem.set('photo', image);
           newItem.save(null,{
@@ -1471,18 +1473,50 @@ var pages = {
   },
   itemDetail : {
     init : function(ParseItem){
+      var loadTime = new Date();
       //this screen MUST be initialized with a Parse "Item" object
       app.l('Loading Item Detail for item ID: '+ParseItem.id);
-      pages.itemDetail.getData(ParseItem).done(pages.itemDetail.render(ParseItem).done(function(){
+      pages.itemDetail.getData(ParseItem).done(function(){
         app.l('Done rendering Item Detail for item ID: '+ParseItem.id);
-        pages.itemDetail.remE().done(pages.itemDetail.addE());
-      }));
+        var doneTime = new Date();
+        var interval = (1000 - (doneTime-loadTime));
+        setTimeout(function(){
+          $('#wishList.screen li').removeClass('loading');
+          pages.itemDetail.render(ParseItem).done(function(){
+            pages.itemDetail.remE().done(pages.itemDetail.addE());
+          });
+        },interval < 0 ? 0 : interval);
+      });
     },
     addE : function(){
       return $.Deferred(function(a){
         $('nav#top #btn_back_itemDetail').hammer().on('tap', function(){
-          //pages.events.render();
-          app.showScreen($('#wishList.screen'));
+          var dirty = util.formIsDirty($('#itemDetail.screen form#frm_item'));
+          if (dirty) {
+            navigator.notification.confirm(
+              "You've made some changes, it seems.",//message
+              function(buttonIndex){
+                //buttonIndex is 1-based
+                //alert was dismissed
+                switch(buttonIndex){
+                  case 1:
+                    pages.itemDetail.updateItem(user.currentItem).done(function(){
+                      app.showScreen($('#wishList.screen'), false, true);
+                    });
+                    break;
+                  case 2:
+                    app.showScreen($('#wishList.screen'));
+                    break;
+                  default:
+                }
+              },//callback
+              "Save changes?",//[title]
+              ["Yes please!","No thanks."]//[buttonNames]
+            );
+          } else {
+            app.showScreen($('#wishList.screen'));
+          }
+          //app.showScreen($('#wishList.screen'));
         });
         $('#itemDetail.screen #frm_admin').on('submit', function(e){
           if(user.currentItem.id == $('#itemDetail.screen #frm_admin #txt_iid').val()){
@@ -1494,7 +1528,7 @@ var pages = {
                   case 1:
                     user.currentItem.destroy({
                       success: function(){
-                        app.showScreen($('#whishList.screen'), false, true);
+                        app.showScreen($('#wishList.screen'), false, true);
                       },
                       error: function(error){
                         app.e("Aw snap! I couldn't delete it! Try again in a few minutes.");
@@ -1513,6 +1547,18 @@ var pages = {
           }
           e.preventDefault();
         });
+        $('#itemDetail.screen #frm_item').on('submit',function(e){
+          pages.itemDetail.updateItem(user.currentItem).done(function(updatedItem){
+            app.showScreen($('#wishList.screen'),false,true);
+            $('#itemDetail.screen #frm_item')[0].reset();
+          });
+          e.preventDefault();
+        });
+        $('#itemDetail.screen #frm_item input').on('propertychange change click keyup input paste', function(){
+          if($(this).data('original') != $(this).val()){
+            $(this).data('dirty', true);
+          }
+        });
         a.resolve();
       }).promise();
     },
@@ -1520,12 +1566,13 @@ var pages = {
       return $.Deferred(function(r){
         $('nav#top #btn_back_itemDetail').hammer().off('tap');
         $('#itemDetail.screen #frm_admin').off('submit');
+        $('#itemDetail.screen #frm_item').off('submit');
+        $('#itemDetail.screen #frm_item input').off('propertychange change click keyup input paste');
         r.resolve();
       }).promise();
     },
     render : function(ParseItem){
       return $.Deferred(function(r){
-        $('#itemDetail.screen content').scrollTop(0);
         $('#itemDetail.screen #frm_admin #txt_iid').val(ParseItem.id);
         var itemDetailTpl = _.template( $('#tpl_itemDetail').html() );
         var obj = {
@@ -1546,7 +1593,33 @@ var pages = {
         }
         $('#itemDetail.screen content').html(itemDetailTpl(obj));
         app.showScreen($('#itemDetail.screen'));
+        $('#itemDetail.screen content').scrollTop(0);
+
         r.resolve();
+      }).promise();
+    },
+    updateItem : function(ParseItem){
+      return $.Deferred(function(ui){
+        if (user.tx.item == false){
+          user.tx.item = true;
+          ParseItem.set('name', $('#itemDetail.screen #frm_item #txt_name').val());
+          ParseItem.set('description', $('#itemDetail.screen #frm_item #txt_description').val());
+          ParseItem.set('upc', parseInt($('#itemDetail.screen #frm_item #txt_upc').val()));
+          ParseItem.set('lastSeenAt', $('#itemDetail.screen #frm_item #txt_lastSeenAt').val());
+          ParseItem.set('estPrice', parseInt($('#itemDetail.screen #frm_item #txt_estPrice').val()));
+          ParseItem.save(null,{
+            success: function(itemObject){
+              user.tx.item = false;
+              ui.resolve(itemObject);
+            },
+            error: function(error){
+              user.tx.item = false;
+              app.e('Couldn\'t save the updated item! We\'re looking into it though!');
+              app.l(JSON.stringify(error),2);
+              ui.reject(error);
+            }
+          });
+        }
       }).promise();
     },
     getData : function(ParseItem, forceDataUpdate){
