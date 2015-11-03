@@ -43,6 +43,10 @@
                         {
                             "xml": "<feature name=\"BarcodeScanner\"><param name=\"ios-package\" value=\"CDVBarcodeScanner\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"ActivityIndicator\"><param name=\"ios-package\" value=\"ActivityIndicator\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -162,6 +166,9 @@
             "PACKAGE_NAME": "co.n2d.ShhSanta"
         },
         "phonegap-plugin-barcodescanner": {
+            "PACKAGE_NAME": "co.n2d.ShhSanta"
+        },
+        "org.apache.cordova.plugin.ActivityIndicator": {
             "PACKAGE_NAME": "co.n2d.ShhSanta"
         }
     },

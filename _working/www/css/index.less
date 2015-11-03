@@ -1095,7 +1095,7 @@
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      padding: (@navBase + @touchBase) 0 @touchBase 0;
+      padding: (@navBase + @touchBase) 0 (@touchBase * 2) 0;
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
@@ -1164,6 +1164,14 @@
       }
     }
     form#frm_rsvp {
+      display: block;
+      position: absolute;
+      padding: 0; margin: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+    form#frm_admin {
       display: block;
       position: absolute;
       padding: 0; margin: 0;

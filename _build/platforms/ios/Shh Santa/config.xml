@@ -37,6 +37,9 @@
     <feature name="BarcodeScanner">
         <param name="ios-package" value="CDVBarcodeScanner" />
     </feature>
+    <feature name="ActivityIndicator">
+        <param name="ios-package" value="ActivityIndicator" />
+    </feature>
     <name>Shh Santa</name>
     <description>
         Hello World sample application that responds to the deviceready event.

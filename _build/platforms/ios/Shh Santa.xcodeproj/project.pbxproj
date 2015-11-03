@@ -65,6 +65,8 @@
 		306774B5222D43E2B3093659 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 005B53132A69449EB24A3DE9 /* CoreVideo.framework */; };
 		F0B769EFF75D454C9E99DED3 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 044962CA98D34E10AC175C5D /* QuartzCore.framework */; };
 		D509D8D1A2E84835B3DB5516 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27699EE357954D40BAD29F78 /* CoreImage.framework */; };
+		FFF9AC943010436BA807BE8E /* ActivityIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2370CE04AFB34E77ADBAE074 /* ActivityIndicator.m */; };
+		85D12B88333A4EB793A7F9E2 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E4D1F9D0624F96B8A17DF6 /* MBProgressHUD.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -166,6 +168,10 @@
 		005B53132A69449EB24A3DE9 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "CoreVideo.framework"; path = "System/Library/Frameworks/CoreVideo.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
 		044962CA98D34E10AC175C5D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "QuartzCore.framework"; path = "System/Library/Frameworks/QuartzCore.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
 		27699EE357954D40BAD29F78 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "CoreImage.framework"; path = "System/Library/Frameworks/CoreImage.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		2370CE04AFB34E77ADBAE074 /* ActivityIndicator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "ActivityIndicator.m"; path = "org.apache.cordova.plugin.ActivityIndicator/ActivityIndicator.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		13E4D1F9D0624F96B8A17DF6 /* MBProgressHUD.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "MBProgressHUD.m"; path = "org.apache.cordova.plugin.ActivityIndicator/MBProgressHUD.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		F3215FEDC0574E869929A6FE /* ActivityIndicator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ActivityIndicator.h"; path = "org.apache.cordova.plugin.ActivityIndicator/ActivityIndicator.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		768549B8626F48C1BA79F109 /* MBProgressHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MBProgressHUD.h"; path = "org.apache.cordova.plugin.ActivityIndicator/MBProgressHUD.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -311,6 +317,10 @@
 				0D42F66A8734437C950DB256 /* CDVBarcodeScanner.mm */,
 				AFD3EFFF1B8F48A786221E2F /* zxing-all-in-one.cpp */,
 				D65BCBB29B2647B380867CE0 /* zxing-all-in-one.h */,
+				2370CE04AFB34E77ADBAE074 /* ActivityIndicator.m */,
+				13E4D1F9D0624F96B8A17DF6 /* MBProgressHUD.m */,
+				F3215FEDC0574E869929A6FE /* ActivityIndicator.h */,
+				768549B8626F48C1BA79F109 /* MBProgressHUD.h */,
 			);
 			name = Plugins;
 			path = "Shh Santa/Plugins";
@@ -517,6 +527,8 @@
 				105E6BEAC3284451B88430BD /* CDVVibration.m in Sources */,
 				CAC21EB21CCB4C78986EB253 /* CDVBarcodeScanner.mm in Resources */,
 				EB8DC8C8DE8E456F9D9099AB /* zxing-all-in-one.cpp in Resources */,
+				FFF9AC943010436BA807BE8E /* ActivityIndicator.m in Sources */,
+				85D12B88333A4EB793A7F9E2 /* MBProgressHUD.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

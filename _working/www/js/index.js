@@ -400,6 +400,7 @@ var modals = {
     },
     setData : function(){
       user.tx.item = true;
+      ActivityIndicator.show("Saving")
       var Item = Parse.Object.extend("Item");
       var newItem = new Item();
       newItem.set('owner',Parse.User.current());
@@ -420,12 +421,14 @@ var modals = {
           newItem.save(null,{
             success : function(newItem){
               user.tx.item = false;
+              ActivityIndicator.hide();
               user.wishList.push(newItem);
               pages.wishList.init();
               modals.mdl_item_create.hide();
             },
             error : function(newItem,error){
               user.tx.item = false;
+              ActivityIndicator.hide();
               app.e("Couldn't save that item.  We'll look into it ASAP!");
               app.l(JSON.stringify(error,null,2),2);
             }
@@ -642,6 +645,7 @@ var modals = {
     },
     setData : function(){
       user.tx.event = true;
+      ActivityIndicator.show("Saving");
       var eAt = moment($(modals.mdl_event_create.el + ' #txt_date').val()).local().valueOf();
       var Event = Parse.Object.extend("Event");
       var newEvent = new Event();
@@ -654,6 +658,7 @@ var modals = {
       newEvent.save(null,{
         success : function(newEvent){
           user.tx.event = false;
+          ActivityIndicator.hide();
           user.getEvents(true).done(function(){
             pages.events.render();
             modals.mdl_event_create.hide();
@@ -661,6 +666,7 @@ var modals = {
         },
         error : function(newEvent,error){
           user.tx.event = false;
+          ActivityIndicator.hide();
           app.e("Couldn't save the event!  We'll look into it ASAP!");
           app.l(JSON.stringify(error,null,2),2);
         }
@@ -853,34 +859,11 @@ var pages = {
       //$('#start.screen #santaList').append( loaderTpl({textToShow:"Santa's Shopping List"}) );
       app.l('Getting santa list items...',1);
       return $.Deferred(function(getData){
-        if (forceDataUpdate || user.santaListUpdatedAt <= new Date().subMinutes(15)) {
-
-          //Get data from Parse
-          var Santas = Parse.Object.extend("Santas");
-          var santaListQuery = new Parse.Query(Santas);
-          santaListQuery.equalTo('santa', Parse.User.current());
-          santaListQuery.include('recipient');
-          santaListQuery.include('event');
-          santaListQuery.ascending('createdAt');
-          santaListQuery.find({
-            success: function(r){
-              user.santaList = r;
-              user.santaListUpdatedAt = new Date();
-              app.l('...got santa list items FROM PARSE',1);
-              getData.resolve(user.santaList);
-            },
-            error: function(e){
-              //TODO
-              //Tie error to master logging system
-              console.error(e);
-              app.e("Poop! I has some trouble finding who you need to shop for! Try again in a few minutes, ok?");
-              getData.reject(e);
-            }
-          });
-        } else {
-          app.l('...got santa list items FROM CACHE',1);
-          getData.resolve(user.santaList);
-        }
+        user.getSantas(forceDataUpdate).done(function(santaList){
+          getData.resolve();
+        }).fail(function(error){
+          getData.reject(error);
+        });
       }).promise();
     }
   },
@@ -1272,6 +1255,37 @@ var pages = {
           );
           e.preventDefault();
         });
+        $('#eventDetail.screen #frm_admin').on('submit', function(e){
+          e.preventDefault();
+        });
+        $('#eventDetail.screen #frm_admin #btn_event_delete').hammer().on('tap', function(e){
+          navigator.notification.confirm(
+            "Are you sure you want to delete this event?",//message
+            function(buttonIndex){
+              //buttonIndex is 1-based
+              //alert was dismissed
+              switch(buttonIndex){
+                case 1:
+                  pages.eventDetail.destroyEvent(user.currentEvent).done(function(){
+                    app.showScreen($('#events.screen'), false, true);
+                  });
+                  break;
+                case 2:
+                  break;
+                default:
+              }
+            },//callback
+            "Confirm delete!",//[title]
+            ["Yes please!","No thanks."]//[buttonNames]
+          );
+          e.preventDefault();
+        });
+        $('#eventDetail.screen #frm_admin #btn_event_close').hammer().on('tap', function(e){
+          pages.eventDetail.closeEvent(user.currentEvent).done(function(eventRespObject){
+            app.l("Event closed: "+eventRespObject.id,1);
+          });
+          e.preventDefault();
+        });
         a.resolve();
       }).promise();
     },
@@ -1284,6 +1298,9 @@ var pages = {
         $('#eventDetail.screen tab-group tab').hammer().off('tap');
         $('#eventDetail.screen ul li.attendee').hammer().off('tap');
         $('#eventDetail.screen #frm_rsvp').off('submit');
+        $('#eventDetail.screen #frm_admin').off('submit');
+        $('#eventDetail.screen #frm_admin #btn_event_delete').hammer().off('tap');
+        $('#eventDetail.screen #frm_admin #btn_event_close').hammer().off('tap');
         r.resolve();
       }).promise();
     },
@@ -1321,9 +1338,11 @@ var pages = {
       $('#eventDetail.screen #detail.tab-target').html( edFormTpl(obj) );
       if (isAdmin) {
         $('#eventDetail.screen #frm_rsvp').addClass('hidden');
+        $('#eventDetail.screen #frm_admin').removeClass('hidden');
         $('#eventDetail.screen #attendance form#sendInvitation').removeClass('hidden');
       } else {
         $('#eventDetail.screen #frm_rsvp').removeClass('hidden');
+        $('#eventDetail.screen #frm_admin').addClass('hidden');
         $('#eventDetail.screen #attendance form#sendInvitation').addClass('hidden');
       }
       pages.eventDetail.remE().done(function(){
@@ -1466,6 +1485,39 @@ var pages = {
             app.l(JSON.stringify(error),2);
             app.e('Wat!? I couldn\'t save your changes.  I R THA DUM.');
             ue.reject();
+          }
+        });
+      }).promise();
+    },
+    destroyEvent : function(eventObject){
+      return $.Deferred(function(de){
+        eventObject.destroy({
+          success: function(){
+            app.l('Destroyed event ID: '+eventObject.id,1);
+            de.resolve();
+          },
+          error: function(e){
+            app.e("I couldn't delete this event! Please try again in a minute.");
+            app.l(JSON.stringify(e),2);
+            de.reject(e);
+          }
+        });
+      }).promise();
+    },
+    closeEvent : function(eventObject){
+      return $.Deferred(function(ce){
+        Parse.Cloud.run('rollTheDice', {
+          ParseEventID : eventObject.id,
+          close : true,
+          assignSantas : true
+        }, {
+          success: function(responseEvent){
+            ce.resolve(responseEvent);
+          },
+          error: function(error){
+            app.e("I couldn't close this event, and assign everyone a Santa! Please try again in a minute.");
+            app.l(JSON.stringify(error),2);
+            ce.reject(error);
           }
         });
       }).promise();
@@ -2082,6 +2134,39 @@ var user = {
       } else {
         app.l('...got user\'s events and invitations FROM CACHE',1);
         getEvents.resolve(user.eventList);
+      }
+    }).promise();
+  },
+  getSantas : function(forceDataUpdate){
+    app.l('Getting user\'s santas...',1);
+    return $.Deferred(function(getSantas){
+      if (forceDataUpdate || user.santaListUpdatedAt <= new Date().subMinutes(15)) {
+
+        //Get data from Parse
+        var Santas = Parse.Object.extend("Santas");
+        var santasQuery = new Parse.Query(Santas);
+        santasQuery.equalTo('santa', Parse.User.current());
+        santasQuery.include('recipient');
+        santasQuery.include('event');
+        santasQuery.ascending('createdAt');
+        santasQuery.find({
+          success: function(r){
+            user.santaList = r;
+            user.santaListUpdatedAt = new Date();
+            app.l('...got user\'s santa list FROM PARSE',1);
+            getSantas.resolve(user.santaList);
+          },
+          error: function(e){
+            //TODO
+            //Tie error to master logging system
+            console.error(e);
+            app.e("Wowsa! I can't find your Secret Santa list right now! Try again in a few minutes, ok?");
+            getSantas.reject(e);
+          }
+        });
+      } else {
+        app.l('...got user\'s santa list FROM CACHE',1);
+        getSantas.resolve(user.santaList);
       }
     }).promise();
   },

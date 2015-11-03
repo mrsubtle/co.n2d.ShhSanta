@@ -62,5 +62,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "org.apache.cordova.plugin.ActivityIndicator": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Initsogar/cordova-activityindicator",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
