@@ -340,7 +340,7 @@ var modals = {
           e.preventDefault();
         });
         $(modals.mdl_item_create.el + ' #btn_takeItemPhoto').hammer().on('tap',function(e){
-          navigator.camera.getPicture(function(imgData){
+          /*navigator.camera.getPicture(function(imgData){
             //success!
             var v = {
               uri : "data:image/png;base64," + imgData
@@ -360,11 +360,22 @@ var modals = {
             targetHeight: 1024,
             encodingType: Camera.EncodingType.PNG,
             cameraDirection: Camera.Direction.BACK
+          });*/
+          util.photo.takeNew().done(function(base64string){
+            var v = {
+              uri : "data:image/jpeg;base64," + base64string
+            };
+            var tpl = _.template( $('#tpl_item_create_photo').html() );
+            $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
+            $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass('hidden');
+          }).fail(function(err){
+            app.e("Umm... This is embarassing. I can't seem to access your camera...  I don't know why not.  Do you?");
+            app.l(JSON.stringify(err),2);
           });
           e.preventDefault();
         });
         $(modals.mdl_item_create.el + ' #btn_selectItemPhoto').hammer().on('tap',function(e){
-          navigator.camera.getPicture(function(imgData){
+          /*navigator.camera.getPicture(function(imgData){
             //success!
             var v = {
               uri : "data:image/png;base64," + imgData
@@ -383,6 +394,18 @@ var modals = {
             targetWidth: 1024,
             targetHeight: 1024,
             encodingType: Camera.EncodingType.PNG
+          });*/
+          util.photo.fromLibrary().done(function(base64string){
+            var v = {
+              uri : "data:image/jpeg;base64," + base64string
+            };
+            
+            var tpl = _.template( $('#tpl_item_create_photo').html() );
+            $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
+            $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass('hidden');
+          }).fail(function(e){
+            app.e("Umm... This is embarassing. I can't open the gallery.  I don't know why.  Do you?");
+            app.l(JSON.stringify(e),2);
           });
           e.preventDefault();
         });
@@ -429,23 +452,39 @@ var modals = {
       newItem.set('estPrice',parseInt($(modals.mdl_item_create.el+" #txt_estPrice").val()));
       if($('#mdl_item_create #item_create_photoContainer img').length != 0){
         var t = $('#mdl_item_create #item_create_photoContainer img').attr('src');
-        var base64data = t.slice("data:image/png;base64,".length);
-        var image = new Parse.File('item.png',{ base64 : base64data });
-        newItem.set('photo', image);
+        var base64data = t.slice("data:image/jpeg;base64,".length);
+        var image = new Parse.File('item.jpg',{ base64 : base64data });
+        image.save().then(function(){
+          newItem.set('photo', image);
+          newItem.save(null,{
+            success : function(newItem){
+              user.tx.item = false;
+              user.wishList.push(newItem);
+              pages.wishList.init();
+              modals.mdl_item_create.hide();
+            },
+            error : function(newItem,error){
+              user.tx.item = false;
+              app.e("Couldn't save that item.  We'll look into it ASAP!");
+              app.l(JSON.stringify(error,null,2),2);
+            }
+          });
+        });
+      } else {
+        newItem.save(null,{
+          success : function(newItem){
+            user.tx.item = false;
+            user.wishList.push(newItem);
+            pages.wishList.init();
+            modals.mdl_item_create.hide();
+          },
+          error : function(newItem,error){
+            user.tx.item = false;
+            app.e("Couldn't save that item.  We'll look into it ASAP!");
+            app.l(JSON.stringify(error,null,2),2);
+          }
+        });
       }
-      newItem.save(null,{
-        success : function(newItem){
-          user.tx.item = false;
-          user.wishList.push(newItem);
-          pages.wishList.init();
-          modals.mdl_item_create.hide();
-        },
-        error : function(newItem,error){
-          user.tx.item = false;
-          app.e("Couldn't save that item.  We'll look into it ASAP!");
-          app.l(JSON.stringify(error,null,2),2);
-        }
-      });
     }
   },
   mdl_event_create : {
@@ -574,49 +613,30 @@ var modals = {
           e.preventDefault();
         });
         $(modals.mdl_event_create.el + ' #btn_takeItemPhoto').hammer().on('tap',function(e){
-          navigator.camera.getPicture(function(imgData){
-            //success!
-            var v = {
-              uri : "data:image/png;base64," + imgData
-            };
-            var tpl = _.template( $('#tpl_item_create_photo').html() );
-            $(modals.mdl_event_create.el + ' #item_create_photoContainer').html(tpl(v));
-            $(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').removeClass("hidden");
-          }, function(error){
-            //fail :(
-            app.e('Can\'t take a picture.  I don\'t know why.  Do you?');
-          }, {
-            quality: 80,
-            destinationType: Camera.DestinationType.DATA_URL,
-            sourceType: Camera.PictureSourceType.CAMERA,
-            allowEdit: true,
-            targetWidth: 1024,
-            targetHeight: 1024,
-            encodingType: Camera.EncodingType.PNG,
-            cameraDirection: Camera.Direction.BACK
-          });
-          e.preventDefault();
-        });
-        $(modals.mdl_event_create.el + ' #btn_selectItemPhoto').hammer().on('tap',function(e){
-          navigator.camera.getPicture(function(imgData){
-            //success!
+          util.photo.takeNew().done(function(base64string){
             var v = {
               uri : "data:image/png;base64," + imgData
             };
             var tpl = _.template( $('#tpl_item_create_photo').html() );
             $(modals.mdl_event_create.el + ' #item_create_photoContainer').html(tpl(v));
             $(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').removeClass('hidden');
-          }, function(error){
-            //fail :(
+          }).fail(function(e){
+            app.e("Umm... This is embarassing. I can't access your camera...  I don't know why.  Do you?");
+            app.l(JSON.stringify(e),2);
+          });
+          e.preventDefault();
+        });
+        $(modals.mdl_event_create.el + ' #btn_selectItemPhoto').hammer().on('tap',function(e){
+          util.photo.fromLibrary().done(function(base64string){
+            var v = {
+              uri : "data:image/png;base64," + imgData
+            };
+            var tpl = _.template( $('#tpl_item_create_photo').html() );
+            $(modals.mdl_event_create.el + ' #item_create_photoContainer').html(tpl(v));
+            $(modals.mdl_event_create.el + ' #btn_deleteItemPhoto').removeClass('hidden');
+          }).fail(function(e){
             app.e("Umm... This is embarassing. I can't open the gallery.  I don't know why.  Do you?");
-          }, {
-            quality: 80,
-            destinationType: Camera.DestinationType.DATA_URL,
-            sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
-            allowEdit: true,
-            targetWidth: 1024,
-            targetHeight: 1024,
-            encodingType: Camera.EncodingType.PNG
+            app.l(JSON.stringify(e),2);
           });
           e.preventDefault();
         });
@@ -818,8 +838,8 @@ var pages = {
     }
   },
   start : {
-    init : function(){
-      pages.start.getData().done(function(){
+    init : function(forceDataUpdate){
+      pages.start.getData(forceDataUpdate).done(function(){
         pages.start.render().done(function(){
           pages.start.remE().then(
             pages.start.addE
@@ -904,8 +924,8 @@ var pages = {
     }
   },
   wishList : {
-    init : function(){
-      pages.wishList.getData().done(function(){
+    init : function(forceDataUpdate){
+      pages.wishList.getData(forceDataUpdate).done(function(){
         pages.wishList.render().done(function(){
           pages.wishList.remE().done(pages.wishList.addE);
         });
@@ -913,7 +933,6 @@ var pages = {
     },
     addE : function(){
       app.addE();
-      console.log('addE');
       return $.Deferred(function(a){
         $('nav#top #btn_addItem').hammer().on('tap',function(){
           modals.mdl_item_create.show();
@@ -923,7 +942,6 @@ var pages = {
     },
     remE : function(){
       app.remE();
-      console.log('remE');
       return $.Deferred(function(r){
         $('nav#top #btn_addItem').hammer().off('tap');
         r.resolve();
@@ -942,7 +960,7 @@ var pages = {
               objectId : o.get('objectId'),
               name : o.get('name'),
               description : o.get('description'),
-              photoURL : o.get('photo').url()
+              photoURL : typeof o.get('photo') != "undefined" ? o.get('photo').url() : ''
             };
             $('#wishList.screen #wishList').append(t(d));
           });
@@ -1039,7 +1057,11 @@ var pages = {
         r.resolve();
       }).promise();
     },
-    tabCheck : function(){
+    tabCheck : function(tabToForceID){
+      if (typeof tabToForceID != "undefined") {
+        $('#events.screen tab-group tab').removeClass('active');
+        $('#events.screen tab-group tab[data-for="'+tabToForceID+'"]').addClass('active');
+      }
       $('#events.screen .tab-target').addClass('hidden');
       $('#events.screen tab-group tab').each(function(i,o){
         if($(this).hasClass('active')){
@@ -1077,6 +1099,7 @@ var pages = {
         $('#events.screen tab[data-for="invitationList"] badge').html('');
         $('#events.screen tab[data-for="invitationList"] badge').addClass('hidden');
         $('#events.screen #invitationList').html(invitationEmptyTpl({}));
+        app.updateBadge($('nav.tabBar div.item.events'),$('#events.screen #invitationList li.invitation').length);
       } else {
         $('#events.screen tab[data-for="invitationList"] badge').html($('#events.screen #invitationList li.invitation').length);
         $('#events.screen tab[data-for="invitationList"] badge').removeClass('hidden');
@@ -1226,6 +1249,8 @@ var pages = {
                           pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
                             //update the attendance list
                             pages.eventDetail.renderAttendance(attendanceArray);
+                            pages.events.tabCheck("eventList");
+                            app.showScreen($('#events.screen'),false,true);
                           });
                         },
                         error: function(error) {
@@ -1252,19 +1277,19 @@ var pages = {
                           pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
                             //update the attendance list
                             pages.eventDetail.renderAttendance(attendanceArray);
+                            pages.events.tabCheck("invitationList");
+                            app.showScreen($('#events.screen'),false,true);
                           });
                         },
                         error: function(error) {
                           app.e("Oh no! I couldn't decline the invitation! Try again in a few minutes.");
                           app.l(JSON.stringify(error),2);
-                          da.reject(error);
                         }
                       });
                     },
                     error: function(error) {
                       app.e("Oh no! I couldn't find that invitation to decline it! Try again in a few minutes.");
                       app.l(JSON.stringify(error),2);
-                      da.reject(error);
                     }
                   });
                   break;
@@ -1509,10 +1534,10 @@ var pages = {
     }
   },
   settings : {
-    init : function(){
+    init : function(forceDataUpdate){
       pages.settings.remE();
       pages.settings.addE();
-      pages.settings.getData();
+      pages.settings.getData(forceDataUpdate);
     },
     addE : function(){
       $('section#settings #btn_logout').hammer().on('tap',function(e){
@@ -1643,7 +1668,10 @@ var app = {
     //load the start screen on signin
     app.showScreen($('section#start'),true);
   },
-  showScreen: function(s,animateBoolean){
+  showScreen: function(s, animateBoolean, forceDataUpdate){
+    if (typeof forceDataUpdate == "undefined") {
+      forceDataUpdate = false;
+    }
     if(animateBoolean){
       //animate crap
       $('section.screen:not(.hidden)').each(function(){
@@ -1676,6 +1704,12 @@ var app = {
         $('nav#top .left i[id='+s.data('nav-icon')+']').removeClass('clear');
       },10);
     }
+
+    //mark all tabBar icons as inactive
+    $('nav#tab .item').each(function(i){
+      $(this).removeClass('active');
+    });
+    $('nav#tab .item[data-screen="'+s.attr('id')+'"]').addClass('active');
 
     //set all tab img to "off"
     $('nav#tab .item img.off').each(function(i){
@@ -1711,19 +1745,19 @@ var app = {
         pages.login.init();
         break;
       case 'start':
-        pages.start.init();
+        pages.start.init(forceDataUpdate);
         break;
       case 'signup':
         pages.signup.init();
         break;
       case 'events':
-        pages.events.init();
+        pages.events.init(forceDataUpdate);
         break;
       case 'settings':
-        pages.settings.init();
+        pages.settings.init(forceDataUpdate);
         break;
       case 'wishList':
-        pages.wishList.init();
+        pages.wishList.init(forceDataUpdate);
         break;
       default:
         console.log(s.attr('id'));
@@ -1843,8 +1877,8 @@ var app = {
       //tab bar item actions
       $('nav#tab .item').hammer().on('tap',function(e){
         var s = $('section.screen#'+$(this).data('screen'));
-        //console.log('Loading: '+$(this).data('screen'));
-        app.showScreen(s,false);
+
+        app.showScreen(s, false, $(this).hasClass('active') ? true : false);
       });
       a.resolve();
     }).promise();
@@ -2164,7 +2198,7 @@ var util = {
           flf.reject(e);
         }, {
           //options
-          quality: 75,
+          quality: 50,
           destinationType: 0, //0 = DATA_URL, 1 = FILE_URI
           sourceType: 0, //0 = Library, 1 = Camera
           allowEdit: true,
@@ -2188,7 +2222,7 @@ var util = {
           tnf.reject(e);
         }, {
           //options
-          quality: 75,
+          quality: 50,
           destinationType: 0, //0 = DATA_URL, 1 = FILE_URI
           sourceType: 1, //0 = Library, 1 = Camera
           allowEdit: true,
@@ -2196,7 +2230,7 @@ var util = {
           targetWidth: 512,
           targetHeight: 512,
           saveToPhotoAlbum: true,
-          cameraDirection: 1 //0 = back, 1 = front
+          cameraDirection: 0 //0 = back, 1 = front
         });
       }).promise();
     }

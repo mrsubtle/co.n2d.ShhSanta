@@ -20,6 +20,7 @@
           <i id="btn_disclosure" class="hidden clear touchable"><img src="img/ico/ico_nav_menu-512.svg"></i>
           <i id="btn_back" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
           <i id="btn_back_eventDetail" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
+          <i id="btn_back_itemDetail" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
           <i id="btn_addItem" class="hidden clear touchable"><img src="img/ico/ico_nav_add-512.svg"></i>
           <i id="btn_addEvent" class="hidden clear touchable"><img src="img/ico/ico_nav_add-512.svg"></i>
         </div>
@@ -108,6 +109,49 @@
           <!-- //WISH LIST POPULATED HERE// -->
           <div class="loader">Loading...</div>
         </ul>
+      </section>
+      <section id="itemDetail" class="screen hidden" data-title="Item Details" data-nav="true" data-nav-icon="btn_back_itemDetail" data-tabbar="false">
+        <!-- //ITEM DETAIL HERE// -->
+        <content class="tab-content">
+          <div id="detail" class="tab-target"></div>
+          <div id="attendance" class="tab-target">
+            <form id="sendInvitation" class="hidden">
+              <list-header class="flexContainer flexContainerRow">
+                <span class="flexItem flexItemElastic label">Invite someone new...</span>
+                <span class="flexItem"></span>
+              </list-header>
+              <input id="txt_email" type="email" placeholder="email@server.net" required>
+              <button id="btn_send" type="submit" class="action">Send the invite!</button>
+            </form>
+            <list-header class="flexContainer flexContainerRow">
+              <span class="flexItem flexItemElastic label">In like Finn</span>
+              <span class="flexItem attendanceGoing count">0</span>
+            </list-header>
+            <ul id="attendanceGoing"></ul>
+            <list-header class="flexContainer flexContainerRow">
+              <span class="flexItem flexItemElastic label">Party Poopers</span>
+              <span class="flexItem attendanceNotGoing count">0</span>
+            </list-header>
+            <ul id="attendanceNotGoing"></ul>
+            <list-header class="flexContainer flexContainerRow">
+              <span class="flexItem flexItemElastic label">Who the heck knows?</span>
+              <span class="flexItem attendanceUnknown count">0</span>
+            </list-header>
+            <ul id="attendanceUnknown"></ul>
+          </div>
+        </content>
+        <tab-group>
+          <tab class="active" data-for="detail">
+            <label>Detail</label><badge class="hidden"></badge>
+          </tab>
+          <tab data-for="attendance">
+            <label>Attendance</label>
+          </tab>
+        </tab-group>
+        <form id="frm_admin" class="hidden">
+          <input type="hidden" id="txt_iid" class="hidden">
+          <button id="btn_delete_item" class="delete" for="frm_admin" type="submit">Delete item</button>
+        </form>
       </section>
       <section id="events" class="screen hidden" data-title="Calendar" data-nav="true" data-nav-icon="btn_addEvent" data-tabbar="true">
         <content class="tab-content">
@@ -274,7 +318,7 @@
               <div id="lbl_barcodeStatus" class="centeredText">
                 ...by scanning a barcode...
               </div>
-              <button id="btn_scanBarcode" class="touchable">Tap to Scan</button>
+              <button id="btn_scanBarcode" type="button" class="touchable">Tap to Scan</button>
               <input type="text" id="txt_upc" placeholder="##########" pattern="[0-9]*" class="">
             </fieldset>
             <fieldset>
@@ -305,11 +349,11 @@
                 &nbsp;
               </div>
               <buttonGroup>
-                <button id="btn_takeItemPhoto" class="touchable">Take a photo</button>
-                <button id="btn_selectItemPhoto" class="touchable">Select from gallery</button>
+                <button id="btn_takeItemPhoto" type="button" class="touchable">Take a photo</button>
+                <button id="btn_selectItemPhoto" type="button" class="touchable">Select from gallery</button>
               </buttonGroup>
               <div id="item_create_photoContainer" class=""></div>
-              <button id="btn_deleteItemPhoto" class="cancel hidden touchable">Remove Photo</button>
+              <button id="btn_deleteItemPhoto" type="button" class="cancel hidden touchable">Remove Photo</button>
             </fieldset>
             <div id="" class="centeredTextDouble">
               P.S.: tap the checkmark up top if you're done!
