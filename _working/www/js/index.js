@@ -340,27 +340,6 @@ var modals = {
           e.preventDefault();
         });
         $(modals.mdl_item_create.el + ' #btn_takeItemPhoto').hammer().on('tap',function(e){
-          /*navigator.camera.getPicture(function(imgData){
-            //success!
-            var v = {
-              uri : "data:image/png;base64," + imgData
-            };
-            var tpl = _.template( $('#tpl_item_create_photo').html() );
-            $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
-            $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass("hidden");
-          }, function(error){
-            //fail :(
-            app.e('Can\'t take a picture.  I don\'t know why.  Do you?');
-          }, {
-            quality: 80,
-            destinationType: Camera.DestinationType.DATA_URL,
-            sourceType: Camera.PictureSourceType.CAMERA,
-            allowEdit: true,
-            targetWidth: 1024,
-            targetHeight: 1024,
-            encodingType: Camera.EncodingType.PNG,
-            cameraDirection: Camera.Direction.BACK
-          });*/
           util.photo.takeNew().done(function(base64string){
             var v = {
               uri : "data:image/jpeg;base64," + base64string
@@ -375,31 +354,11 @@ var modals = {
           e.preventDefault();
         });
         $(modals.mdl_item_create.el + ' #btn_selectItemPhoto').hammer().on('tap',function(e){
-          /*navigator.camera.getPicture(function(imgData){
-            //success!
-            var v = {
-              uri : "data:image/png;base64," + imgData
-            };
-            var tpl = _.template( $('#tpl_item_create_photo').html() );
-            $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
-            $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass('hidden');
-          }, function(error){
-            //fail :(
-            app.e("Umm... This is embarassing. I can't open the gallery.  I don't know why.  Do you?");
-          }, {
-            quality: 80,
-            destinationType: Camera.DestinationType.DATA_URL,
-            sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
-            allowEdit: true,
-            targetWidth: 1024,
-            targetHeight: 1024,
-            encodingType: Camera.EncodingType.PNG
-          });*/
           util.photo.fromLibrary().done(function(base64string){
             var v = {
               uri : "data:image/jpeg;base64," + base64string
             };
-            
+
             var tpl = _.template( $('#tpl_item_create_photo').html() );
             $(modals.mdl_item_create.el + ' #item_create_photoContainer').html(tpl(v));
             $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').removeClass('hidden');
@@ -431,11 +390,11 @@ var modals = {
       }).promise();
     },
     render : function(){
-      $(modals.mdl_item_create.el + ' content').scrollTop(0);
       $(modals.mdl_item_create.el + ' #item_create_photoContainer').html('');
       $(modals.mdl_item_create.el + ' #btn_deleteItemPhoto').addClass("hidden");
       //unhide the appropriate modal
       $(modals.mdl_item_create.el).removeClass('hidden');
+      $(modals.mdl_item_create.el + ' content').scrollTop(0);
       //animate modal container
       $('group.modalContainer').removeClass('modalOff');
     },
@@ -937,6 +896,15 @@ var pages = {
         $('nav#top #btn_addItem').hammer().on('tap',function(){
           modals.mdl_item_create.show();
         });
+        $('#wishList.screen ul#wishList li.item').hammer().on('tap', function(){
+          var iID = $(this).data('id');
+          $(this).addClass('loading');
+          var ParseItem = _.find(user.wishList, function(obj) {
+              return obj.id == iID; 
+          });
+          user.currentItem = ParseItem;
+          pages.itemDetail.init(ParseItem);
+        });
         a.resolve();
       }).promise();
     },
@@ -944,6 +912,7 @@ var pages = {
       app.remE();
       return $.Deferred(function(r){
         $('nav#top #btn_addItem').hammer().off('tap');
+        $('#wishList.screen ul#wishList li.item').hammer().off('tap');
         r.resolve();
       }).promise();
     },
@@ -957,7 +926,7 @@ var pages = {
             //console.log(v);
             var t = _.template($('#tpl_wishList_listItem').html());
             var d = {
-              objectId : o.get('objectId'),
+              id : o.id,
               name : o.get('name'),
               description : o.get('description'),
               photoURL : typeof o.get('photo') != "undefined" ? o.get('photo').url() : ''
@@ -1501,11 +1470,106 @@ var pages = {
     }
   },
   itemDetail : {
-    init : function(){},
-    addE : function(){},
-    remE : function(){},
-    render : function(){},
-    getData : function(){}
+    init : function(ParseItem){
+      //this screen MUST be initialized with a Parse "Item" object
+      app.l('Loading Item Detail for item ID: '+ParseItem.id);
+      pages.itemDetail.getData(ParseItem).done(pages.itemDetail.render(ParseItem).done(function(){
+        app.l('Done rendering Item Detail for item ID: '+ParseItem.id);
+        pages.itemDetail.remE().done(pages.itemDetail.addE());
+      }));
+    },
+    addE : function(){
+      return $.Deferred(function(a){
+        $('nav#top #btn_back_itemDetail').hammer().on('tap', function(){
+          //pages.events.render();
+          app.showScreen($('#wishList.screen'));
+        });
+        $('#itemDetail.screen #frm_admin').on('submit', function(e){
+          if(user.currentItem.id == $('#itemDetail.screen #frm_admin #txt_iid').val()){
+            navigator.notification.confirm(
+              "Are you sure you want to delete it?  Someone may have bought it for you already!",//message
+              function(buttonIndex){
+                //buttonIndex is 1-based
+                switch(buttonIndex){
+                  case 1:
+                    user.currentItem.destroy({
+                      success: function(){
+                        app.showScreen($('#whishList.screen'), false, true);
+                      },
+                      error: function(error){
+                        app.e("Aw snap! I couldn't delete it! Try again in a few minutes.");
+                        app.l(JSON.stringify(error),2);
+                      }
+                    });
+                    break;
+                  case 2:
+                    break;
+                  default:
+                }
+              },//callback
+              "Delete it for realz?",//[title]
+              ["Yes please!","No thanks."]//[buttonNames]
+            );
+          }
+          e.preventDefault();
+        });
+        a.resolve();
+      }).promise();
+    },
+    remE : function(){
+      return $.Deferred(function(r){
+        $('nav#top #btn_back_itemDetail').hammer().off('tap');
+        $('#itemDetail.screen #frm_admin').off('submit');
+        r.resolve();
+      }).promise();
+    },
+    render : function(ParseItem){
+      return $.Deferred(function(r){
+        $('#itemDetail.screen content').scrollTop(0);
+        $('#itemDetail.screen #frm_admin #txt_iid').val(ParseItem.id);
+        var itemDetailTpl = _.template( $('#tpl_itemDetail').html() );
+        var obj = {
+          id : ParseItem.id,
+          oid : ParseItem.get('owner').id,
+          photoURL : ParseItem.get('photo').url(),
+          name : ParseItem.get('name'),
+          description : ParseItem.get('description'),
+          upc : ParseItem.get('upc'),
+          lastSeenAt : ParseItem.get('lastSeenAt'),
+          estPrice : ParseItem.get('estPrice'),
+          isOwner : ParseItem.get('owner').id == Parse.User.current().id ? true : false
+        }
+        if (obj.isOwner) {
+          $('#itemDetail.screen #frm_admin').removeClass('hidden');
+        } else {
+          $('#itemDetail.screen #frm_admin').addClass('hidden');
+        }
+        $('#itemDetail.screen content').html(itemDetailTpl(obj));
+        app.showScreen($('#itemDetail.screen'));
+        r.resolve();
+      }).promise();
+    },
+    getData : function(ParseItem, forceDataUpdate){
+      if(typeof forceDataUpdate == "undefined"){
+        forceDataUpdate = false;
+      }
+      return $.Deferred(function(getData){
+        if(forceDataUpdate || user.wishListUpdatedAt <= new Date().subMinutes(15)){
+          ParseItem.fetch({
+            success: function(updatedItem){
+              getData.resolve(updatedItem);
+            },
+            error: function(error){
+              app.e("Whoops! I couldn't update this item's data.  BUT, I have old date that I can show you.");
+              app.l(JSON.stringify(error),2);
+              getData.resolve(ParseItem);
+            }
+          });
+        } else {
+          getData.resolve(ParseItem);
+        }
+      }).promise();
+    }
   },
   personWishList : {
     init : function(){},
@@ -1949,6 +2013,7 @@ var user = {
     }).promise();
   },
   currentEvent : {},
+  currentItem : {},
   currentAttendanceID : "",
   wishList : [],
   wishListUpdatedAt : new Date(2000,01,01),

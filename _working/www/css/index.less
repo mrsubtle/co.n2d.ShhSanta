@@ -72,6 +72,7 @@
     color: lighten(@cancelColorLight,30%);
   }
   button.delete {
+    background-color: @appBG1;
     font-family: @fontFamilyHeader;
     color: @cancelColor;
   }
@@ -1211,6 +1212,17 @@
           font-size: 0.8em;
           color: @mainColorLight;
         }
+        loader-container {
+          display: none;
+          position: absolute;
+          top:0; left:0;
+          bottom:0; right: 0;
+          background-color: rgba(red(@appBG),green(@appBG),blue(@appBG),0.75);
+          //border-radius: 0.2rem;
+          .loader {
+            .flexItem;
+          }
+        }
         &.empty {
           padding: 1rem 1rem 2rem 1rem;
           text-align: center;
@@ -1220,7 +1232,61 @@
           background-color: transparent;
           border: none;
         }
+        &.loading {
+          loader-container {
+            .flexContainer;
+          }
+        }
       }
+    }
+  }
+
+  #itemDetail.screen {
+    content {
+      display: block;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0 0 (@touchBase * 2) 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    item {
+      display: block;
+      position: relative;
+      width: 100%;
+      height: 50vh;
+      padding: 0; margin: 0;
+      border: none;
+      border-bottom: @borderStandard darken(@appBG,2%);
+      background-color: @tintColorLight;
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      background-size: cover;
+      name {
+        display: block;
+        position: absolute;
+        bottom: 0; left: 0;
+        padding: 1rem; margin: 0;
+        border: none;
+        color: @appBG;
+        font-family: @fontFamilyM;
+        font-size: 1.5rem;
+        text-shadow: 0 2px 10px rgba(red(@mainColorDark),green(@mainColorDark),blue(@mainColorDark),0.67);
+      }
+    }
+    fieldset {
+      margin: 1rem 0;
+    }
+    form#frm_admin {
+      display: block;
+      position: absolute;
+      padding: 0; margin: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
     }
   }
 

@@ -112,42 +112,9 @@
       </section>
       <section id="itemDetail" class="screen hidden" data-title="Item Details" data-nav="true" data-nav-icon="btn_back_itemDetail" data-tabbar="false">
         <!-- //ITEM DETAIL HERE// -->
-        <content class="tab-content">
-          <div id="detail" class="tab-target"></div>
-          <div id="attendance" class="tab-target">
-            <form id="sendInvitation" class="hidden">
-              <list-header class="flexContainer flexContainerRow">
-                <span class="flexItem flexItemElastic label">Invite someone new...</span>
-                <span class="flexItem"></span>
-              </list-header>
-              <input id="txt_email" type="email" placeholder="email@server.net" required>
-              <button id="btn_send" type="submit" class="action">Send the invite!</button>
-            </form>
-            <list-header class="flexContainer flexContainerRow">
-              <span class="flexItem flexItemElastic label">In like Finn</span>
-              <span class="flexItem attendanceGoing count">0</span>
-            </list-header>
-            <ul id="attendanceGoing"></ul>
-            <list-header class="flexContainer flexContainerRow">
-              <span class="flexItem flexItemElastic label">Party Poopers</span>
-              <span class="flexItem attendanceNotGoing count">0</span>
-            </list-header>
-            <ul id="attendanceNotGoing"></ul>
-            <list-header class="flexContainer flexContainerRow">
-              <span class="flexItem flexItemElastic label">Who the heck knows?</span>
-              <span class="flexItem attendanceUnknown count">0</span>
-            </list-header>
-            <ul id="attendanceUnknown"></ul>
-          </div>
+        <content>
+          <div class="loader">Loading...</div>
         </content>
-        <tab-group>
-          <tab class="active" data-for="detail">
-            <label>Detail</label><badge class="hidden"></badge>
-          </tab>
-          <tab data-for="attendance">
-            <label>Attendance</label>
-          </tab>
-        </tab-group>
         <form id="frm_admin" class="hidden">
           <input type="hidden" id="txt_iid" class="hidden">
           <button id="btn_delete_item" class="delete" for="frm_admin" type="submit">Delete item</button>
@@ -526,10 +493,11 @@
       </li>
     </script>
     <script type="text/template" id="tpl_wishList_listItem">
-      <li id="<%= objectId %>" class="touchable">
+      <li id="<%= id %>" class="item touchable" data-id="<%= id %>">
         <i class="itemPhoto" style="background-image:url('<%= photoURL %>')"></i>
         <label class="name"><%= name %></label>
         <label class="description"><%= description %></label>
+        <loader-container><% var lt = _.template($('#tpl_loading').html()); print(lt({}));  %></loader-container>
       </li>
     </script>
     <script type="text/template" id="tpl_wishList_listItem_empty">
@@ -539,6 +507,74 @@
     </script>
     <script type="text/template" id="tpl_item_create_photo">
       <img src="<%= uri %>" width="1024" height="1024" align="absmiddle">
+    </script>
+    <script type="text/template" id="tpl_itemDetail">
+      <item id="<%= id %>"
+        style="background-image: url(<%= photoURL %>);"
+        data-ownerid="<%= oid %>">
+      </item>
+      <fieldset>
+        <field class="flexContainer flexContainerRow">
+          <label for="txt_name" class="flexItem">Name</label>
+          <input type="text"
+            id="txt_name"
+            placeholder="Doo-dad"
+            class="flexItem flexItemElastic"
+            value="<%= name %>"
+            <% if(!isOwner){ print("readonly"); } %>
+            data-original="<%= name %>"
+            data-dirty="false">
+        </field>
+        <field class="flexContainer flexContainerRow">
+          <label for="txt_description" class="flexItem">Description</label>
+          <input type="text"
+            id="txt_description"
+            placeholder="It's waaay cool"
+            class="flexItem flexItemElastic"
+            value="<%= description %>"
+            <% if(!isOwner){ print("readonly"); } %>
+            data-original="<%= description %>"
+            data-dirty="false">
+        </field>
+      </fieldset>
+      <fieldset>
+        <field class="flexContainer flexContainerRow">
+          <label for="txt_upc" class="flexItem">UPC</label>
+          <input type="text"
+            id="txt_upc"
+            placeholder="0123456789"
+            class="flexItem flexItemElastic"
+            value="<%= upc %>"
+            <% if(!isOwner){ print('readonly'); } %>
+            data-original="<%= upc %>"
+            data-dirty="false">
+        </field>
+      </fieldset>
+      <fieldset>
+        <field class="flexContainer flexContainerRow">
+          <label for="txt_lastSeenAt" class="flexItem">Last seen at</label>
+          <input type="text"
+            id="txt_lastSeenAt"
+            placeholder="Walmart maybe?"
+            class="flexItem flexItemElastic"
+            value="<%= lastSeenAt %>"
+            <% if(!isOwner){ print("readonly"); } %>
+            data-original="<%= lastSeenAt %>"
+            data-dirty="false">
+        </field>
+        <field class="flexContainer flexContainerRow">
+          <label for="txt_estPrice" class="flexItem">Estimated price</label>
+          <input type="text"
+            id="txt_estPrice"
+            placeholder="$ 0"
+            class="flexItem flexItemElastic"
+            value="<%= estPrice %>"
+            pattern="[0-9]*"
+            <% if(!isOwner){ print("readonly"); } %>
+            data-original="<%= estPrice %>"
+            data-dirty="false">
+        </field>
+      </fieldset>
     </script>
     <script type="text/template" id="tpl_start_listItem">
       <li
