@@ -136,10 +136,12 @@
           <div id="detail" class="tab-target"></div>
           <div id="attendance" class="tab-target">
             <form id="sendInvitation" class="hidden">
-              <fieldset>
-                <input id="txt_email" type="email" placeholder="email@server.net" required>
-                <button id="btn_send" type="submit" class="action">Send Invitation</button>
-              </fieldset>
+              <list-header class="flexContainer flexContainerRow">
+                <span class="flexItem flexItemElastic label">Invite someone new...</span>
+                <span class="flexItem"></span>
+              </list-header>
+              <input id="txt_email" type="email" placeholder="email@server.net" required>
+              <button id="btn_send" type="submit" class="action">Send the invite!</button>
             </form>
             <list-header class="flexContainer flexContainerRow">
               <span class="flexItem flexItemElastic label">In like Finn</span>
@@ -166,6 +168,10 @@
             <label>Attendance</label>
           </tab>
         </tab-group>
+        <form id="frm_rsvp" class="hidden">
+          <input type="hidden" id="txt_aid" class="hidden">
+          <button id="btn_invitation_rsvp" class="cancel" for="frm_rsvp" type="submit">RSVP</button>
+        </form>
       </section>
       <section id="item" class="screen hidden">
       </section>
@@ -231,6 +237,17 @@
           </ul>
           <ul class="lower">
             <li id="btn_cancel_attendance" class="touchable cancel">Cancel</li>
+          </ul>
+        </container>
+      </article>
+      <article id="as_eventDetail_invitation_rsvp" class="actionSheet hidden">
+        <container class="flexContainer flexContainerColumnEnd">
+          <ul class="upper">
+            <li id="btn_accept" class="touchable primary">Accept invitation</li>
+            <li id="btn_decline" class="touchable">Decline (lol party pooper)</li>
+          </ul>
+          <ul class="lower">
+            <li id="btn_cancel_rsvp" class="touchable cancel">Cancel</li>
           </ul>
         </container>
       </article>
@@ -389,7 +406,7 @@
       <div class="loader">Loading...</div>
     </script>
     <script type="text/template" id="tpl_events_listItem">
-      <li class="event touchable" data-id="<%= id %>">
+      <li class="event touchable" data-aid="<%= aid %>" data-id="<%= id %>">
         <card>
           <label id="eventDate" class="date">
             <%= moment(date).fromNow() %>
@@ -408,7 +425,7 @@
       </li>
     </script>
     <script type="text/template" id="tpl_invitation_listItem">
-      <li class="invitation touchable" data-id="<%= id %>">
+      <li class="invitation touchable" data-id="<%= id %>" data-aid="<%= aid %>">
         <card>
           <label id="eventDate" class="date">
             <%= moment(date).fromNow() %>
@@ -427,19 +444,33 @@
       </li>
     </script>
     <script type="text/template" id="tpl_eventDetail">
-      <form id="eventDetail" data-dirty="false" data-id="<%= id %>">
-        <fieldset>
-          <input type="text" id="txt_title" placeholder="Event title" class="noEdit" value="<%= title %>" <% if(!isEventAdmin){ print("readonly"); } %> data-original="<%= title %>" data-dirty="false">
-          <input type="datetime-local" id="txt_date" placeholder="Event date" class="noEdit" value="<%= dateString %>" <% if(!isEventAdmin){ print('readonly'); } %>  data-original="<%= dateString %>" data-dirty="false">
-        </fieldset>
-        <fieldset>
-          <input type="text" id="txt_spendLimit" placeholder="Spending limit" class="topBorder noEdit" value="<%= spendLimit %>" pattern="[0-9]*" <% if(!isEventAdmin){ print("readonly"); } %>  data-original="<%= spendLimit %>" data-dirty="false">
-          <textarea id="txt_description" placeholder="Event description" class="noEdit" <% if(!isEventAdmin){ print("readonly"); } %>  data-original="<%= description %>" data-dirty="false"><%= description %></textarea>
-        </fieldset>
+      <form id="eventDetail" data-dirty="false" data-id="<%= id %>" data-owner="<%= isEventAdmin %>">
+        <list-header class="flexContainer flexContainerRow">
+          <span class="flexItem flexItemElastic label">The formalities...</span>
+          <span class="flexItem"></span>
+        </list-header>
+        <field class="flexContainer flexContainerRow">
+          <label for="txt_title" class="flexItem">What</label>
+          <input type="text" id="txt_title" placeholder="Event title" class="flexItem flexItemElastic" value="<%= title %>" <% if(!isEventAdmin){ print("readonly"); } %> data-original="<%= title %>" data-dirty="false">
+        </field>
+        <field class="flexContainer flexContainerRow">
+          <label for="txt_date" class="flexItem">When</label>
+          <input type="datetime-local" id="txt_date" placeholder="Event date" class="flexItem flexItemElastic" value="<%= dateString %>" <% if(!isEventAdmin){ print('readonly'); } %>  data-original="<%= dateString %>" data-dirty="false">
+        </field>
+        <field class="flexContainer flexContainerRow">
+          <label for="txt_spendLimit" class="flexItem">Spend limit</label>
+          <input type="text" id="txt_spendLimit" data-label="Spend limit" placeholder="Spending limit" class="flexItem flexItemElastic topBorder" value="<%= spendLimit %>" pattern="[0-9]*" <% if(!isEventAdmin){ print("readonly"); } %>  data-original="<%= spendLimit %>" data-dirty="false">
+        </field>
+        
+        <list-header class="flexContainer flexContainerRow">
+          <span class="flexItem flexItemElastic label">The deets, yo...</span>
+          <span class="flexItem"></span>
+        </list-header>
+        <textarea id="txt_description" placeholder="Event description" class="" <% if(!isEventAdmin){ print("readonly"); } %>  data-original="<%= description %>" data-dirty="false"><%= description %></textarea>
       </form>
     </script>
     <script type="text/template" id="tpl_eventDetail_attendanceItem">
-      <li class="touchable attendee" data-id="<%= id %>" data-aid="<%= aid %>">
+      <li class="touchable attendee" data-id="<%= id %>" data-aid="<%= aid %>" data-status="<%= status %>" data-owner="<%= isOwner %>">
         <% if(isOwner){ %><div class="ownerDot">party boss</div><% } %>
         <div class="name <% if(isOwner){ print('owner'); } %>"><%= name %></div>
         <div class="email"><%= email %></div>

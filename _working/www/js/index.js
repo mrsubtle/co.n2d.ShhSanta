@@ -85,7 +85,7 @@ var as = {
           var attendanceQuery = new Parse.Query(Attendance);
           attendanceQuery.get(attendanceObjectID, {
             success: function(attendanceObject) {
-              attendanceObject..destroy({
+              attendanceObject.destroy({
                 success: function(myObject) {
                   // The object was deleted from the Parse Cloud.
                   da.resolve();
@@ -101,6 +101,117 @@ var as = {
               app.e("Oh no! I couldn't find that invitation to recall it! Try again in a few minutes.");
               app.l(JSON.stringify(error),2);
               da.reject(error);
+            }
+          });
+        }
+      }).promise();
+    }
+  },
+  as_eventDetail_invitation_rsvp : {
+    el : "#as_eventDetail_invitation_rsvp",
+    hide : function(){
+      this.remE();
+      $('group.actionSheetContainer').one('webkittransitionend transitionend',function(){
+        $(as.as_eventDetail_invitation_rsvp.el).addClass('hidden');
+      });
+      $('group.actionSheetContainer').addClass('actionSheetOff');
+      $('.app').removeClass('tilt');
+    },
+    show : function(){
+      $('.app').addClass('tilt');
+      as.as_eventDetail_invitation_rsvp.remE().done(as.as_eventDetail_invitation_rsvp.addE().done(as.as_eventDetail_invitation_rsvp.render));
+    },
+    addE : function(){
+      return $.Deferred(function(a){
+        $(as.as_eventDetail_invitation_rsvp.el + ' #btn_accept').hammer().on('tap', function(){
+          as.as_eventDetail_invitation_rsvp.doAccept(user.currentAttendanceID).done(function(){
+            console.log('Accepted');
+            pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
+              as.as_eventDetail_invitation_rsvp.hide();
+              pages.eventDetail.renderAttendance(attendanceArray);
+            });
+          });
+        });
+        $(as.as_eventDetail_invitation_rsvp.el + ' #btn_decline').hammer().on('tap', function(){
+          as.as_eventDetail_invitation_rsvp.doDecline(user.currentAttendanceID).done(function(){
+            console.log('Declined');
+            pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
+              as.as_eventDetail_invitation_rsvp.hide();
+              pages.eventDetail.renderAttendance(attendanceArray);
+            });
+          });
+        });
+        $(as.as_eventDetail_invitation_rsvp.el + ' #btn_cancel_rsvp').hammer().on('tap', function(){
+          as.as_eventDetail_invitation_rsvp.hide();
+        });
+        a.resolve();
+      }).promise();
+    },
+    remE : function(){
+      return $.Deferred(function(r){
+        $(as.as_eventDetail_invitation_rsvp.el + ' #btn_accept').hammer().off('tap');
+        $(as.as_eventDetail_invitation_rsvp.el + ' #btn_decline').hammer().off('tap');
+        $(as.as_eventDetail_invitation_rsvp.el + ' #btn_cancel_rsvp').hammer().off('tap');
+        r.resolve();
+      }).promise();
+    },
+    render : function(){
+      //unhide the appropriate as content
+      $(as.as_eventDetail_invitation_rsvp.el).removeClass('hidden');
+      //animate modal container
+      $('group.actionSheetContainer').removeClass('actionSheetOff');
+    },
+    doAccept : function(attendanceObjectID){
+      return $.Deferred(function(da){
+        if (typeof attendanceObjectID != "undefined") {
+          var Attendance = Parse.Object.extend("Attendance");
+          var attendanceQuery = new Parse.Query(Attendance);
+          attendanceQuery.get(attendanceObjectID, {
+            success: function(attendanceObject) {
+              attendanceObject.set('status', 1);
+              attendanceObject.save({
+                success: function(myObject) {
+                  da.resolve();
+                },
+                error: function(error) {
+                  app.e("Oh no! I couldn't accept the invitation! Try again in a few minutes.");
+                  app.l(JSON.stringify(error),2);
+                  da.reject(error);
+                }
+              });
+            },
+            error: function(error) {
+              app.e("Oh no! I couldn't find that invitation to accept it! Try again in a few minutes.");
+              app.l(JSON.stringify(error),2);
+              da.reject(error);
+            }
+          });
+        }
+      }).promise();
+    },
+    doDecline : function(attendanceObjectID){
+      return $.Deferred(function(dd){
+        if (typeof attendanceObjectID != "undefined") {
+          var Attendance = Parse.Object.extend("Attendance");
+          var attendanceQuery = new Parse.Query(Attendance);
+          attendanceQuery.get(attendanceObjectID, {
+            success: function(attendanceObject) {
+              attendanceObject.set('status', 1);
+              attendanceObject.save({
+                success: function(myObject) {
+                  dd.resolve();
+                },
+                error: function(error) {
+                  app.e("Oh no! I couldn't decline the invitation! Try again in a few minutes.");
+                  app.l(JSON.stringify(error),2);
+                  dd.reject(error);
+                }
+              });
+            },
+            error: function(error) {
+              app.e("Oh no! I couldn't find that invitation to decline! Try again in a few minutes.");
+              app.l(JSON.stringify(error),2);
+              dd.reject(error);
             }
           });
         }
@@ -897,6 +1008,7 @@ var pages = {
         });
         $('#events.screen #eventList li').hammer().on('tap',function(){
           var eID = $(this).data('id');
+          user.currentAttendanceID = $(this).data('aid');
           $(this).addClass('loading');
           app.l('Tapped Attendance ID: '+eID,1);
           var ParseAttendance = _.find(user.eventList, function(obj) {
@@ -906,6 +1018,7 @@ var pages = {
         });
         $('#events.screen #invitationList li').hammer().on('tap',function(){
           var eID = $(this).data('id');
+          user.currentAttendanceID = $(this).data('aid');
           $(this).addClass('loading');
           app.l('Tapped Attendance ID: '+eID,1);
           var ParseAttendance = _.find(user.eventList, function(obj) {
@@ -944,6 +1057,7 @@ var pages = {
       $('#events.screen #invitationList').html("");
       _.each(user.eventList, function(o,i,a){
         var object = {
+          aid: o.id,
           id: o.get('event').id,
           date: o.get('event').get('eventAt'),
           title: o.get('event').get('title'),
@@ -986,6 +1100,8 @@ var pages = {
       //this function assumes you are passing the actual event object to render/query.
       //NOT simply the ID
       app.l('Init detail for eventID: '+ParseEventObjectToLoad.id,1);
+      //set the attendance ID for the RSVP button to work
+      $('#eventDetail.screen #frm_rsvp #txt_aid').val(user.currentAttendanceID);
       if(typeof ParseEventObjectToLoad != "undefined"){
         user.currentEvent = ParseEventObjectToLoad;
         pages.eventDetail.getAttendanceForEvent(ParseEventObjectToLoad).done(function(attendanceArray){
@@ -994,7 +1110,7 @@ var pages = {
           //add attendance to event object
           ParseEventObjectToLoad.attendance = attendanceArray;
           setTimeout(function(){
-            $('#eventDetail.screen li').removeClass('loading');
+            $('#event.screen li').removeClass('loading');
             pages.eventDetail.tabCheck();
             pages.eventDetail.renderAttendance(attendanceArray);
             pages.eventDetail.render(ParseEventObjectToLoad);
@@ -1016,10 +1132,12 @@ var pages = {
                 switch(buttonIndex){
                   case 1:
                     pages.eventDetail.updateEvent(eventObject).done(function(){
+                      pages.events.render();
                       app.showScreen($('#events.screen'));
                     });
                     break;
                   case 2:
+                    pages.events.render();
                     app.showScreen($('#events.screen'));
                     break;
                   default:
@@ -1029,6 +1147,7 @@ var pages = {
               ["Yes please!","No thanks."]//[buttonNames]
             );
           } else {
+            pages.events.render();
             app.showScreen($('#events.screen'));
           }
           //app.showScreen($('#events.screen'));
@@ -1081,25 +1200,94 @@ var pages = {
           pages.eventDetail.tabCheck();
         });
         $('#eventDetail.screen ul li.attendee').hammer().on('tap', function(){
-          app.l('Loading actionsheet for Attendance: '+$(this).data('aid'),1);
-          user.currentAttendanceID = $(this).data('aid');
-          as.as_eventDetail_invitation.show();
+          if ($(this).data('status') != 2 && user.currentEvent.get('createdBy').id == Parse.User.current().id) {
+            app.l('Loading actionsheet for Attendance: '+$(this).data('aid'),1);
+            user.currentAttendanceID = $(this).data('aid');
+            as.as_eventDetail_invitation.show();
+          }
+        });
+        $('#eventDetail.screen #frm_rsvp').on('submit', function(e){
+          user.currentAttendanceID = $('#eventDetail.screen #frm_rsvp #txt_aid').val();
+          navigator.notification.confirm(
+            "Are you goin', or are you a party pooper? LOL",//message
+            function(buttonIndex){
+              //buttonIndex is 1-based
+              //alert was dismissed
+              switch(buttonIndex){
+                case 1:
+                  var Attendance = Parse.Object.extend("Attendance");
+                  var attendanceQuery = new Parse.Query(Attendance);
+                  attendanceQuery.get(user.currentAttendanceID, {
+                    success: function(attendanceObject) {
+                      attendanceObject.set('status', 1);
+                      attendanceObject.save({
+                        success: function(myObject) {
+                          app.l('Accepted attendance ID: '+user.currentAttendanceID);
+                          pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
+                            //update the attendance list
+                            pages.eventDetail.renderAttendance(attendanceArray);
+                          });
+                        },
+                        error: function(error) {
+                          app.e("Oh no! I couldn't accept the invitation! Try again in a few minutes.");
+                          app.l(JSON.stringify(error),2);
+                        }
+                      });
+                    },
+                    error: function(error) {
+                      app.e("Oh no! I couldn't find that invitation to accept it! Try again in a few minutes.");
+                      app.l(JSON.stringify(error),2);
+                    }
+                  });
+                  break;
+                case 2:
+                  var Attendance = Parse.Object.extend("Attendance");
+                  var attendanceQuery = new Parse.Query(Attendance);
+                  attendanceQuery.get(user.currentAttendanceID, {
+                    success: function(attendanceObject) {
+                      attendanceObject.set('status', 0);
+                      attendanceObject.save({
+                        success: function(myObject) {
+                          app.l('Declined attendance ID: '+user.currentAttendanceID);
+                          pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
+                            //update the attendance list
+                            pages.eventDetail.renderAttendance(attendanceArray);
+                          });
+                        },
+                        error: function(error) {
+                          app.e("Oh no! I couldn't decline the invitation! Try again in a few minutes.");
+                          app.l(JSON.stringify(error),2);
+                          da.reject(error);
+                        }
+                      });
+                    },
+                    error: function(error) {
+                      app.e("Oh no! I couldn't find that invitation to decline it! Try again in a few minutes.");
+                      app.l(JSON.stringify(error),2);
+                      da.reject(error);
+                    }
+                  });
+                  break;
+                default:
+              }
+            },//callback
+            'RSVP',//[title]
+            ["You bet, I'm going!","Not going (boooo)"]//[buttonNames]
+          );
+          e.preventDefault();
         });
         a.resolve();
       }).promise();
     },
     remE : function(){
       return $.Deferred(function(r){
-        //DEBUG
-        console.log('Start remE');
         app.remE();
         $('nav#top #btn_back_eventDetail').hammer().off('tap');
         $('#eventDetail.screen form#eventDetail').off('submit');
         $('#eventDetail.screen form#eventDetail input, #eventDetail.screen form#eventDetail textarea').off('propertychange change click keyup input paste');
         $('#eventDetail.screen tab-group tab').hammer().off('tap');
         $('#eventDetail.screen ul li.attendee').hammer().off('tap');
-        //DEBUG
-        console.log('End remE');
+        $('#eventDetail.screen #frm_rsvp').off('submit');
         r.resolve();
       }).promise();
     },
@@ -1112,8 +1300,6 @@ var pages = {
       });
     },
     render : function(retrievedParseEventData){
-      //DEBUG
-      console.log('Start render');
       //check if current user is event admin
       var isAdmin = false;
       var eventAdmins = [];
@@ -1138,8 +1324,10 @@ var pages = {
       var edFormTpl = _.template( $('#tpl_eventDetail').html() );
       $('#eventDetail.screen #detail.tab-target').html( edFormTpl(obj) );
       if (isAdmin) {
+        $('#eventDetail.screen #frm_rsvp').addClass('hidden');
         $('#eventDetail.screen #attendance form#sendInvitation').removeClass('hidden');
       } else {
+        $('#eventDetail.screen #frm_rsvp').removeClass('hidden');
         $('#eventDetail.screen #attendance form#sendInvitation').addClass('hidden');
       }
       pages.eventDetail.remE().done(function(){
@@ -1147,8 +1335,6 @@ var pages = {
           app.showScreen($('#eventDetail.screen'));
         });
       });
-      //DEBUG
-      console.log('End render');
     },
     getAttendanceForEvent : function(ParseEvent){
       app.l('Retreiving Attendance for eventID: '+ParseEvent.id,1);
@@ -1199,6 +1385,7 @@ var pages = {
             id : "0",
             isOwner : o.get('status') == 2 ? true : false,
             name : null,
+            status : o.get('status'),
             email : o.get('email')
           };
           if (typeof o.get('attendee') != "undefined"){

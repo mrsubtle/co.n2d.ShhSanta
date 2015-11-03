@@ -270,6 +270,35 @@
       border-top: @borderStandard darken(@appBG1,10%);
     }
   }
+  field {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 0; margin: 0;
+    background-color: @appBG;
+    border: none;
+    border-bottom: @borderStandard darken(@appBG,2%);
+    label {
+      margin: 0 1rem;
+      color: @mainColorLight;
+      font-family: @fontFamily;
+      font-size: @inputFontSize;
+      border: none;
+    }
+    input {
+      text-align: right;
+      padding-right: 1rem;
+      background-color: transparent;
+      color: @tintColor;
+      border: none;
+      &[readonly] {
+        color: @mainColorMedium
+      }
+    }
+    input:focus {
+      background-color: transparent;
+    }
+  }
   .good {
     .greenColor;
   }
@@ -1119,19 +1148,23 @@
       input.topBorder {
         border-top: @borderStandard darken(@appBG, 2%);
       }
-      input[type="text"], textarea {
+      textarea {
         text-align: left;
+        color: @tintColor;
         padding-left: 1rem;
         border-bottom: @borderStandard darken(@appBG, 2%);
+        &[readonly]{
+          color: @mainColorMedium;
+        }
       }
-      input[type="datetime-local"] {
-        text-align: right;
-        padding-right: 1rem;
-        border-bottom: @borderStandard darken(@appBG, 2%);
-      }
-      input.noEdit, textarea.noEdit {
-        -webkit-user-select: none;
-      }
+    }
+    form#frm_rsvp {
+      display: block;
+      position: absolute;
+      padding: 0; margin: 0;
+      bottom: 0;
+      left: 0;
+      width: 100%;
     }
   }
 
@@ -1322,6 +1355,11 @@
           background-color: @appBG1;
           color: @mainColorDark;
           font-size: 1.1rem;
+           font-family: @fontFamily;
+          &.primary {
+            color: @tintColor;
+            font-family: @fontFamilyM;
+          }
           &.cancel {
             color: @cancelColor;
             font-family: @fontFamilyB;
