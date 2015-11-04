@@ -296,9 +296,11 @@ var modals = {
           var lblO = $(modals.mdl_item_create.el + ' #frm_item_create #lbl_barcodeStatus');
           var tmpLbl = lblO.html();
           lblO.html( $('#tpl_loading').html() );
+          ActivityIndicator.show("Looking up UPC");
           //scan that code!
           cordova.plugins.barcodeScanner.scan(
             function (result) {
+              ActivityIndicator.hide();
               if(result.cancelled == 0){
                 lblO.html('...successful scan...');
                 $('#frm_item_create #txt_upc').val(result.text);
@@ -327,10 +329,9 @@ var modals = {
               } else {
                 lblO.html(tmpLbl);
               }
-              //DEBUG
-              console.log(result);
             },
             function (error) {
+              ActivityIndicator.hide();
               lblO.html(tmpLbl);
               app.e("Oops! Scan seems to have failed, but don't worry - we'll fix it. Eventiually.");
               //DEBUG
@@ -400,7 +401,7 @@ var modals = {
     },
     setData : function(){
       user.tx.item = true;
-      ActivityIndicator.show("Saving")
+      ActivityIndicator.show("Saving");
       var Item = Parse.Object.extend("Item");
       var newItem = new Item();
       newItem.set('owner',Parse.User.current());
@@ -437,12 +438,14 @@ var modals = {
       } else {
         newItem.save(null,{
           success : function(newItem){
+            ActivityIndicator.hide();
             user.tx.item = false;
             user.wishList.push(newItem);
             pages.wishList.init();
             modals.mdl_item_create.hide();
           },
           error : function(newItem,error){
+            ActivityIndicator.hide();
             user.tx.item = false;
             app.e("Couldn't save that item.  We'll look into it ASAP!");
             app.l(JSON.stringify(error,null,2),2);
