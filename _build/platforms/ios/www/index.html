@@ -21,6 +21,7 @@
           <i id="btn_back" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
           <i id="btn_back_eventDetail" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
           <i id="btn_back_itemDetail" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
+          <i id="btn_back_personWishList" class="hidden clear touchable"><img src="img/ico/ico_nav_back-512.svg"></i>
           <i id="btn_addItem" class="hidden clear touchable"><img src="img/ico/ico_nav_add-512.svg"></i>
           <i id="btn_addEvent" class="hidden clear touchable"><img src="img/ico/ico_nav_add-512.svg"></i>
         </div>
@@ -101,8 +102,10 @@
           <div class="loader">Loading...</div>
         </ul>
       </section>
-      <section id="personWishList" class="screen hidden" data-title="Wish List" data-nav="true" data-nav-icon="btn_back" data-tabbar="true">
-        something
+      <section id="personWishList" class="screen hidden" data-title="Wish List" data-nav="true" data-nav-icon="btn_back_personWishList" data-tabbar="true">
+        <ul id="wishList">
+          <div class="loader">Loading...</div>
+        </ul>
       </section>
       <section id="wishList" class="screen hidden" data-title="Your Wish List" data-nav="true" data-nav-icon="btn_addItem" data-tabbar="true">
         <ul id="wishList">
@@ -498,7 +501,7 @@
     </script>
     <script type="text/template" id="tpl_wishList_listItem">
       <li id="<%= id %>" class="item touchable" data-id="<%= id %>">
-        <i class="itemPhoto" style="background-image:url('<%= photoURL %>')"></i>
+        <i class="itemPhoto" style="background-image:url('<% if (photoURL == '') { print('img/ico/ico_noImage.svg'); } else { print(photoURL); } %>')"></i>
         <label class="name"><%= name %></label>
         <label class="description"><%= description %></label>
         <loader-container><% var lt = _.template($('#tpl_loading').html()); print(lt({}));  %></loader-container>
@@ -584,22 +587,17 @@
     </script>
     <script type="text/template" id="tpl_start_listItem">
       <li
-        id="<%= objectId %>"
-        class="<% if((isDoneShopping == true) && (isDoneWrapping == false)){print('shoppingDone ');} else if((isDoneShopping == false) && (isDoneWrapping == true)){print('wrappingDone ');} else if((isDoneShopping == true) && (isDoneWrapping == true)){print('allDone ');} %>"
+        data-id="<%= recipient.id %>"
+        class="recipient <% if((isDoneShopping == true) && (isDoneWrapping == false)){print('shoppingDone ');} else if((isDoneShopping == false) && (isDoneWrapping == true)){print('wrappingDone ');} else if((isDoneShopping == true) && (isDoneWrapping == true)){print('allDone ');} %>"
         >
         <div
-          id="<%= objectId %>"
           class="front touchable"
           >
-          <!--<i class="bg" style="background-image:url('<%= recipientPicture.m %>');"></i>-->
-          <i class="avatar" style="background-image:url('<%= recipientPicture.m %>');"></i>
-          <label class="main"><%= recipientDisplayName %></label>
-          <label class="sub"><%= eventTitle %></label>
-          <label class="count"><%= moment(eventAt).fromNow() %></label>
+          <label class="main"><%= recipient.get('displayName') %></label>
+          <label class="sub"><%= event.get('title') %></label>
+          <label class="count"><%= moment(event.get('eventAt')).fromNow() %></label>
         </div>
-        <div class="back clear">
-          stuff
-        </div>
+        <loader-container><% var lt = _.template($('#tpl_loading').html()); print(lt({}));  %></loader-container>
       </li>
     </script>
     <script type="text/template" id="tpl_start_listItem_empty">

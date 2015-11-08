@@ -809,49 +809,59 @@ var pages = {
   },
   start : {
     init : function(forceDataUpdate){
-      pages.start.getData(forceDataUpdate).done(function(){
-        pages.start.render().done(function(){
-          pages.start.remE().then(
-            pages.start.addE
-          ).then(
-            app.remE().then(app.addE)
-          );
-        })
+      pages.start.getData(forceDataUpdate).done(function(santaListArray){
+        pages.start.render(santaListArray);
       });
       pages.events.getData().done(function(){
         pages.events.render();
       });
     },
     addE : function(){
+      app.l('#start.screen addE');
       return $.Deferred(function(a){
-        $('#santaList li').hammer().on('tap',function(e){
-          app.meta.currentPersonObjectID = $(this).attr('id');
-          pages.personWishList.getData(app.showScreen($('section#personWishList'),false),function(){
-            app.l('Failed to get person data',2);
+        app.addE();
+        $('#start.screen #santaList li.recipient').on('click',function(e){
+          app.l('Tapped '+$(this).data('id'));
+          var ID = $(this).data('id');
+          $(this).addClass('loading');
+          var ParseSanta = _.find(user.santaList, function(obj) {
+              return obj.get('recipient').id == ID; 
           });
+          user.currentRecipient = ParseSanta.get('recipient');
+          pages.personWishList.init(user.currentRecipient);
         });
         a.resolve();
       }).promise();
     },
     remE : function(){
       return $.Deferred(function(r){
-        $('#santaList li .front').hammer().off('tap');
+        app.remE();
+        $('#start.screen #santaList li').off('click');
         r.resolve();
       }).promise();
     },
-    render: function(){
+    render: function(santaListArray){
       app.l('Render santa list',1);
       return $.Deferred(function(render){
-        if(user.santaList.length > 0){
-          $('.screen#start #santaList').html("");
-          $.each(user.santaList,function(i,v){
+        if(santaListArray.length > 0){
+          $('#start.screen #santaList').html("");
+          _.each(santaListArray,function(o,i,a){
+            var obj = {
+              id : o.id,
+              isDoneShopping : o.get('isDoneShopping'),
+              isDoneWrapping : o.get('isDoneWrapping'),
+              recipient : o.get('recipient'),
+              event : o.get('event')
+            };
             var template = _.template( $('#tpl_start_listItem').html() );
-            $('.screen#start #santaList').append(template(v));
+            $('.screen#start #santaList').append(template(obj));
           });
         } else {
           var emptyTpl = _.template( $('#tpl_start_listItem_empty').html() );
           $('.screen#start #santaList').html( emptyTpl({}) );
         }
+        //app.remE().done(app.addE);
+        pages.start.remE().done(pages.start.addE);
         render.resolve();
       }).promise();
     },
@@ -863,7 +873,7 @@ var pages = {
       app.l('Getting santa list items...',1);
       return $.Deferred(function(getData){
         user.getSantas(forceDataUpdate).done(function(santaList){
-          getData.resolve();
+          getData.resolve(santaList);
         }).fail(function(error){
           getData.reject(error);
         });
@@ -1748,29 +1758,72 @@ var pages = {
     }
   },
   personWishList : {
-    init : function(){},
-    addE : function(){},
-    remE : function(){},
-    render : function(){},
-    getData : function(successCallback,failCallack){
-      var url = "js/person-"+app.meta.currentPersonObjectID+".json";
-      $.getJSON(url,function(d){
-        //success
-      }).done(function(d){
-        //anal-retention success
-        console.log(d);
-        if(successCallback){
-          successCallback();
-        }
-      }).fail(function(d){
-        //failover
-        app.l(d,2);
-        if(failCallack){
-          failCallack();
-        }
-      }).always(function(){
-        //do this no matter what
+    init : function(ParseRecipient){
+      var loadTime = new Date();
+      //this function assumes you are passing the actual Santas object to render/query.
+      //NOT simply the ID
+      app.l('Loading detail for Recipient ID: '+ParseRecipient.id);
+      $('#personWishList.screen').data('title', ParseRecipient.get('firstName')+"'s Wish List");
+      pages.personWishList.getData(ParseRecipient).done(function(wishListArray){
+        app.l('Done loading detail for Recipient ID: '+ParseRecipient.id);
+        var doneTime = new Date();
+        var interval = (1000 - (doneTime-loadTime));
+        setTimeout(function(){
+          $('#start.screen li').removeClass('loading');
+          pages.personWishList.render(wishListArray);
+        },interval < 0 ? 0 : interval);
       });
+    },
+    addE : function(){
+      return $.Deferred(function(a){
+        $('nav#top #btn_back_personWishList').hammer().on('tap', function(){
+          app.showScreen($('#start.screen'));
+        });
+        a.resolve();
+      }).promise();
+    },
+    remE : function(){
+      return $.Deferred(function(r){
+        r.resolve();
+      }).promise();
+    },
+    render : function(wishListArray){
+      return $.Deferred(function(r){
+        $('#personWishList.screen #wishList').html('');
+        _.each(wishListArray, function(o,i,a){
+          app.l('Item ID: '+o.id);
+          var t = _.template($('#tpl_wishList_listItem').html());
+          var d = {
+            id : o.id,
+            name : o.get('name'),
+            description : o.get('description'),
+            photoURL : typeof o.get('photo') != "undefined" ? o.get('photo').url() : ''
+          };
+          $('#personWishList.screen #wishList').append(t(d));
+        });
+        pages.personWishList.remE().done(pages.personWishList.addE());
+        app.showScreen($('#personWishList.screen'));
+        $('#start.screen #santaList li').removeClass('loading');
+        r.resolve();
+      }).promise();
+    },
+    getData : function(ParseRecipient){
+      return $.Deferred(function(getData){
+        var Item = Parse.Object.extend("Item");
+        var itemListQuery = new Parse.Query(Item);
+        itemListQuery.equalTo('owner', ParseRecipient);
+        itemListQuery.descending('rating');
+        itemListQuery.find({
+          success: function(wishList){
+            getData.resolve(wishList);
+          },
+          error: function(e){
+            app.e("Wat?! I can't find that person's Wish List.  But I'll keep looking, and you can try again in a bit, ok? Ok.");
+            app.l(JSON.stringify(e),2);
+            getData.reject(e);
+          }
+        });
+      }).promise();
     }
   },
   settings : {
@@ -1891,7 +1944,7 @@ var app = {
       app.signin();
     } else {
       //load the login screen
-      app.showScreen($('section.screen#login'),true);
+      app.showScreen($('#login.screen'),true);
     }
   },
   exit: function(){
@@ -1904,9 +1957,8 @@ var app = {
     user.parse = Parse.User.current();
     //persist to localStorage
     localStorage.setItem('user',JSON.stringify(user));
-
     //load the start screen on signin
-    app.showScreen($('section#start'),true);
+    app.showScreen($('#start.screen'),true,false);
   },
   showScreen: function(s, animateBoolean, forceDataUpdate){
     if (typeof forceDataUpdate == "undefined") {
@@ -2151,6 +2203,39 @@ var user = {
   parse : null,
   santaList : [],
   santaListUpdatedAt : new Date(2000,01,01),
+  getSantas : function(forceDataUpdate){
+    app.l('Getting user\'s santas...',1);
+    return $.Deferred(function(getSantas){
+      if (forceDataUpdate || user.santaListUpdatedAt <= new Date().subMinutes(15)) {
+
+        //Get data from Parse
+        var Santas = Parse.Object.extend("Santas");
+        var santasQuery = new Parse.Query(Santas);
+        santasQuery.equalTo('santa', Parse.User.current());
+        santasQuery.include('recipient');
+        santasQuery.include('event');
+        santasQuery.ascending('createdAt');
+        santasQuery.find({
+          success: function(r){
+            user.santaList = r;
+            user.santaListUpdatedAt = new Date();
+            app.l('...got user\'s santa list FROM PARSE',1);
+            getSantas.resolve(user.santaList);
+          },
+          error: function(e){
+            //TODO
+            //Tie error to master logging system
+            console.error(e);
+            app.e("Wowsa! I can't find your Secret Santa list right now! Try again in a few minutes, ok?");
+            getSantas.reject(e);
+          }
+        });
+      } else {
+        app.l('...got user\'s santa list FROM CACHE',1);
+        getSantas.resolve(user.santaList);
+      }
+    }).promise();
+  },
   eventList : [],
   eventListUpdatedAt : new Date(2000,01,01),
   getEvents : function(forceDataUpdate){
@@ -2188,42 +2273,10 @@ var user = {
       }
     }).promise();
   },
-  getSantas : function(forceDataUpdate){
-    app.l('Getting user\'s santas...',1);
-    return $.Deferred(function(getSantas){
-      if (forceDataUpdate || user.santaListUpdatedAt <= new Date().subMinutes(15)) {
-
-        //Get data from Parse
-        var Santas = Parse.Object.extend("Santas");
-        var santasQuery = new Parse.Query(Santas);
-        santasQuery.equalTo('santa', Parse.User.current());
-        santasQuery.include('recipient');
-        santasQuery.include('event');
-        santasQuery.ascending('createdAt');
-        santasQuery.find({
-          success: function(r){
-            user.santaList = r;
-            user.santaListUpdatedAt = new Date();
-            app.l('...got user\'s santa list FROM PARSE',1);
-            getSantas.resolve(user.santaList);
-          },
-          error: function(e){
-            //TODO
-            //Tie error to master logging system
-            console.error(e);
-            app.e("Wowsa! I can't find your Secret Santa list right now! Try again in a few minutes, ok?");
-            getSantas.reject(e);
-          }
-        });
-      } else {
-        app.l('...got user\'s santa list FROM CACHE',1);
-        getSantas.resolve(user.santaList);
-      }
-    }).promise();
-  },
   currentEvent : {},
   currentItem : {},
   currentAttendanceID : "",
+  currentRecipient : {},
   wishList : [],
   wishListUpdatedAt : new Date(2000,01,01),
   tx : {

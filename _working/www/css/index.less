@@ -25,6 +25,7 @@
   @cancelColorLight : lighten(@cancelColor,20%);
   @successColorDark : darken(@successColor,20%);
   @successColorLight : lighten(@successColor,20%);
+  @imageBGColor: #fafafa;
   @timingFunction : cubic-bezier(.11,1,.97,1);
   @fontFamilyB : "AvenirNext-Bold","Roboto-Bold";
   @fontFamilyM : "AvenirNext-DemiBold","Roboto-Medium";
@@ -825,12 +826,28 @@
           vertical-align: baseline;
           color: @mainColorMedium;
         }
+        loader-container {
+          display: none;
+          position: absolute;
+          top:0; left:0;
+          bottom:0; right: 0;
+          background-color: rgba(red(@appBG),green(@appBG),blue(@appBG),0.75);
+          //border-radius: 0.2rem;
+          .loader {
+            .flexItem;
+          }
+        }
         &.empty {
           padding: 1rem 1rem 2rem 1rem;
           text-align: center;
           font-family: @fontFamilyM;
           font-size: 0.75em;
           color: darken(@appBG, 15%);
+        }
+        &.loading {
+          loader-container {
+            .flexContainer;
+          }
         }
       }
       li:last-child {
@@ -1181,7 +1198,7 @@
     }
   }
 
-  #wishList.screen {
+  #wishList.screen, #personWishList.screen {
     ul {
       //reset the ul
       margin: 0; padding: 0;
@@ -1191,7 +1208,7 @@
         display: block;
         min-height: ((@touchBase * 1.5) + ((@touchBase / 5) * 2) );
         font-family: @fontFamilyHeader;
-        font-size: 1.25em;
+        font-size: 1.05em;
         //border-bottom: @borderStandard darken(@appBG1,10%);
         //height: @touchBase * 1.9;
         padding: 1em 1em 1em @touchBase * 1.9;
@@ -1203,6 +1220,7 @@
           position: absolute;
           top: @touchBase / 5;
           left: @touchBase / 5;
+          background-color: @imageBGColor;
           background-size: cover;
           background-position: center center;
           border-radius: @touchBase / 5;
@@ -1213,12 +1231,18 @@
         label.name {
           font-family: @fontFamilyM;
           color: @tintColor;
+          overflow: none;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         label.description {
           font-family: @fontFamily;
           letter-spacing: 0.01em;
           font-size: 0.8em;
           color: @mainColorLight;
+          overflow: none;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         loader-container {
           display: none;
@@ -1244,6 +1268,28 @@
           loader-container {
             .flexContainer;
           }
+        }
+      }
+    }
+  }
+  #personWishList.screen {
+    ul {
+      li {
+        min-height: ((@touchBase) + ((@touchBase / 5) * 2) );
+        padding: 1em 1em 1em (@touchBase + ((@touchBase / 5)*2));
+        i.itemPhoto {
+          display: inline-block;
+          width: @touchBase;
+          height: @touchBase;
+          position: absolute;
+          top: @touchBase / 5;
+          left: @touchBase / 5;
+          background-size: cover;
+          background-position: center center;
+          border-radius: @touchBase / 8;
+        }
+        label.description {
+          display: none;
         }
       }
     }
