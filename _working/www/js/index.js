@@ -1286,6 +1286,28 @@ var pages = {
         $('#eventDetail.screen #frm_admin #btn_event_close').hammer().on('tap', function(e){
           pages.eventDetail.closeEvent(user.currentEvent).done(function(eventRespObject){
             app.l("Event closed: "+eventRespObject.id,1);
+            var tempEventList = _.without(user.eventList, user.currentEvent);
+            //DEBUG
+            console.log(user.eventList.length + " to " + tempEventList.length);
+            tempEventList.push(eventRespObject);
+            user.eventList = tempEventList;
+            user.eventListUpdatedAt = new Date();
+            user.currentEvent = eventRespObject;
+            pages.eventDetail.init(eventRespObject);
+          });
+          e.preventDefault();
+        });
+        $('#eventDetail.screen #frm_admin #btn_event_close').hammer().on('tap', function(e){
+          pages.eventDetail.openEvent(user.currentEvent).done(function(eventRespObject){
+            app.l("Event opened: "+eventRespObject.id,1);
+            var tempEventList = _.without(user.eventList, user.currentEvent);
+            //DEBUG
+            console.log(user.eventList.length + " to " + tempEventList.length);
+            tempEventList.push(eventRespObject);
+            user.eventList = tempEventList;
+            user.eventListUpdatedAt = new Date();
+            user.currentEvent = eventRespObject;
+            pages.eventDetail.init(eventRespObject);
           });
           e.preventDefault();
         });
@@ -1296,14 +1318,14 @@ var pages = {
       return $.Deferred(function(r){
         app.remE();
         $('nav#top #btn_back_eventDetail').hammer().off('tap');
+        $('#eventDetail.screen form#sendInvitation').off('submit');
         $('#eventDetail.screen form#eventDetail').off('submit');
         $('#eventDetail.screen form#eventDetail input, #eventDetail.screen form#eventDetail textarea').off('propertychange change click keyup input paste');
         $('#eventDetail.screen tab-group tab').hammer().off('tap');
         $('#eventDetail.screen ul li.attendee').hammer().off('tap');
         $('#eventDetail.screen #frm_rsvp').off('submit');
         $('#eventDetail.screen #frm_admin').off('submit');
-        $('#eventDetail.screen #frm_admin #btn_event_delete').hammer().off('tap');
-        $('#eventDetail.screen #frm_admin #btn_event_close').hammer().off('tap');
+        $('#eventDetail.screen #frm_admin button').hammer().off('tap');
         r.resolve();
       }).promise();
     },
@@ -1334,6 +1356,7 @@ var pages = {
         dateString : util.formatDateForDTL(retrievedParseEventData.get('eventAt')),
         spendLimit : retrievedParseEventData.get('spendLimit'),
         description : retrievedParseEventData.get('description'),
+        locked : retrievedParseEventData.get('isLocked'),
         isEventAdmin : isAdmin
       };
       //load detail template
@@ -1347,6 +1370,13 @@ var pages = {
         $('#eventDetail.screen #frm_rsvp').removeClass('hidden');
         $('#eventDetail.screen #frm_admin').addClass('hidden');
         $('#eventDetail.screen #attendance form#sendInvitation').addClass('hidden');
+      }
+      if(obj.locked){
+        $('#eventDetail.screen #frm_admin #btn_event_close').addClass('hidden');
+        $('#eventDetail.screen #frm_admin #btn_event_open').removeClass('hidden');
+      } else {
+        $('#eventDetail.screen #frm_admin #btn_event_close').removeClass('hidden');
+        $('#eventDetail.screen #frm_admin #btn_event_open').addClass('hidden');
       }
       pages.eventDetail.remE().done(function(){
         pages.eventDetail.addE(user.currentEvent).done(function(){
@@ -1513,6 +1543,24 @@ var pages = {
           ParseEventID : eventObject.id,
           close : true,
           assignSantas : true
+        }, {
+          success: function(responseEvent){
+            ce.resolve(responseEvent);
+          },
+          error: function(error){
+            app.e("I couldn't close this event, and assign everyone a Santa! Please try again in a minute.");
+            app.l(JSON.stringify(error),2);
+            ce.reject(error);
+          }
+        });
+      }).promise();
+    },
+    openEvent : function(eventObject){
+      return $.Deferred(function(ce){
+        Parse.Cloud.run('rollTheDice', {
+          ParseEventID : eventObject.id,
+          close : false,
+          assignSantas : false
         }, {
           success: function(responseEvent){
             ce.resolve(responseEvent);

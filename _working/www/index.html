@@ -185,7 +185,8 @@
         </form>
         <form id="frm_admin" class="hidden">
           <button id="btn_event_delete" class="touchable delete" for="frm_admin" type="button">Delete event</button>
-          <button id="btn_event_close" class="touchable action" for="frm_admin" type="button">Assign everyone a Santa!</button>
+          <button id="btn_event_close" class="touchable action" for="frm_admin" type="button">Lock &amp; Assign Santas!</button>
+          <button id="btn_event_open" class="touchable" for="frm_admin" type="button">Unlock &amp; Reset Santas</button>
         </form>
       </section>
       <section id="item" class="screen hidden">
@@ -476,7 +477,6 @@
           <label for="txt_spendLimit" class="flexItem">Spend limit</label>
           <input type="text" id="txt_spendLimit" data-label="Spend limit" placeholder="Spending limit" class="flexItem flexItemElastic topBorder" value="<%= spendLimit %>" pattern="[0-9]*" <% if(!isEventAdmin){ print("readonly"); } %>  data-original="<%= spendLimit %>" data-dirty="false">
         </field>
-        
         <list-header class="flexContainer flexContainerRow">
           <span class="flexItem flexItemElastic label">The deets, yo...</span>
           <span class="flexItem"></span>

@@ -5,7 +5,7 @@ var _ = require('underscore');
 function getAttendaceForEvent(ParseEvent){
   var Attendance = Parse.Object.extend('Attendance');
   var attendaceQuery = new Parse.Query(Attendance);
-  attendaceQuery.equalTo('event', ParseEvent.id);
+  attendaceQuery.equalTo('event', ParseEvent);
   attendaceQuery.include('attendee');
   attendaceQuery.find({
     success: function(attendanceArray){
@@ -17,9 +17,11 @@ function getAttendaceForEvent(ParseEvent){
     }
   });
 }
+
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
 
 Parse.Cloud.define("rollTheDice", function(request, response) {
   var id = request.params.ParseEventID;
@@ -27,58 +29,70 @@ Parse.Cloud.define("rollTheDice", function(request, response) {
   var eventQuery = new Parse.Query(Event);
   eventQuery.get(id, {
     success: function(eventObject){
-      eventObject.set('isLocked', true);
+      eventObject.set('isLocked', request.params.close);
       eventObject.save({
         success: function(lockedEvent){
-          //TODO
-          //remove outstanding invitations? DECISION: Not to remove invites in the event a user prematurely locked the event
-          var santasArray = [];
-          var attendanceArray = getAttendaceForEvent(lockedEvent);
-          var theHat = attendanceArray;
-          if(attendanceArray){
-            //iterate over attendanceArray and draw from theHat
-            _.each(attendanceArray, function(o,i,a){
-              //random SantaIndex for referencing theHat
-              var hi = getRandomInt(0,(theHat.length-1));
-              //iterate through attendees
-              //verify that santa is not attendee
-              if (i == (attendanceArray.length-1) && o.id == theHat[hi].id) {
-                var tempR = santasArray[0].recipient
-                santasArray[0] = {
-                  santa : santasArray[0].santa,
-                  recipient : theHat[hi]
-                };
-                santasArray.push({
-                  santa : o,
-                  recipient : tempR
+          if (request.params.close == true) {
+            var Attendance = Parse.Object.extend('Attendance');
+            var attendaceQuery = new Parse.Query(Attendance);
+            attendaceQuery.equalTo('event', lockedEvent);
+            attendaceQuery.include('attendee');
+            attendaceQuery.find({
+              success: function(attendanceArray){
+                var usersGoing = [];
+                _.each(attendanceArray, function(o,i,a){
+                  if(o.get('status') == 1 || o.get('status') == 2) {
+                    usersGoing.push(o.get("attendee"));
+                  }
                 });
-              } else {
-                santasArray.push({
-                  santa : o,
-                  recipient : theHat[hi]
+                var santasArray = [];
+                //TODO
+                //investigate if a better solution exists
+                //current as per http://stackoverflow.com/questions/27630794/shuffle-array-so-no-two-keys-are-in-the-same-location
+                var theHat1 = _.shuffle(usersGoing);
+                var theHat2 = _.union(_.rest(theHat1), [_.first(theHat1)]);
+                //iterate over attendanceArray and draw from theHat2
+                _.each(usersGoing, function(o,i,a){
+                  //assign santas to recipients
+                  santasArray.push({
+                    santa : o,
+                    recipient : theHat2[i]
+                  });
                 });
-              }
-              theHat = _.rest(theHat, hi);
-            });
-            var Santas = Parse.Object.extend("Santas");
-            _.each(santasArray,function(o,i,a){
-              var santa = new Santas();
-              santa.set('santa', o.santa);
-              santa.set('recipient', o.recipient);
-              santa.set('event', lockedEvent);
-              santa.set('isDoneShopping', false);
-              santa.set('isDoneWrapping', false);
-              santa.save({
-                success: function(){},
-                error: function(e){
-                  console.error(e);
-                  response.error({ error: e, message: "Failed to save the santa object for event ("+lockedEvent.id+")" });
+                var Santas = Parse.Object.extend("Santas");
+                if (request.params.assignSantas == true){
+                  _.each(santasArray,function(o,i,a){
+                    var santa = new Santas();
+                    santa.set('santa', o.santa);
+                    santa.set('recipient', o.recipient);
+                    santa.set('event', lockedEvent);
+                    santa.set('isDoneShopping', false);
+                    santa.set('isDoneWrapping', false);
+                    santa.save({
+                      success: function(santaResult){
+                        console.log(santaResult);
+                      },
+                      error: function(e){
+                        console.error(e);
+                        response.error({ error: e, message: "Failed to save the santa object for event ("+lockedEvent.id+")" });
+                      }
+                    });
+                  });
                 }
-              });
+                response.success(lockedEvent);
+              },
+              error: function(error){
+                console.error(error);
+                response.error({ message: "Failed to get the event ("+eventObject.id+") attendees" });
+              }
+            });
+          } else {
+            var Santas = Parse.Object.extend('Santas');
+            var santasQuery = new Parse.Query(Santas);
+            santasQuery.each(function(santa){
+              santa.destroy();
             });
             response.success(lockedEvent);
-          } else {
-            response.error({ message: "Failed to get the event ("+eventObject.id+") attendees" });
           }
         },
         error: function(e){
@@ -86,7 +100,7 @@ Parse.Cloud.define("rollTheDice", function(request, response) {
           response.error({ error: e, message: "Failed to save the event ("+eventObject.id+") after locking" });
         }
       });
-      response.success(eventObject);
+      //response.success(eventObject);
     },
     error: function(e){
       console.error(e);
