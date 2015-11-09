@@ -2,6 +2,31 @@
 
 var _ = require('underscore');
 
+var util = {
+  shuffleFY : function (input) {
+    for (var i = input.length-1; i >=0; i--) {
+     
+      var randomIndex = Math.floor(Math.random()*(i+1)); 
+      var itemAtIndex = input[randomIndex]; 
+       
+      input[randomIndex] = input[i]; 
+      input[i] = itemAtIndex;
+    }
+    return input;
+  },
+  shuffleSattolo : function (array) {
+    for (var i = array.length-1; i >=0; i--) {
+     
+      var j = Math.floor(Math.random()*(i)); 
+      var itemAtIndex = array[j]; 
+       
+      array[j] = array[i]; 
+      array[i] = itemAtIndex;
+    }
+    return array;
+  }
+};
+
 function getAttendaceForEvent(ParseEvent){
   var Attendance = Parse.Object.extend('Attendance');
   var attendaceQuery = new Parse.Query(Attendance);
@@ -20,6 +45,26 @@ function getAttendaceForEvent(ParseEvent){
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function shuffle(array) {
+  //Fisher-Yates (aka Knuth) Shuffle
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
 }
 
 
@@ -49,14 +94,15 @@ Parse.Cloud.define("rollTheDice", function(request, response) {
                 //TODO
                 //investigate if a better solution exists
                 //current as per http://stackoverflow.com/questions/27630794/shuffle-array-so-no-two-keys-are-in-the-same-location
-                var theHat1 = _.shuffle(usersGoing);
-                var theHat2 = _.union(_.rest(theHat1), [_.first(theHat1)]);
+                var theHat = _.shuffle(usersGoing);
+                //var theHat1 = _.shuffle(usersGoing);
+                //var theHat2 = _.union(_.rest(theHat1), [_.first(theHat1)]);
                 //iterate over attendanceArray and draw from theHat2
                 _.each(usersGoing, function(o,i,a){
                   //assign santas to recipients
                   santasArray.push({
                     santa : o,
-                    recipient : theHat2[i]
+                    recipient : theHat[i]
                   });
                 });
                 var Santas = Parse.Object.extend("Santas");
@@ -74,7 +120,6 @@ Parse.Cloud.define("rollTheDice", function(request, response) {
                       },
                       error: function(e){
                         console.error(e);
-                        response.error({ error: e, message: "Failed to save the santa object for event ("+lockedEvent.id+")" });
                       }
                     });
                   });

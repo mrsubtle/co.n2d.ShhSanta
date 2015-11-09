@@ -1388,10 +1388,10 @@ var pages = {
         });
         $('#eventDetail.screen #frm_admin #btn_event_close').hammer().on('tap', function(e){
           pages.eventDetail.closeEvent(user.currentEvent).done(function(eventRespObject){
-            var tempEventList = _.without(user.eventList, user.currentEvent);
+            /*var tempEventList = _.without(user.eventList, user.currentEvent);
             tempEventList.push(eventRespObject);
             user.eventList = tempEventList;
-            user.eventListUpdatedAt = new Date();
+            user.eventListUpdatedAt = new Date();*/
             app.showScreen($('#start.screen'),false,true);
           });
           e.preventDefault();
