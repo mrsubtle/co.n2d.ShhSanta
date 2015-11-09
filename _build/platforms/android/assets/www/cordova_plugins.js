@@ -99,6 +99,11 @@ module.exports = [
         "clobbers": [
             "cordova.plugins.barcodeScanner"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-whitelist/whitelist.js",
+        "id": "cordova-plugin-whitelist.whitelist",
+        "runs": true
     }
 ];
 module.exports.metadata = 
@@ -112,7 +117,8 @@ module.exports.metadata =
     "cordova-plugin-network-information": "1.0.1",
     "cordova-plugin-vibration": "1.2.0",
     "org.apache.cordova.plugin.ActivityIndicator": "1.0.0",
-    "phonegap-plugin-barcodescanner": "4.1.0"
+    "phonegap-plugin-barcodescanner": "4.1.0",
+    "cordova-plugin-whitelist": "1.0.0"
 }
 // BOTTOM OF METADATA
 });

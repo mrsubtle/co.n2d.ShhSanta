@@ -133,7 +133,8 @@ module.exports.metadata =
     "cordova-plugin-network-information": "1.0.1",
     "cordova-plugin-vibration": "1.2.0",
     "phonegap-plugin-barcodescanner": "4.1.0",
-    "org.apache.cordova.plugin.ActivityIndicator": "1.0.0"
+    "org.apache.cordova.plugin.ActivityIndicator": "1.0.0",
+    "cordova-plugin-whitelist": "1.0.0"
 }
 // BOTTOM OF METADATA
 });

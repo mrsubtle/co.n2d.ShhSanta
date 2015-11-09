@@ -170,6 +170,9 @@
         },
         "org.apache.cordova.plugin.ActivityIndicator": {
             "PACKAGE_NAME": "co.n2d.ShhSanta"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "co.n2d.ShhSanta"
         }
     },
     "dependent_plugins": {}

@@ -35,6 +35,10 @@
                         {
                             "xml": "<feature name=\"BarcodeScanner\"><param name=\"android-package\" value=\"com.phonegap.plugins.barcodescanner.BarcodeScanner\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -603,6 +607,9 @@
             "PACKAGE_NAME": "co.n2d.ShhSanta"
         },
         "phonegap-plugin-barcodescanner": {
+            "PACKAGE_NAME": "co.n2d.ShhSanta"
+        },
+        "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "co.n2d.ShhSanta"
         }
     },
