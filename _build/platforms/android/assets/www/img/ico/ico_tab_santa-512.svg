@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="512px" height="512px" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
+    <title>ico_tab_santa-512</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="ico_tab_santa-512" sketch:type="MSArtboardGroup">
+            <g id="Santa-2" sketch:type="MSLayerGroup" transform="translate(132.000000, 128.000000)">
+                <path d="M23.3882424,118.710228 C23.3882424,-37.0848724 222.102393,-40.1438558 222.102393,118.710228 L222.102393,255.97443 L23.3882424,255.97443 L23.3882424,118.710228 Z" id="Rectangle-2" stroke="#CAC8CA" stroke-width="14" sketch:type="MSShapeGroup" transform="translate(122.745318, 128.344213) scale(1, -1) translate(-122.745318, -128.344213) "></path>
+                <ellipse id="Oval-3" fill="#CAC8CA" sketch:type="MSShapeGroup" cx="59.5946342" cy="105.837943" rx="19.3662096" ry="19.3428063"></ellipse>
+                <ellipse id="Oval-4" fill="#CAC8CA" sketch:type="MSShapeGroup" cx="185.053992" cy="105.837943" rx="19.3662096" ry="19.3428063"></ellipse>
+                <ellipse id="Oval-5" stroke="#CAC8CA" stroke-width="14" sketch:type="MSShapeGroup" cx="123.587327" cy="157.979421" rx="19.3662096" ry="19.3428063"></ellipse>
+                <path d="M110.678532,95.3144753 C52.5833608,122.344584 -1.39373114,101.936866 0.0366870137,101.936865 C24.9529719,169.20483 87.1265778,170.762281 123.896958,152.150024 C160.667339,170.762281 222.840945,169.20483 247.75723,101.936865 C249.187648,101.936866 195.210556,122.344584 137.115384,95.3144753 C134.157808,93.4532645 130.733342,91.6826615 126.809617,90.0261919 C126.013509,89.5782866 125.217198,89.1208235 124.420814,88.6536308 C124.245312,88.7199618 124.070694,88.7865028 123.896958,88.8532522 C123.723223,88.7865028 123.548605,88.7199618 123.373103,88.6536308 C122.576717,89.1208239 121.780406,89.5782874 120.984298,90.0261931 C117.060574,91.6826615 113.636108,93.4532645 110.678532,95.3144753 Z" id="Path-12" stroke="#CAC8CA" stroke-width="14" fill="#FFFFFF" sketch:type="MSShapeGroup"></path>
+                <ellipse id="Oval-1" stroke="#CAC8CA" stroke-width="14" fill="#CAC8CA" sketch:type="MSShapeGroup" cx="123.587327" cy="89.0181118" rx="19.3662096" ry="19.3428063"></ellipse>
+                <path d="M49.9115294,57 L70.1197481,57" id="Line" stroke="#CAC8CA" stroke-width="14" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+                <path d="M175.370887,57 L195.579106,57" id="Line-2" stroke="#CAC8CA" stroke-width="14" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+            </g>
+        </g>
+    </g>
+</svg>

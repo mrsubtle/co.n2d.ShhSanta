@@ -69,6 +69,7 @@
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="HideKeyboardFormAccessoryBar" value="true" />
+    <preference name="android-minSdkVersion" value="19" />
     <gap:plugin name="org.apache.cordova.battery-status" />
     <gap:plugin name="org.apache.cordova.camera" />
     <gap:plugin name="org.apache.cordova.media-capture" />

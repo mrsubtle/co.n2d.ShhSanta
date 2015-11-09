@@ -25,11 +25,13 @@
     <preference name="android-minSdkVersion" value="7" />
     <preference name="android-installLocation" value="auto" />
     <preference name="DisallowOverscroll" value="true"/>
-    <!-- iOS -->
+    <!-- iOS Preferences -->
     <preference name="EnableViewportScale" value="false"/>
     <preference name="BackupWebStorage" value="cloud"/>
     <preference name="KeyboardDisplayRequiresUserAction" value="false"/>
     <preference name="HideKeyboardFormAccessoryBar" value="true"/>
+    <!-- Android Preferences -->
+    <preference name="android-minSdkVersion" value="19" />
     <!-- iOS -->
     <feature name="Device">
         <param name="ios-package" value="CDVDevice" />
