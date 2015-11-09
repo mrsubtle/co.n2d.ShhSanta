@@ -87,12 +87,16 @@ Parse.Cloud.define("rollTheDice", function(request, response) {
               }
             });
           } else {
+            console.log("Destroying Santas for EventID: "+lockedEvent.id);
             var Santas = Parse.Object.extend('Santas');
             var santasQuery = new Parse.Query(Santas);
+            santasQuery.equalTo('event', lockedEvent);
             santasQuery.each(function(santa){
+              console.log("Destroying Santa ID: "+santa.id);
               santa.destroy();
+            }).then(function(){
+              response.success(lockedEvent);
             });
-            response.success(lockedEvent);
           }
         },
         error: function(e){

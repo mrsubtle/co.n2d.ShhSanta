@@ -217,6 +217,117 @@ var as = {
         }
       }).promise();
     }
+  },
+  as_start_sorts : {
+    el : "#as_start_sorts",
+    hide : function(){
+      this.remE();
+      $('group.actionSheetContainer').one('webkittransitionend transitionend',function(){
+        $(as.as_start_sorts.el).addClass('hidden');
+      });
+      $('group.actionSheetContainer').addClass('actionSheetOff');
+      $('.app').removeClass('tilt');
+    },
+    show : function(){
+      $('.app').addClass('tilt');
+      as.as_start_sorts.remE().done(as.as_start_sorts.addE().done(as.as_start_sorts.render));
+    },
+    addE : function(){
+      return $.Deferred(function(a){
+        $(as.as_start_sorts.el + ' #btn_accept').hammer().on('tap', function(){
+          as.as_start_sorts.doAccept(user.currentAttendanceID).done(function(){
+            console.log('Accepted');
+            pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
+              as.as_start_sorts.hide();
+              pages.eventDetail.renderAttendance(attendanceArray);
+            });
+          });
+        });
+        $(as.as_start_sorts.el + ' #btn_decline').hammer().on('tap', function(){
+          as.as_start_sorts.doDecline(user.currentAttendanceID).done(function(){
+            console.log('Declined');
+            pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
+              as.as_start_sorts.hide();
+              pages.eventDetail.renderAttendance(attendanceArray);
+            });
+          });
+        });
+        $(as.as_start_sorts.el + ' #btn_cancel_rsvp').hammer().on('tap', function(){
+          as.as_start_sorts.hide();
+        });
+        a.resolve();
+      }).promise();
+    },
+    remE : function(){
+      return $.Deferred(function(r){
+        $(as.as_start_sorts.el + ' #btn_accept').hammer().off('tap');
+        $(as.as_start_sorts.el + ' #btn_decline').hammer().off('tap');
+        $(as.as_start_sorts.el + ' #btn_cancel_rsvp').hammer().off('tap');
+        r.resolve();
+      }).promise();
+    },
+    render : function(){
+      //unhide the appropriate as content
+      $(as.as_start_sorts.el).removeClass('hidden');
+      //animate modal container
+      $('group.actionSheetContainer').removeClass('actionSheetOff');
+    },
+    doAccept : function(attendanceObjectID){
+      return $.Deferred(function(da){
+        if (typeof attendanceObjectID != "undefined") {
+          var Attendance = Parse.Object.extend("Attendance");
+          var attendanceQuery = new Parse.Query(Attendance);
+          attendanceQuery.get(attendanceObjectID, {
+            success: function(attendanceObject) {
+              attendanceObject.set('status', 1);
+              attendanceObject.save({
+                success: function(myObject) {
+                  da.resolve();
+                },
+                error: function(error) {
+                  app.e("Oh no! I couldn't accept the invitation! Try again in a few minutes.");
+                  app.l(JSON.stringify(error),2);
+                  da.reject(error);
+                }
+              });
+            },
+            error: function(error) {
+              app.e("Oh no! I couldn't find that invitation to accept it! Try again in a few minutes.");
+              app.l(JSON.stringify(error),2);
+              da.reject(error);
+            }
+          });
+        }
+      }).promise();
+    },
+    doDecline : function(attendanceObjectID){
+      return $.Deferred(function(dd){
+        if (typeof attendanceObjectID != "undefined") {
+          var Attendance = Parse.Object.extend("Attendance");
+          var attendanceQuery = new Parse.Query(Attendance);
+          attendanceQuery.get(attendanceObjectID, {
+            success: function(attendanceObject) {
+              attendanceObject.set('status', 1);
+              attendanceObject.save({
+                success: function(myObject) {
+                  dd.resolve();
+                },
+                error: function(error) {
+                  app.e("Oh no! I couldn't decline the invitation! Try again in a few minutes.");
+                  app.l(JSON.stringify(error),2);
+                  dd.reject(error);
+                }
+              });
+            },
+            error: function(error) {
+              app.e("Oh no! I couldn't find that invitation to decline! Try again in a few minutes.");
+              app.l(JSON.stringify(error),2);
+              dd.reject(error);
+            }
+          });
+        }
+      }).promise();
+    }
   }
 };
 
@@ -287,8 +398,7 @@ var modals = {
                 },3000);
               });
             } catch (e) {
-              //DEBUG
-              console.log(e);
+              app.l(JSON.stringify(e),2);
             }
           }
         });
@@ -322,8 +432,7 @@ var modals = {
                     $(modals.mdl_item_create.el + ' #txt_name').val(d.name);
 
                   },function(e){
-                    //DEBUG
-                    console.log(e);
+                    app.l(JSON.stringify(e),2);
                   });
                 }
               } else {
@@ -334,8 +443,7 @@ var modals = {
               ActivityIndicator.hide();
               lblO.html(tmpLbl);
               app.e("Oops! Scan seems to have failed, but don't worry - we'll fix it. Eventiually.");
-              //DEBUG
-              console.log(error);
+              app.l(JSON.stringify(error),2);
             }
           );
           e.preventDefault();
@@ -527,8 +635,7 @@ var modals = {
                 },3000);
               });
             } catch (e) {
-              //DEBUG
-              console.log(e);
+              app.l(JSON.stringify(e),2);
             }
           }
         });
@@ -560,21 +667,17 @@ var modals = {
                     $(modals.mdl_event_create.el + ' #txt_name').val(d.name);
 
                   },function(e){
-                    //DEBUG
-                    console.log(e);
+                    app.l(JSON.stringify(e),2);
                   });
                 }
               } else {
                 lblO.html(tmpLbl);
               }
-              //DEBUG
-              console.log(result);
             },
             function (error) {
               lblO.html(tmpLbl);
               app.e("Oops! Scan seems to have failed, but don't worry - we'll fix it. Eventiually.");
-              //DEBUG
-              console.log(error);
+              app.l(JSON.stringify(error),2);
             }
           );
           e.preventDefault();
@@ -686,7 +789,6 @@ var pages = {
     },
     addE : function(){
       $('#frm_Login').on('submit', function(e){
-        //app.l('Login submitted');
         pages.login.doLogin();
         e.preventDefault();
       });
@@ -817,11 +919,9 @@ var pages = {
       });
     },
     addE : function(){
-      app.l('#start.screen addE');
       return $.Deferred(function(a){
         app.addE();
         $('#start.screen #santaList li.recipient').on('click',function(e){
-          app.l('Tapped '+$(this).data('id'));
           var ID = $(this).data('id');
           $(this).addClass('loading');
           var ParseSanta = _.find(user.santaList, function(obj) {
@@ -841,7 +941,6 @@ var pages = {
       }).promise();
     },
     render: function(santaListArray){
-      app.l('Render santa list',1);
       return $.Deferred(function(render){
         if(santaListArray.length > 0){
           $('#start.screen #santaList').html("");
@@ -870,7 +969,7 @@ var pages = {
       //$('#start.screen #santaList').html('');
       //var loaderTpl = _.template( $('#tpl_loading').html() );
       //$('#start.screen #santaList').append( loaderTpl({textToShow:"Santa's Shopping List"}) );
-      app.l('Getting santa list items...',1);
+      app.l('Getting santa list items...');
       return $.Deferred(function(getData){
         user.getSantas(forceDataUpdate).done(function(santaList){
           getData.resolve(santaList);
@@ -894,7 +993,7 @@ var pages = {
         $('nav#top #btn_addItem').hammer().on('tap',function(){
           modals.mdl_item_create.show();
         });
-        $('#wishList.screen ul#wishList li.item').hammer().on('tap', function(){
+        $('#wishList.screen ul#wishList li.item hitbox').hammer().on('tap', function(){
           var iID = $(this).data('id');
           $(this).addClass('loading');
           var ParseItem = _.find(user.wishList, function(obj) {
@@ -916,17 +1015,19 @@ var pages = {
     },
     render : function(){
       return $.Deferred(function(render){
-        app.l('Render wish list',1);
         $('#wishList.screen #wishList').html('');
         if(user.wishList.length > 0){
           _.each(user.wishList,function(o,i,a){
-            //DEBUG
-            //console.log(v);
             var t = _.template($('#tpl_wishList_listItem').html());
             var d = {
               id : o.id,
+              oid : Parse.User.current().id,
+              isOwner : true,
               name : o.get('name'),
               description : o.get('description'),
+              price : typeof o.get('estPrice') == "undefined" || o.get('estPrice') == null ? null : o.get('estPrice'),
+              where : typeof o.get('lastSeenAt') == "undefined" || o.get('lastSeenAt') == "" ? null : o.get('lastSeenAt'),
+              purchased : false,
               photoURL : typeof o.get('photo') != "undefined" ? o.get('photo').url() : ''
             };
             $('#wishList.screen #wishList').append(t(d));
@@ -939,7 +1040,7 @@ var pages = {
       }).promise();
     },
     getData : function(forceDataUpdate){
-      app.l('Getting wish list items...',1);
+      app.l('Getting wish list items...');
       //show the loading indicator on the wishList
       $('#wishList.screen #wishList').html('');
       var loaderTpl = _.template( $('#tpl_loading').html() );
@@ -958,7 +1059,7 @@ var pages = {
               //got the data
               user.wishList = results;
               user.wishListUpdatedAt = new Date();
-              app.l('...got wish list items FROM PARSE',1);
+              app.l('...got wish list items FROM PARSE');
               getData.resolve(user.wishList);
             },
             error : function(error){
@@ -968,7 +1069,7 @@ var pages = {
             }
           });
         } else {
-          app.l('...got wish list items FROM CACHE',1);
+          app.l('...got wish list items FROM CACHE');
           getData.resolve(user.wishList);
         }
       }).promise();
@@ -995,7 +1096,6 @@ var pages = {
           var eID = $(this).data('id');
           user.currentAttendanceID = $(this).data('aid');
           $(this).addClass('loading');
-          app.l('Tapped Attendance ID: '+eID,1);
           var ParseAttendance = _.find(user.eventList, function(obj) {
               return obj.get('event').id == eID; 
           });
@@ -1005,7 +1105,6 @@ var pages = {
           var eID = $(this).data('id');
           user.currentAttendanceID = $(this).data('aid');
           $(this).addClass('loading');
-          app.l('Tapped Attendance ID: '+eID,1);
           var ParseAttendance = _.find(user.eventList, function(obj) {
               return obj.get('event').id == eID; 
           });
@@ -1089,7 +1188,6 @@ var pages = {
       var loadTime = new Date();
       //this function assumes you are passing the actual event object to render/query.
       //NOT simply the ID
-      app.l('Init detail for eventID: '+ParseEventObjectToLoad.id,1);
       //set the attendance ID for the RSVP button to work
       $('#eventDetail.screen #frm_rsvp #txt_aid').val(user.currentAttendanceID);
       if(typeof ParseEventObjectToLoad != "undefined"){
@@ -1146,8 +1244,6 @@ var pages = {
           var email = $('#eventDetail.screen form#sendInvitation #txt_email').val();
           var re = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
           if (re.test(email) && user.tx.attendance == false){
-            //DEBUG
-            console.log('VALID');
             user.tx.attendance = true;
             var Attendance = Parse .Object.extend("Attendance");
             var attend = new Attendance();
@@ -1191,7 +1287,6 @@ var pages = {
         });
         $('#eventDetail.screen ul li.attendee').hammer().on('tap', function(){
           if ($(this).data('status') != 2 && user.currentEvent.get('createdBy').id == Parse.User.current().id) {
-            app.l('Loading actionsheet for Attendance: '+$(this).data('aid'),1);
             user.currentAttendanceID = $(this).data('aid');
             as.as_eventDetail_invitation.show();
           }
@@ -1212,7 +1307,6 @@ var pages = {
                       attendanceObject.set('status', 1);
                       attendanceObject.save({
                         success: function(myObject) {
-                          app.l('Accepted attendance ID: '+user.currentAttendanceID);
                           pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
                             //update the attendance list
                             pages.eventDetail.renderAttendance(attendanceArray);
@@ -1240,7 +1334,6 @@ var pages = {
                       attendanceObject.set('status', 0);
                       attendanceObject.save({
                         success: function(myObject) {
-                          app.l('Declined attendance ID: '+user.currentAttendanceID);
                           pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
                             //update the attendance list
                             pages.eventDetail.renderAttendance(attendanceArray);
@@ -1295,29 +1388,21 @@ var pages = {
         });
         $('#eventDetail.screen #frm_admin #btn_event_close').hammer().on('tap', function(e){
           pages.eventDetail.closeEvent(user.currentEvent).done(function(eventRespObject){
-            app.l("Event closed: "+eventRespObject.id,1);
             var tempEventList = _.without(user.eventList, user.currentEvent);
-            //DEBUG
-            console.log(user.eventList.length + " to " + tempEventList.length);
             tempEventList.push(eventRespObject);
             user.eventList = tempEventList;
             user.eventListUpdatedAt = new Date();
-            user.currentEvent = eventRespObject;
-            pages.eventDetail.init(eventRespObject);
+            app.showScreen($('#start.screen'),false,true);
           });
           e.preventDefault();
         });
-        $('#eventDetail.screen #frm_admin #btn_event_close').hammer().on('tap', function(e){
+        $('#eventDetail.screen #frm_admin #btn_event_open').hammer().on('tap', function(e){
           pages.eventDetail.openEvent(user.currentEvent).done(function(eventRespObject){
-            app.l("Event opened: "+eventRespObject.id,1);
             var tempEventList = _.without(user.eventList, user.currentEvent);
-            //DEBUG
-            console.log(user.eventList.length + " to " + tempEventList.length);
             tempEventList.push(eventRespObject);
             user.eventList = tempEventList;
             user.eventListUpdatedAt = new Date();
-            user.currentEvent = eventRespObject;
-            pages.eventDetail.init(eventRespObject);
+            app.showScreen($('#events.screen'),false,true);
           });
           e.preventDefault();
         });
@@ -1375,7 +1460,12 @@ var pages = {
       if (isAdmin) {
         $('#eventDetail.screen #frm_rsvp').addClass('hidden');
         $('#eventDetail.screen #frm_admin').removeClass('hidden');
-        $('#eventDetail.screen #attendance form#sendInvitation').removeClass('hidden');
+        if (retrievedParseEventData.get('isLocked') == false) {
+          $('#eventDetail.screen #attendance form#sendInvitation').removeClass('hidden');
+        } else {
+          $('#eventDetail.screen #attendance form#sendInvitation').addClass('hidden');
+        }
+        
       } else {
         $('#eventDetail.screen #frm_rsvp').removeClass('hidden');
         $('#eventDetail.screen #frm_admin').addClass('hidden');
@@ -1395,7 +1485,7 @@ var pages = {
       });
     },
     getAttendanceForEvent : function(ParseEvent){
-      app.l('Retreiving Attendance for eventID: '+ParseEvent.id,1);
+      app.l('Retreiving Attendance for eventID: '+ParseEvent.id);
       return $.Deferred(function(getAttendanceForEvent){
         var Attendance = Parse.Object.extend("Attendance");
         var attendanceQuery = new Parse.Query(Attendance);
@@ -1497,7 +1587,7 @@ var pages = {
       });
     },
     getData : function(ParseEventObjectToLoad){
-      app.l('Retreiving data for eventID: '+ParseEventObjectToLoad.id,1);
+      app.l('Retreiving data for eventID: '+ParseEventObjectToLoad.id);
       return $.Deferred(function(getData){
         var Event = Parse.Object.extend("Event");
         var eventDetailQuery = new Parse.Query(Event);
@@ -1521,7 +1611,6 @@ var pages = {
         eventObject.set('description', $('#eventDetail.screen form#eventDetail #txt_description').val());
         eventObject.save({
           success: function(){
-            app.l('Updated event '+eventObject.id,1);
             ue.resolve();
           },
           error: function(error){
@@ -1536,7 +1625,6 @@ var pages = {
       return $.Deferred(function(de){
         eventObject.destroy({
           success: function(){
-            app.l('Destroyed event ID: '+eventObject.id,1);
             de.resolve();
           },
           error: function(e){
@@ -1588,9 +1676,7 @@ var pages = {
     init : function(ParseItem){
       var loadTime = new Date();
       //this screen MUST be initialized with a Parse "Item" object
-      app.l('Loading Item Detail for item ID: '+ParseItem.id);
       pages.itemDetail.getData(ParseItem).done(function(){
-        app.l('Done rendering Item Detail for item ID: '+ParseItem.id);
         var doneTime = new Date();
         var interval = (1000 - (doneTime-loadTime));
         setTimeout(function(){
@@ -1603,6 +1689,7 @@ var pages = {
     },
     addE : function(){
       return $.Deferred(function(a){
+        app.addE();
         $('nav#top #btn_back_itemDetail').hammer().on('tap', function(){
           var dirty = util.formIsDirty($('#itemDetail.screen form#frm_item'));
           if (dirty) {
@@ -1614,11 +1701,13 @@ var pages = {
                 switch(buttonIndex){
                   case 1:
                     pages.itemDetail.updateItem(user.currentItem).done(function(){
-                      app.showScreen($('#wishList.screen'), false, true);
+                      //app.showScreen($('#wishList.screen'), false, true);
+                      app.back(true);
                     });
                     break;
                   case 2:
-                    app.showScreen($('#wishList.screen'));
+                    //app.showScreen($('#wishList.screen'));
+                    app.back(false);
                     break;
                   default:
                 }
@@ -1627,7 +1716,8 @@ var pages = {
               ["Yes please!","No thanks."]//[buttonNames]
             );
           } else {
-            app.showScreen($('#wishList.screen'));
+            //app.showScreen($('#wishList.screen'));
+            app.back(false);
           }
           //app.showScreen($('#wishList.screen'));
         });
@@ -1660,6 +1750,18 @@ var pages = {
           }
           e.preventDefault();
         });
+        $('#itemDetail.screen #frm_shop #btn_purchase_item').hammer().on('tap',function(e){
+          pages.itemDetail.purchaseItem(user.currentItem, true).done(function(updatedItem){
+            app.back(true);
+          });
+          e.preventDefault();
+        });
+        $('#itemDetail.screen #frm_shop #btn_unpurchase_item').hammer().on('tap',function(e){
+          pages.itemDetail.purchaseItem(user.currentItem, false).done(function(updatedItem){
+            app.back(true);
+          });
+          e.preventDefault();
+        });
         $('#itemDetail.screen #frm_item').on('submit',function(e){
           pages.itemDetail.updateItem(user.currentItem).done(function(updatedItem){
             app.showScreen($('#wishList.screen'),false,true);
@@ -1677,8 +1779,11 @@ var pages = {
     },
     remE : function(){
       return $.Deferred(function(r){
+        app.remE();
         $('nav#top #btn_back_itemDetail').hammer().off('tap');
         $('#itemDetail.screen #frm_admin').off('submit');
+        $('#itemDetail.screen #frm_shop #btn_purchase_item').hammer().off('tap');
+        $('#itemDetail.screen #frm_shop #btn_unpurchase_item').hammer().off('tap');
         $('#itemDetail.screen #frm_item').off('submit');
         $('#itemDetail.screen #frm_item input').off('propertychange change click keyup input paste');
         r.resolve();
@@ -1686,25 +1791,23 @@ var pages = {
     },
     render : function(ParseItem){
       return $.Deferred(function(r){
+        $('#personWishList.screen li, #wishList.screen li').removeClass('loading');
         $('#itemDetail.screen #frm_admin #txt_iid').val(ParseItem.id);
         var itemDetailTpl = _.template( $('#tpl_itemDetail').html() );
         var obj = {
           id : ParseItem.id,
           oid : ParseItem.get('owner').id,
-          photoURL : ParseItem.get('photo').url(),
+          photoURL : typeof ParseItem.get('photo') == "undefined" ? "" : ParseItem.get('photo').url(),
           name : ParseItem.get('name'),
           description : ParseItem.get('description'),
           upc : ParseItem.get('upc'),
           lastSeenAt : ParseItem.get('lastSeenAt'),
           estPrice : ParseItem.get('estPrice'),
-          isOwner : ParseItem.get('owner').id == Parse.User.current().id ? true : false
-        }
-        if (obj.isOwner) {
-          $('#itemDetail.screen #frm_admin').removeClass('hidden');
-        } else {
-          $('#itemDetail.screen #frm_admin').addClass('hidden');
+          isOwner : ParseItem.get('owner').id == Parse.User.current().id ? true : false,
+          purchased : typeof ParseItem.get('purchased') == "undefined" ? false : ParseItem.get('purchased')
         }
         $('#itemDetail.screen content').html(itemDetailTpl(obj));
+        //$('#itemDetail.screen form#frm_admin').detach().appendTo('#itemDetail.screen content');
         app.showScreen($('#itemDetail.screen'));
         $('#itemDetail.screen content').scrollTop(0);
 
@@ -1728,6 +1831,26 @@ var pages = {
             error: function(error){
               user.tx.item = false;
               app.e('Couldn\'t save the updated item! We\'re looking into it though!');
+              app.l(JSON.stringify(error),2);
+              ui.reject(error);
+            }
+          });
+        }
+      }).promise();
+    },
+    purchaseItem : function(ParseItem, toggleBoolean){
+      return $.Deferred(function(ui){
+        if (user.tx.item == false){
+          user.tx.item = true;
+          ParseItem.set('purchased', toggleBoolean);
+          ParseItem.save(null,{
+            success: function(itemObject){
+              user.tx.item = false;
+              ui.resolve(itemObject);
+            },
+            error: function(error){
+              user.tx.item = false;
+              app.e('Couldn\'t mark this as purchased, or not! We\'re looking into it though, so try agin in a minute!');
               app.l(JSON.stringify(error),2);
               ui.reject(error);
             }
@@ -1759,31 +1882,81 @@ var pages = {
   },
   personWishList : {
     init : function(ParseRecipient){
+      if (typeof ParseRecipient == "undefined") {
+        ParseRecipient = user.currentRecipient;
+      }
       var loadTime = new Date();
       //this function assumes you are passing the actual Santas object to render/query.
       //NOT simply the ID
-      app.l('Loading detail for Recipient ID: '+ParseRecipient.id);
       $('#personWishList.screen').data('title', ParseRecipient.get('firstName')+"'s Wish List");
       pages.personWishList.getData(ParseRecipient).done(function(wishListArray){
-        app.l('Done loading detail for Recipient ID: '+ParseRecipient.id);
         var doneTime = new Date();
         var interval = (1000 - (doneTime-loadTime));
         setTimeout(function(){
           $('#start.screen li').removeClass('loading');
+          ActivityIndicator.hide();
           pages.personWishList.render(wishListArray);
         },interval < 0 ? 0 : interval);
       });
     },
     addE : function(){
       return $.Deferred(function(a){
+        app.addE();
         $('nav#top #btn_back_personWishList').hammer().on('tap', function(){
           app.showScreen($('#start.screen'));
+        });
+        $('#personWishList.screen #wishList li.item hitbox').hammer().on('tap', function(){
+          var iID = $(this).data('id');
+          $(this).addClass('loading');
+          var ParseItem = _.find(user.currentRecipientWishList, function(obj) {
+              return obj.id == iID; 
+          });
+          user.currentItem = ParseItem;
+          pages.itemDetail.init(ParseItem);
+        });
+        $('#personWishList.screen #wishList li.item input[type="checkbox"]').hammer().on('tap',function(e){
+          var loadTime = new Date();
+          var el = $(this);
+          var iID = el.data('id');
+          el.addClass('shake');
+          var ParseItem = _.find(user.currentRecipientWishList, function(obj) {
+              return obj.id == iID; 
+          });
+          user.currentItem = ParseItem;
+          if (this.checked == false) {
+            pages.itemDetail.purchaseItem(user.currentItem, true).done(function(updatedItem){
+              var doneTime = new Date();
+              var interval = (1000 - (doneTime-loadTime));
+              setTimeout(function(){
+                el.removeClass('shake');
+                el.prop('checked', true);
+              },interval < 0 ? 0 : interval);
+            });
+          } else {
+            pages.itemDetail.purchaseItem(user.currentItem, false).done(function(updatedItem){
+              var doneTime = new Date();
+              var interval = (1000 - (doneTime-loadTime));
+              setTimeout(function(){
+                el.removeClass('shake');
+                el.prop('checked', false);
+              },interval < 0 ? 0 : interval);
+            });
+          }
+        });
+        $('#personWishList.screen #wishList li.item input[type="checkbox"]').on('click',function(e){
+          e.preventDefault();
+          //e.stopPropagation();
         });
         a.resolve();
       }).promise();
     },
     remE : function(){
       return $.Deferred(function(r){
+        app.remE();
+        $('nav#top #btn_back_personWishList').hammer().off('tap');
+        $('#personWishList.screen #wishList li.item').hammer().off('tap');
+        $('#personWishList.screen #wishList li.item input[type="checkbox"]').hammer().off('tap');
+        $('#personWishList.screen #wishList li.item input[type="checkbox"]').off('click');
         r.resolve();
       }).promise();
     },
@@ -1791,12 +1964,16 @@ var pages = {
       return $.Deferred(function(r){
         $('#personWishList.screen #wishList').html('');
         _.each(wishListArray, function(o,i,a){
-          app.l('Item ID: '+o.id);
           var t = _.template($('#tpl_wishList_listItem').html());
           var d = {
             id : o.id,
+            oid : o.get('owner').id,
+            isOwner : false,
             name : o.get('name'),
             description : o.get('description'),
+            price : typeof o.get('estPrice') == "undefined" || o.get('estPrice') == null ? null : o.get('estPrice'),
+            where : typeof o.get('lastSeenAt') == "undefined" || o.get('lastSeenAt') == "" ? null : o.get('lastSeenAt'),
+            purchased : typeof o.get('purchased') == "undefined" ? false : o.get('purchased'),
             photoURL : typeof o.get('photo') != "undefined" ? o.get('photo').url() : ''
           };
           $('#personWishList.screen #wishList').append(t(d));
@@ -1815,6 +1992,7 @@ var pages = {
         itemListQuery.descending('rating');
         itemListQuery.find({
           success: function(wishList){
+            user.currentRecipientWishList = wishList;
             getData.resolve(wishList);
           },
           error: function(e){
@@ -1881,10 +2059,10 @@ var pages = {
 };
 
 
-
 var app = {
   meta:{
-    "currentPersonObjectID" : ""
+    "currentPersonObjectID" : "",
+    lastScreen : $('#start.screen')
   },
   d:{
     //semantics3 not used
@@ -1960,7 +2138,26 @@ var app = {
     //load the start screen on signin
     app.showScreen($('#start.screen'),true,false);
   },
+  back: function(forceDataUpdate){
+    if (typeof forceDataUpdate == "undefined") {
+      forceDataUpdate = false;
+    }
+    switch (app.meta.lastScreen.attr('id')) {
+      case 'wishList':
+        app.showScreen($('#wishList.screen'),false,forceDataUpdate);
+        break;
+      case 'personWishList':
+        ActivityIndicator.show('Loading');
+        //pages.personWishList.render(user.currentRecipientWishList);
+        pages.personWishList.init(user.currentRecipient);
+        break;
+      default:
+        console.log(s.attr('id'));
+    }
+    //app.showScreen(app.meta.lastScreen, false, forceDataUpdate);
+  },
   showScreen: function(s, animateBoolean, forceDataUpdate){
+    app.meta.lastScreen = $('section.screen:not(.hidden)');
     if (typeof forceDataUpdate == "undefined") {
       forceDataUpdate = false;
     }
@@ -2049,6 +2246,7 @@ var app = {
         pages.settings.init(forceDataUpdate);
         break;
       case 'wishList':
+        user.currentRecipient = Parse.User.current();
         pages.wishList.init(forceDataUpdate);
         break;
       default:
@@ -2156,7 +2354,6 @@ var app = {
       });
       $('.touchable').hammer().on('tap',function(e){
         e.preventDefault();
-        //DEBUG:console.log(e);
         $(this).addClass();
       });
       $('.shakeable').on('touchstart mousedown',function(){
@@ -2204,10 +2401,9 @@ var user = {
   santaList : [],
   santaListUpdatedAt : new Date(2000,01,01),
   getSantas : function(forceDataUpdate){
-    app.l('Getting user\'s santas...',1);
+    app.l('Getting user\'s santas...');
     return $.Deferred(function(getSantas){
       if (forceDataUpdate || user.santaListUpdatedAt <= new Date().subMinutes(15)) {
-
         //Get data from Parse
         var Santas = Parse.Object.extend("Santas");
         var santasQuery = new Parse.Query(Santas);
@@ -2217,21 +2413,19 @@ var user = {
         santasQuery.ascending('createdAt');
         santasQuery.find({
           success: function(r){
-            user.santaList = r;
+            user.santaList = _.sortBy(r, function(i){ return i.get('event').get('eventAt'); });;
             user.santaListUpdatedAt = new Date();
-            app.l('...got user\'s santa list FROM PARSE',1);
+            app.l('...got user\'s santa list FROM PARSE');
             getSantas.resolve(user.santaList);
           },
           error: function(e){
-            //TODO
-            //Tie error to master logging system
-            console.error(e);
+            app.l(JSON.stringify(e),2);
             app.e("Wowsa! I can't find your Secret Santa list right now! Try again in a few minutes, ok?");
             getSantas.reject(e);
           }
         });
       } else {
-        app.l('...got user\'s santa list FROM CACHE',1);
+        app.l('...got user\'s santa list FROM CACHE');
         getSantas.resolve(user.santaList);
       }
     }).promise();
@@ -2239,10 +2433,9 @@ var user = {
   eventList : [],
   eventListUpdatedAt : new Date(2000,01,01),
   getEvents : function(forceDataUpdate){
-    app.l('Getting user\'s events and invitations...',1);
+    app.l('Getting user\'s events and invitations...');
     return $.Deferred(function(getEvents){
       if (forceDataUpdate || user.eventListUpdatedAt <= new Date().subMinutes(15)) {
-
         //Get data from Parse
         var Attendance = Parse.Object.extend("Attendance");
         var attendanceByAttendeeQuery = new Parse.Query(Attendance);
@@ -2256,7 +2449,7 @@ var user = {
           success: function(r){
             user.eventList = r;
             user.eventListUpdatedAt = new Date();
-            app.l('...got user\'s events and invitations FROM PARSE',1);
+            app.l('...got user\'s events and invitations FROM PARSE');
             getEvents.resolve(user.eventList);
           },
           error: function(e){
@@ -2268,17 +2461,18 @@ var user = {
           }
         });
       } else {
-        app.l('...got user\'s events and invitations FROM CACHE',1);
+        app.l('...got user\'s events and invitations FROM CACHE');
         getEvents.resolve(user.eventList);
       }
     }).promise();
   },
+  wishList : [],
+  wishListUpdatedAt : new Date(2000,01,01),
   currentEvent : {},
   currentItem : {},
   currentAttendanceID : "",
   currentRecipient : {},
-  wishList : [],
-  wishListUpdatedAt : new Date(2000,01,01),
+  currentRecipientWishList : [],
   tx : {
     //transmission flags to prevent data-spamming
     user : false,
@@ -2355,7 +2549,7 @@ var util = {
       "son",
       "kilt",
       "shoe",
-      "ion",
+      "ton",
       "hole",
       "butch",
       "esis",
@@ -2395,7 +2589,7 @@ var util = {
   generateElfName : function(){
     //first name
     var fn = "";
-    var numSyllablesFN = util.random(2,4);
+    var numSyllablesFN = util.random(1,2);
     for (var i = 0; i < numSyllablesFN; i++) {
       fn += util.elf.firstNameSyllables[util.random(0,util.elf.firstNameSyllables.length)];
     }
@@ -2405,7 +2599,7 @@ var util = {
 
     //last name
     var ln = "";
-    var numSyllablesLN = util.random(1,4);
+    var numSyllablesLN = util.random(2,3);
     for (var i = 0; i < numSyllablesLN; i++) {
       ln += util.elf.lastNameSyllables[util.random(0,util.elf.lastNameSyllables.length)];
     }
@@ -2449,52 +2643,13 @@ var util = {
 
     return isDirty;
   },
-  getDataUPCold : function(upc){
-
-    var oauth = OAuth({
-      consumer: {
-        public: app.d.s3.key,
-        secret: app.d.s3.secret
-      },
-      signature_method: 'PLAINTEXT'
-    });
-
-    var request_data = {
-      url: app.d.s3.productTestURI,
-      method: 'GET',
-      data: {
-        "upc": upc,
-        "fields": [
-        "name"
-        ]
-      }
-    };
-
-    var token = {
-      public: app.d.s3.key,
-      secret: app.d.s3.secret
-    };
-
-    $.ajax({
-      url: request_data.url,
-      type: request_data.method,
-      data: oauth.authorize(request_data)
-    }).done(function(data) {
-      //process your data here
-      //DEBUG
-      console.log("S3:\n"+data);
-    });
-
-  },
   getDataUPC : function(upc, successCallback, errorCallback){
     // NEW lookup via Outpan test UPC: 714201313585
     // Test string: http://www.outpan.com/api/get-product.php?barcode=0714201313585&apikey=e4df75113dd952806a676e683515c618
     var url = 'http://www.outpan.com/api/get-product.php?barcode='+upc+'&apikey='+app.d.outpan.key;
     //var response = {};
-    app.l('Product lookup for UPC:'+upc,1);
+    app.l('Product lookup for UPC:'+upc);
     $.getJSON(url,null).done(function(d){
-      //DEBUG
-      //console.log(d);
       if(d.error){
         if(errorCallback){
           errorCallback(d);
@@ -2509,14 +2664,12 @@ var util = {
         errorCallback(e);
       }
     }).always(function(){
-      app.l('Product lookup complete for UPC:'+upc,1);
+      app.l('Product lookup complete for UPC:'+upc);
     });
   },
   photo : {
     fromLibrary : function(){
       return $.Deferred(function(flf){
-        //DEBUG
-        console.log('From LIBRARY');
         navigator.camera.getPicture(function(data){
           //success
           flf.resolve(data);
@@ -2539,8 +2692,6 @@ var util = {
     },
     takeNew : function(){
       return $.Deferred(function(tnf){
-        //DEBUG
-        console.log('Take NEW');
         navigator.camera.getPicture(function(data){
           //success
           tnf.resolve(data);

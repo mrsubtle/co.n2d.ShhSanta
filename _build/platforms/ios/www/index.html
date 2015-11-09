@@ -69,10 +69,10 @@
             </div>
             <input id="txt_firstName" type="text" placeholder="First name" class="topBorder" spellcheck="false" required>
             <input id="txt_lastName" type="text" placeholder="Last name" class="" spellcheck="false" required>
-            <div class="centeredText">
+            <!--<div class="centeredText">
               what's your Elf name?
             </div>
-            <input id="txt_elfName" type="text" placeholder="Elf name" class="topBorder" contenteditable="true" spellcheck="false" required>
+            <input id="txt_elfName" type="text" placeholder="Elf name" class="topBorder" contenteditable="true" spellcheck="false" required>-->
             <div class="centeredText">
               &nbsp;
             </div>
@@ -96,7 +96,7 @@
           <button id="btn_cancel" for="frm_signup" type="reset" class="touchable cancel">Cancel</button>
         </form>
       </section>
-      <section id="start" class="screen hidden" data-title="Santa's Shopping List" data-nav="true" data-nav-icon="btn_disclosure" data-tabbar="true">
+      <section id="start" class="screen hidden" data-title="Santa's Shopping List" data-nav="true" data-nav-icon="" data-tabbar="true">
         <ul id="santaList">
           <!-- //SANTA LIST POPULATED HERE// -->
           <div class="loader">Loading...</div>
@@ -118,10 +118,6 @@
         <content>
           <div class="loader">Loading...</div>
         </content>
-        <form id="frm_admin" class="hidden">
-          <input type="hidden" id="txt_iid" class="hidden">
-          <button id="btn_delete_item" class="delete" for="frm_admin" type="submit">Delete item</button>
-        </form>
       </section>
       <section id="events" class="screen hidden" data-title="Calendar" data-nav="true" data-nav-icon="btn_addEvent" data-tabbar="true">
         <content class="tab-content">
@@ -504,6 +500,11 @@
         <i class="itemPhoto" style="background-image:url('<% if (photoURL == '') { print('img/ico/ico_noImage.svg'); } else { print(photoURL); } %>')"></i>
         <label class="name"><%= name %></label>
         <label class="description"><%= description %></label>
+        <% if(price != null || where != null){ %><label class="details"><% if(where == null){print("");}else{print(where);} %><% if(where == null || price == null){print("");}else{print(" &middot; ");} %><% if(price == null){print("");}else{print("$"+price);} %></label><% } %>
+        <% if(!isOwner){ %>
+          <input type="checkbox" id="chk_toggle_purchase" data-id="<%= id %>" <% if(purchased){ print('checked'); } %>>
+        <% } %>
+        <hitbox data-id="<%= id %>"></hitbox>
         <loader-container><% var lt = _.template($('#tpl_loading').html()); print(lt({}));  %></loader-container>
       </li>
     </script>
@@ -517,7 +518,8 @@
     </script>
     <script type="text/template" id="tpl_itemDetail">
       <item id="<%= id %>"
-        style="background-image: url(<%= photoURL %>);"
+        class="<% if (photoURL == '') { print('noPhoto'); } else { print('hasPhoto'); } %>"
+        style="background-image: url(<% if (photoURL == '') { print('img/ico/ico_noImage.svg'); } else { print(photoURL); } %>);"
         data-ownerid="<%= oid %>">
       </item>
       <form id="frm_item">
@@ -582,6 +584,21 @@
               data-original="<%= estPrice %>"
               data-dirty="false">
           </field>
+        </fieldset>
+      </form>
+      <form id="frm_shop" class="<% if(isOwner){print('hidden')} %>">
+        <fieldset>
+          <% if(!purchased){ %>
+            <button id="btn_purchase_item" class="touchable action" for="frm_shop" type="button">I got it for <%= user.currentRecipient.get('firstName') %>!</button>
+          <% } else { %>
+            <button id="btn_unpurchase_item" class="touchable delete" for="frm_shop" type="button">Mark not purchased</button>
+          <% } %>
+        </fieldset>
+      </form>
+      <form id="frm_admin" class="<% if(!isOwner){print('hidden')} %>">
+        <fieldset>
+          <input type="hidden" id="txt_iid" class="hidden">
+          <button id="btn_delete_item" class="touchable delete" for="frm_admin" type="submit">Delete item</button>
         </fieldset>
       </form>
     </script>

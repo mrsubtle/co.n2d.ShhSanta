@@ -1018,8 +1018,9 @@
           min-height: @touchBase;
           font-family: @fontFamily;
           font-size: 1.15em;
-          border: @borderStandard darken(@appBG1,1%);
+          //border: @borderStandard darken(@appBG1,1%);
           border-radius: 0.2rem;
+          box-shadow: 0 1px 1px rgba(0,0,0,0.37);
           .animate300();
           loader-container {
             display: none;
@@ -1033,7 +1034,7 @@
             }
           }
         }
-        card:after{
+        /*card:after{
           content:"";
           position:absolute;
           z-index:-1;
@@ -1044,7 +1045,7 @@
           width:  80%;
           height: 10%;
           border-radius:100%;
-        }
+        }*/
         label {
           display: block;
           text-align: center;
@@ -1206,24 +1207,22 @@
       li {
         position: relative;
         display: block;
-        min-height: ((@touchBase * 1.5) + ((@touchBase / 5) * 2) );
         font-family: @fontFamilyHeader;
         font-size: 1.05em;
-        //border-bottom: @borderStandard darken(@appBG1,10%);
-        //height: @touchBase * 1.9;
-        padding: 1em 1em 1em @touchBase * 1.9;
+        min-height: ((@touchBase) + ((@touchBase / 5) * 2) );
+        padding: 1em 1em 1em (@touchBase + ((@touchBase / 5)*2));
         background-color: @appBG;
         i.itemPhoto {
           display: inline-block;
-          width: @touchBase * 1.5;
-          height: @touchBase * 1.5;
+          width: @touchBase;
+          height: @touchBase;
           position: absolute;
-          top: @touchBase / 5;
-          left: @touchBase / 5;
-          background-color: @imageBGColor;
+          top: (@touchBase / 5);
+          left: (@touchBase / 5);
           background-size: cover;
           background-position: center center;
-          border-radius: @touchBase / 5;
+          border-radius: @touchBase / 8;
+          background-color: @imageBGColor;
         }
         label {
           display: block;
@@ -1231,11 +1230,11 @@
         label.name {
           font-family: @fontFamilyM;
           color: @tintColor;
-          overflow: none;
+          overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-        label.description {
+        label.description, label.details {
           font-family: @fontFamily;
           letter-spacing: 0.01em;
           font-size: 0.8em;
@@ -1243,6 +1242,12 @@
           overflow: none;
           text-overflow: ellipsis;
           white-space: nowrap;
+        }
+        label.details {
+          display: none;
+        }
+        input#chk_toggle_purchase {
+          display: none;
         }
         loader-container {
           display: none;
@@ -1254,6 +1259,13 @@
           .loader {
             .flexItem;
           }
+        }
+        hitbox {
+          display: block;
+          position: absolute;
+          top:0; left:0;
+          bottom:0; right: 0;
+          background-color: transparent;
         }
         &.empty {
           padding: 1rem 1rem 2rem 1rem;
@@ -1275,21 +1287,38 @@
   #personWishList.screen {
     ul {
       li {
-        min-height: ((@touchBase) + ((@touchBase / 5) * 2) );
-        padding: 1em 1em 1em (@touchBase + ((@touchBase / 5)*2));
-        i.itemPhoto {
-          display: inline-block;
-          width: @touchBase;
-          height: @touchBase;
-          position: absolute;
-          top: @touchBase / 5;
-          left: @touchBase / 5;
-          background-size: cover;
-          background-position: center center;
-          border-radius: @touchBase / 8;
-        }
+        padding: 1em (@touchBase + ((@touchBase / 5)*2)) 1em (@touchBase + ((@touchBase / 5)*2));
         label.description {
           display: none;
+        }
+        label.details {
+          display: block;
+        }
+        input#chk_toggle_purchase {
+          display: inline-block;
+          position: absolute;
+          top: (@touchBase / 5); right: (@touchBase / 5);
+          width: @touchBase;
+          height: @touchBase;
+          -webkit-appearance: none;
+          background-color: @tintColor;
+          background-image: url(../img/ico/ico_purchase.svg);
+          background-position: 50% 50%;
+          background-size: cover;
+          border: 10px solid @appBG;
+          border-radius: @touchBase;
+          //padding: 10px;
+        }
+        input#chk_toggle_purchase:checked {
+          background-image: url(../img/ico/ico_return.svg);
+          background-color: darken(@appBG, 10%);
+        }
+        hitbox {
+          display: block;
+          position: absolute;
+          top:0; left:0;
+          bottom:0; right: (@touchBase + ((@touchBase / 5)*2));
+          background-color: transparent;
         }
       }
     }
@@ -1311,11 +1340,11 @@
       display: block;
       position: relative;
       width: 100%;
-      height: 50vh;
-      padding: 0; margin: 0;
+      height: 100vw;
+      padding: 0; margin: @navBase 0 0 0;
       border: none;
       border-bottom: @borderStandard darken(@appBG,2%);
-      background-color: @tintColorLight;
+      background-color: @imageBGColor;
       background-repeat: no-repeat;
       background-position: 50% 50%;
       background-size: cover;
@@ -1330,18 +1359,30 @@
         font-size: 1.5rem;
         text-shadow: 0 2px 10px rgba(red(@mainColorDark),green(@mainColorDark),blue(@mainColorDark),0.67);
       }
+      &.noPhoto {
+        height: 50vw;
+      }
     }
     fieldset {
       margin: 1rem 0;
     }
     form#frm_admin {
       display: block;
+      //position: absolute;
+      padding: 0; margin: (@touchBase * 2) 0 0 0;
+      //bottom: 0;
+      //left: 0;
+      width: 100%;
+    }
+    /*form#frm_shop {
+      display: block;
       position: absolute;
-      padding: 0; margin: 0;
+      padding: 0; 
+      //margin: (@touchBase * 2) 0 0 0;
       bottom: 0;
       left: 0;
       width: 100%;
-    }
+    }*/
   }
 
 // MODALS ========================
