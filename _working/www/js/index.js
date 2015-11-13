@@ -994,12 +994,16 @@ var pages = {
           modals.mdl_item_create.show();
         });
         $('#wishList.screen ul#wishList li.item hitbox').hammer().on('tap', function(){
+          //DEBUG
+          console.log('wishList TAPPED ITEM');
           var iID = $(this).data('id');
-          $(this).addClass('loading');
+          $('#wishList.screen ul#wishList li#'+$(this).data('id')+'.item').addClass('loading');
           var ParseItem = _.find(user.wishList, function(obj) {
               return obj.id == iID; 
           });
           user.currentItem = ParseItem;
+          //DEBUG
+          console.log(ParseItem);
           pages.itemDetail.init(ParseItem);
         });
         a.resolve();
@@ -1047,31 +1051,9 @@ var pages = {
       $('#wishList.screen #wishList').append(loaderTpl({}));
       //perfom data GET
       return $.Deferred(function(getData){
-        if (forceDataUpdate || user.wishListUpdatedAt <= new Date().subMinutes(5)) {
-          var Item = Parse.Object.extend('Item');
-          var wishListQuery = new Parse.Query(Item);
-          wishListQuery.descending('rating');
-          wishListQuery.equalTo('owner',Parse.User.current());
-          //include the _User object
-          wishListQuery.include('owner');
-          wishListQuery.find({
-            success : function(results){
-              //got the data
-              user.wishList = results;
-              user.wishListUpdatedAt = new Date();
-              app.l('...got wish list items FROM PARSE');
-              getData.resolve(user.wishList);
-            },
-            error : function(error){
-              app.e("Darn it! I couldn't find your Wish List.  Gimmea sec, and try again.");
-              app.l(JSON.stringify(error,null,2),2);
-              getData.reject(error);
-            }
-          });
-        } else {
-          app.l('...got wish list items FROM CACHE');
-          getData.resolve(user.wishList);
-        }
+        user.getWishList(forceDataUpdate).done(function(wishListArray){
+          getData.resolve(wishListArray);
+        });
       }).promise();
     }
   },
@@ -1670,6 +1652,10 @@ var pages = {
   },
   itemDetail : {
     init : function(ParseItem){
+      user.currentItem = ParseItem;
+      //DEBUG
+      console.log('itemDetail INIT');
+      console.log(ParseItem);
       var loadTime = new Date();
       //this screen MUST be initialized with a Parse "Item" object
       pages.itemDetail.getData(ParseItem).done(function(){
@@ -1718,32 +1704,30 @@ var pages = {
           //app.showScreen($('#wishList.screen'));
         });
         $('#itemDetail.screen #frm_admin').on('submit', function(e){
-          if(user.currentItem.id == $('#itemDetail.screen #frm_admin #txt_iid').val()){
-            navigator.notification.confirm(
-              "Are you sure you want to delete it?  Someone may have bought it for you already!",//message
-              function(buttonIndex){
-                //buttonIndex is 1-based
-                switch(buttonIndex){
-                  case 1:
-                    user.currentItem.destroy({
-                      success: function(){
-                        app.showScreen($('#wishList.screen'), false, true);
-                      },
-                      error: function(error){
-                        app.e("Aw snap! I couldn't delete it! Try again in a few minutes.");
-                        app.l(JSON.stringify(error),2);
-                      }
-                    });
-                    break;
-                  case 2:
-                    break;
-                  default:
-                }
-              },//callback
-              "Delete it for realz?",//[title]
-              ["Yes please!","No thanks."]//[buttonNames]
-            );
-          }
+          navigator.notification.confirm(
+            "Are you sure you want to delete it?  Someone may have bought it for you already!",//message
+            function(buttonIndex){
+              //buttonIndex is 1-based
+              switch(buttonIndex){
+                case 1:
+                  user.currentItem.destroy({
+                    success: function(){
+                      app.showScreen($('#wishList.screen'), false, true);
+                    },
+                    error: function(error){
+                      app.e("Aw snap! I couldn't delete it! Try again in a few minutes.");
+                      app.l(JSON.stringify(error),2);
+                    }
+                  });
+                  break;
+                case 2:
+                  break;
+                default:
+              }
+            },//callback
+            "Delete it for realz?",//[title]
+            ["Yes please!","No thanks."]//[buttonNames]
+          );
           e.preventDefault();
         });
         $('#itemDetail.screen #frm_shop #btn_purchase_item').hammer().on('tap',function(e){
@@ -1790,6 +1774,9 @@ var pages = {
         $('#personWishList.screen li, #wishList.screen li').removeClass('loading');
         $('#itemDetail.screen #frm_admin #txt_iid').val(ParseItem.id);
         var itemDetailTpl = _.template( $('#tpl_itemDetail').html() );
+        //DEBUG
+        console.log('itemDetail RENDER');
+        console.log(ParseItem);
         var obj = {
           id : ParseItem.id,
           oid : ParseItem.get('owner').id,
@@ -1859,20 +1846,19 @@ var pages = {
         forceDataUpdate = false;
       }
       return $.Deferred(function(getData){
-        if(forceDataUpdate || user.wishListUpdatedAt <= new Date().subMinutes(15)){
-          ParseItem.fetch({
-            success: function(updatedItem){
-              getData.resolve(updatedItem);
-            },
-            error: function(error){
-              app.e("Whoops! I couldn't update this item's data.  BUT, I have old date that I can show you.");
-              app.l(JSON.stringify(error),2);
-              getData.resolve(ParseItem);
-            }
-          });
-        } else {
-          getData.resolve(ParseItem);
-        }
+        var Item = Parse.Object.extend("Item");
+        var itemQuery = new Parse.Query(Item);
+        itemQuery.include('owner');
+        itemQuery.get(ParseItem.id,{
+          success: function(updatedItem){
+            getData.resolve(updatedItem);
+          },
+          error: function(error){
+            app.e("Whoops! I couldn't update this item's data.  BUT, I have old date that I can show you.");
+            app.l(JSON.stringify(error),2);
+            getData.resolve(ParseItem);
+          }
+        });
       }).promise();
     }
   },
@@ -2464,6 +2450,36 @@ var user = {
   },
   wishList : [],
   wishListUpdatedAt : new Date(2000,01,01),
+  getWishList : function(forceDataUpdate){
+    app.l('Getting user\'s wish list...');
+    return $.Deferred(function(getData){
+      if (forceDataUpdate || user.wishListUpdatedAt <= new Date().subMinutes(5)) {
+        var Item = Parse.Object.extend('Item');
+        var wishListQuery = new Parse.Query(Item);
+        wishListQuery.descending('rating');
+        wishListQuery.equalTo('owner', Parse.User.current());
+        //include the _User object
+        wishListQuery.include('owner');
+        wishListQuery.find({
+          success : function(results){
+            //got the data
+            user.wishList = results;
+            user.wishListUpdatedAt = new Date();
+            app.l('...got wish list items FROM PARSE');
+            getData.resolve(user.wishList);
+          },
+          error : function(error){
+            app.e("Darn it! I couldn't find your Wish List.  Gimmea sec, and try again.");
+            app.l(JSON.stringify(error,null,2),2);
+            getData.reject(error);
+          }
+        });
+      } else {
+        app.l('...got wish list items FROM CACHE');
+        getData.resolve(user.wishList);
+      }
+    }).promise();
+  },
   currentEvent : {},
   currentItem : {},
   currentAttendanceID : "",
