@@ -1,6 +1,8 @@
 // Parse Cloud Code (main.js)
 
 var _ = require('underscore');
+var Mailgun = require('mailgun');
+Mailgun.initialize('robot.shh-santa.com', 'key-adbe6932e8b425ec158ef5ca5d31f867');
 
 function getAttendaceForEvent(ParseEvent){
   var Attendance = Parse.Object.extend('Attendance');
@@ -157,6 +159,7 @@ Parse.Cloud.afterDelete("Event", function(request) {
   });
 });
 Parse.Cloud.beforeSave("Attendance", function(request, response){
+  var sendingUser = Parse.User.current();
   if (typeof request.object.get('email') != "undefined") {
     var email = request.object.get('email');
     var User = Parse.Object.extend("User");
@@ -165,7 +168,26 @@ Parse.Cloud.beforeSave("Attendance", function(request, response){
     userQuery.first({
       success: function(userResult){
         request.object.set('attendee', userResult);
-        response.success();
+        //send Mailgun Email
+        Mailgun.sendEmail({
+          to: email,
+          from: "Santa's Robo-Elf <no-reply@shh-santa.com>",
+          subject: "You're Invited!",
+          html: "<p>HEYO!</p><p>"+ sendingUser.get('displayName') +" has sent you an invitation to join a Secret Santa event in the <strong>Shh Santa!</strong> <em>mobile app</em>!</p><p>To download the app and accept your invitation, select your mobile platform below...</p><p><a href='https://geo.itunes.apple.com/us/app/shh-santa!/id1057261178?mt=8' style='display:inline-block;overflow:hidden;background:url(http://linkmaker.itunes.apple.com/images/badges/en-us/badge_appstore-lrg.svg) no-repeat;width:165px;height:40px;''></a><br><a href='https://geo.itunes.apple.com/us/app/shh-santa!/id1057261178?mt=8'>Click here to download on the Apple App Store</a></p><p><a href='https://play.google.com/store/apps/details?id=co.n2d.ShhSanta&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' height='40' src='https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png' /></a><br><a href='https://play.google.com/store/apps/details?id=co.n2d.ShhSanta&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1''>Click here to download on the Google Play Store</a></p><p>If you already have the <strong>Shh Santa!</strong> app, your event is waiting for you in the <em>Invitations</em> tab under <em>Events</em>.</p><p><br>Sincerely,<br><strong>Santa's Robo-Elf</strong><br><small><a href='http://shh-santa.com/'>shh-santa.com</a><br><a href='http://shh-santa.com/privacy.html'>Privacy Policy</a></small></p><p><small>PS.<br>Don't reply directly to this email, I'm just a robot!</small></p>"
+        }, {
+          success: function(httpResponse) {
+            console.log(httpResponse);
+            console.log('Sent via Mailgun to '+email);
+            //response.success("Email sent!");
+            response.success();
+          },
+          error: function(httpResponse) {
+            console.error(httpResponse);
+            console.log('Mailgun could not send email to '+email);
+            //response.error("Uh oh, something went wrong");
+            response.success();
+          }
+        });
       },
       error: function(e){
         console.error(e);
