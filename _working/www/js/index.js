@@ -33,6 +33,8 @@
     return this;
   }
 
+
+
 var as = {
   as_eventDetail_invitation : {
     el : "#as_eventDetail_invitation",
@@ -2368,6 +2370,39 @@ var app = {
   },
   onDeviceReady: function() {
     app.s('deviceready');
+    // Push Notification setup
+    var push = PushNotification.init({
+        /*android: {
+            senderID: "12345679"
+        },*/
+        ios: {
+            alert: "true",
+            badge: "true",
+            sound: "true"
+        }
+    });
+
+    push.on('registration', function(data) {
+      console.log('Push registration');
+      console.log(data.registrationId);
+    });
+
+    push.on('notification', function(data) {
+      console.log('Push received');
+      console.log(JSON.stringify(data,null,4));
+        // data.message,
+        // data.title,
+        // data.count,
+        // data.sound,
+        // data.image,
+        // data.additionalData
+    });
+
+    push.on('error', function(e) {
+      console.log('Push error');
+      console.log(JSON.stringify(e,null,4));
+        // e.message
+    });
   },
   updateBadge : function(tabBarObject, badgeInteger){
     if (badgeInteger == 0) {

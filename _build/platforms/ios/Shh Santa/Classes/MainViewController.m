@@ -75,6 +75,8 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    [Parse setApplicationId:@"8dbOiuDO7wXfYQ6D0Wk7GhuZRaLPjQOJlvTpligz"
+                  clientKey:@"gYbbuBl97XvY5lsrUOSOJxprok0SuGB91wekF92T"];
 }
 
 - (void)viewDidUnload

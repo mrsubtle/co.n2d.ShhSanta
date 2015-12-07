@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		105E6BEAC3284451B88430BD /* CDVVibration.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F000DE8DDD542F9BFEE3E51 /* CDVVibration.m */; };
 		1D3623260D0F684500981E51 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* AppDelegate.m */; };
@@ -16,6 +17,7 @@
 		302D95F114D2391D003F00A1 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 302D95EF14D2391D003F00A1 /* MainViewController.m */; };
 		302D95F214D2391D003F00A1 /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 302D95F014D2391D003F00A1 /* MainViewController.xib */; };
 		305D5FD1115AB8F900A74A75 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 305D5FD0115AB8F900A74A75 /* MobileCoreServices.framework */; };
+		30659643323140B985731790 /* PushPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = C6D05910CF904CC9B9C3DB50 /* PushPlugin.m */; };
 		306774B5222D43E2B3093659 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 005B53132A69449EB24A3DE9 /* CoreVideo.framework */; };
 		3088BBBD154F3926009F9C59 /* Default-Landscape@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 3088BBB7154F3926009F9C59 /* Default-Landscape@2x~ipad.png */; };
 		3088BBBE154F3926009F9C59 /* Default-Landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 3088BBB8154F3926009F9C59 /* Default-Landscape~ipad.png */; };
@@ -33,6 +35,7 @@
 		30FC414916E50CA1004E6F35 /* icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 30FC414816E50CA1004E6F35 /* icon-72@2x.png */; };
 		314EE660C0944D84899BCE3A /* CDVBarcodeScanner.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 76F59190EFBE4F2994628484 /* CDVBarcodeScanner.bundle */; };
 		37DD638140BB4572A22044D9 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF3F8A37B69047258B3B05CA /* libiconv.dylib */; };
+		41864004D7304BC2A342DBB7 /* AppDelegate+notification.m in Sources */ = {isa = PBXBuildFile; fileRef = 57727148B4D5430783992A5E /* AppDelegate+notification.m */; };
 		5106EE54E5534DD1BC30A545 /* UIImage+CropScaleOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E954621B26743D8A55B95F2 /* UIImage+CropScaleOrientation.m */; };
 		516EB2F0973E4370A7B9C526 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB2CEC01E7D74539930418B3 /* CoreLocation.framework */; };
 		5B1594DD16A7569C00FEF299 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B1594DC16A7569C00FEF299 /* AssetsLibrary.framework */; };
@@ -100,6 +103,7 @@
 		1EC4A23354DE4A3BB9B94310 /* CDVDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVDevice.m; path = "cordova-plugin-device/CDVDevice.m"; sourceTree = "<group>"; };
 		2370CE04AFB34E77ADBAE074 /* ActivityIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ActivityIndicator.m; path = org.apache.cordova.plugin.ActivityIndicator/ActivityIndicator.m; sourceTree = "<group>"; };
 		238591ABF16A4C74BA9D67B5 /* CDVConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVConnection.h; path = "cordova-plugin-network-information/CDVConnection.h"; sourceTree = "<group>"; };
+		23F696ED8B7F5B5FEB74F283 /* Pods-Shh Santa.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shh Santa.release.xcconfig"; path = "Pods/Target Support Files/Pods-Shh Santa/Pods-Shh Santa.release.xcconfig"; sourceTree = "<group>"; };
 		25820815DCD843A6A339AF14 /* CDVJpegHeaderWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVJpegHeaderWriter.m; path = "cordova-plugin-camera/CDVJpegHeaderWriter.m"; sourceTree = "<group>"; };
 		27699EE357954D40BAD29F78 /* CoreImage.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -134,6 +138,9 @@
 		47F29450385D4DD5BFEA88C0 /* CDVReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVReachability.h; path = "cordova-plugin-network-information/CDVReachability.h"; sourceTree = "<group>"; };
 		4C37C9B565B04289A8D05A99 /* CDVLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVLogger.h; path = "cordova-plugin-console/CDVLogger.h"; sourceTree = "<group>"; };
 		51C66F536CA64362A4FBD108 /* SystemConfiguration.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		52856A94481C6DDBB104C47B /* Pods-Shh Santa.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shh Santa.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Shh Santa/Pods-Shh Santa.debug.xcconfig"; sourceTree = "<group>"; };
+		574333A14CF9450A8FC09273 /* AppDelegate+notification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+notification.h"; path = "phonegap-plugin-push/AppDelegate+notification.h"; sourceTree = "<group>"; };
+		57727148B4D5430783992A5E /* AppDelegate+notification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "AppDelegate+notification.m"; path = "phonegap-plugin-push/AppDelegate+notification.m"; sourceTree = "<group>"; };
 		5B1594DC16A7569C00FEF299 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		646CD9ACDABB43A39902210E /* CDVCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVCamera.h; path = "cordova-plugin-camera/CDVCamera.h"; sourceTree = "<group>"; };
 		689C4371EDD6436484B8926D /* CDVNotification.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = CDVNotification.bundle; sourceTree = "<group>"; };
@@ -158,6 +165,8 @@
 		9B56D6BA1BDDCA8A001FF3F7 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		AC06D336FE694ACE8F759872 /* AudioToolbox.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		AFD3EFFF1B8F48A786221E2F /* zxing-all-in-one.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = unknown; name = "zxing-all-in-one.cpp"; path = "phonegap-plugin-barcodescanner/zxing-all-in-one.cpp"; sourceTree = "<group>"; };
+		C6D05910CF904CC9B9C3DB50 /* PushPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PushPlugin.m; path = "phonegap-plugin-push/PushPlugin.m"; sourceTree = "<group>"; };
+		C935049AC17440379C93D4DA /* PushPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PushPlugin.h; path = "phonegap-plugin-push/PushPlugin.h"; sourceTree = "<group>"; };
 		CB2CEC01E7D74539930418B3 /* CoreLocation.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		CD0E397196A84999BB299E85 /* scannerOverlay.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = scannerOverlay.xib; sourceTree = "<group>"; };
 		D4A0D8751607E02300AEF8BB /* Default-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x~iphone.png"; sourceTree = "<group>"; };
@@ -234,6 +243,7 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				99F2E399300F9F0F1276242D /* Pods */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -321,6 +331,10 @@
 				13E4D1F9D0624F96B8A17DF6 /* MBProgressHUD.m */,
 				F3215FEDC0574E869929A6FE /* ActivityIndicator.h */,
 				768549B8626F48C1BA79F109 /* MBProgressHUD.h */,
+				57727148B4D5430783992A5E /* AppDelegate+notification.m */,
+				C6D05910CF904CC9B9C3DB50 /* PushPlugin.m */,
+				574333A14CF9450A8FC09273 /* AppDelegate+notification.h */,
+				C935049AC17440379C93D4DA /* PushPlugin.h */,
 			);
 			name = Plugins;
 			path = "Shh Santa/Plugins";
@@ -365,6 +379,15 @@
 			path = splash;
 			sourceTree = "<group>";
 		};
+		99F2E399300F9F0F1276242D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				52856A94481C6DDBB104C47B /* Pods-Shh Santa.debug.xcconfig */,
+				23F696ED8B7F5B5FEB74F283 /* Pods-Shh Santa.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		EB87FDF11871DA420020F90C /* Staging */ = {
 			isa = PBXGroup;
 			children = (
@@ -381,10 +404,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "Shh Santa" */;
 			buildPhases = (
+				D3C67F89F41A0C5E549AE235 /* Check Pods Manifest.lock */,
 				304B58A110DAC018002A0835 /* Copy www directory */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				D8356648811917E6FE3229DD /* Embed Pods Frameworks */,
+				D927F83D0A4FA99BBCD6ABB9 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -505,6 +531,51 @@
 			shellScript = "NODEJS_PATH=/usr/local/bin; NVM_NODE_PATH=~/.nvm/versions/node/`nvm version 2>/dev/null`/bin; N_NODE_PATH=`find /usr/local/n/versions/node/* -maxdepth 0 -type d 2>/dev/null | tail -1`/bin; XCODE_NODE_PATH=`xcode-select --print-path`/usr/share/xcs/Node/bin; PATH=$NODEJS_PATH:$NVM_NODE_PATH:$N_NODE_PATH:$XCODE_NODE_PATH:$PATH && node cordova/lib/copy-www-build-step.js";
 			showEnvVarsInLog = 0;
 		};
+		D3C67F89F41A0C5E549AE235 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		D8356648811917E6FE3229DD /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Shh Santa/Pods-Shh Santa-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D927F83D0A4FA99BBCD6ABB9 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Shh Santa/Pods-Shh Santa-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -529,6 +600,8 @@
 				EB8DC8C8DE8E456F9D9099AB /* zxing-all-in-one.cpp in Sources */,
 				FFF9AC943010436BA807BE8E /* ActivityIndicator.m in Sources */,
 				85D12B88333A4EB793A7F9E2 /* MBProgressHUD.m in Sources */,
+				41864004D7304BC2A342DBB7 /* AppDelegate+notification.m in Sources */,
+				30659643323140B985731790 /* PushPlugin.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -545,12 +618,17 @@
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 52856A94481C6DDBB104C47B /* Pods-Shh Santa.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -578,12 +656,17 @@
 		};
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 23F696ED8B7F5B5FEB74F283 /* Pods-Shh Santa.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Shh Santa/Shh Santa-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;

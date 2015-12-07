@@ -63,6 +63,8 @@
  */
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
+    
+    
     CGRect screenBounds = [[UIScreen mainScreen] bounds];
 
 #if __has_feature(objc_arc)
@@ -77,6 +79,19 @@
 #else
         self.viewController = [[[MainViewController alloc] init] autorelease];
 #endif
+    
+    // SETTING UP Parse Push
+    /* not needed with cordova push plugin
+    UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert |
+                                                    UIUserNotificationTypeBadge |
+                                                    UIUserNotificationTypeSound);
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:userNotificationTypes
+                                                                             categories:nil];
+    [application registerUserNotificationSettings:settings];
+    [application registerForRemoteNotifications];
+    */
+    // ENDING Parse Push
+    
 
     // Set your app's start page by setting the <content src='foo.html' /> tag in config.xml.
     // If necessary, uncomment the line below to override it.
@@ -125,6 +140,13 @@
             stringByReplacingOccurrencesOfString:@" " withString:@""];
 
         [[NSNotificationCenter defaultCenter] postNotificationName:CDVRemoteNotification object:token];
+        // Store the deviceToken in the current installation and save it to Parse.
+        /*
+        PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+        [currentInstallation setDeviceTokenFromData:deviceToken];
+        currentInstallation.channels = @[ @"global" ];
+        [currentInstallation saveInBackground];
+        */
     }
 
     - (void)                                 application:(UIApplication*)application
@@ -147,5 +169,7 @@
 {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
 }
+
+
 
 @end

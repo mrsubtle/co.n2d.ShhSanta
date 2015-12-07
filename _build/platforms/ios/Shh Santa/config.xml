@@ -102,4 +102,7 @@
     <access launch-external="yes" origin="tel:*" />
     <access launch-external="yes" origin="sms:*" />
     <access launch-external="yes" origin="geo:*" />
+    <feature name="PushNotification">
+        <param name="ios-package" value="PushPlugin" />
+    </feature>
 </widget>
