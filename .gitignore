@@ -1,0 +1,6 @@
+
+*.cer
+
+*.p12
+
+*.certSigningRequest
