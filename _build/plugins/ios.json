@@ -47,10 +47,6 @@
                         {
                             "xml": "<feature name=\"ActivityIndicator\"><param name=\"ios-package\" value=\"ActivityIndicator\" /></feature>",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"PushNotification\"><param name=\"ios-package\" value=\"PushPlugin\" /></feature>",
-                            "count": 1
                         }
                     ]
                 }
@@ -142,12 +138,6 @@
                             "xml": "<string />",
                             "count": 2
                         }
-                    ],
-                    "UIBackgroundModes": [
-                        {
-                            "xml": "<array><string>remote-notification</string></array>",
-                            "count": 1
-                        }
                     ]
                 }
             }
@@ -182,9 +172,6 @@
             "PACKAGE_NAME": "co.n2d.ShhSanta"
         },
         "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "co.n2d.ShhSanta"
-        },
-        "phonegap-plugin-push": {
             "PACKAGE_NAME": "co.n2d.ShhSanta"
         }
     },

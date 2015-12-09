@@ -29,6 +29,7 @@
 #import "MainViewController.h"
 
 #import <Cordova/CDVPlugin.h>
+#import <Parse/Parse.h>
 
 @implementation AppDelegate
 
@@ -63,6 +64,13 @@
  */
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
+    // Initialize Parse.
+    [Parse setApplicationId:@"8dbOiuDO7wXfYQ6D0Wk7GhuZRaLPjQOJlvTpligz"
+                  clientKey:@"gYbbuBl97XvY5lsrUOSOJxprok0SuGB91wekF92T"];
+    
+    // [Optional] Track statistics around application opens.
+    [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+    
     CGRect screenBounds = [[UIScreen mainScreen] bounds];
 
 #if __has_feature(objc_arc)
