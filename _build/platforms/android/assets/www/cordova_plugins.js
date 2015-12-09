@@ -104,6 +104,13 @@ module.exports = [
         "file": "plugins/cordova-plugin-whitelist/whitelist.js",
         "id": "cordova-plugin-whitelist.whitelist",
         "runs": true
+    },
+    {
+        "file": "plugins/com.phonegap.parsepushplugin/www/parse-push-plugin.js",
+        "id": "com.phonegap.parsepushplugin.ParsePushPlugin",
+        "clobbers": [
+            "ParsePushPlugin"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -118,7 +125,8 @@ module.exports.metadata =
     "cordova-plugin-vibration": "1.2.0",
     "org.apache.cordova.plugin.ActivityIndicator": "1.0.0",
     "phonegap-plugin-barcodescanner": "4.1.0",
-    "cordova-plugin-whitelist": "1.0.0"
+    "cordova-plugin-whitelist": "1.0.0",
+    "com.phonegap.parsepushplugin": "0.6.3"
 }
 // BOTTOM OF METADATA
 });

@@ -47,6 +47,10 @@
                         {
                             "xml": "<feature name=\"ActivityIndicator\"><param name=\"ios-package\" value=\"ActivityIndicator\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"ParsePushPlugin\"><param name=\"ios-package\" value=\"CDVParsePlugin\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -63,12 +67,20 @@
                         {
                             "xml": false,
                             "count": 2
+                        },
+                        {
+                            "xml": "false",
+                            "count": 1
                         }
                     ],
                     "CoreGraphics.framework": [
                         {
                             "xml": false,
                             "count": 3
+                        },
+                        {
+                            "xml": "false",
+                            "count": 1
                         }
                     ],
                     "AssetsLibrary.framework": [
@@ -80,6 +92,10 @@
                     "MobileCoreServices.framework": [
                         {
                             "xml": false,
+                            "count": 1
+                        },
+                        {
+                            "xml": "false",
                             "count": 1
                         }
                     ],
@@ -97,11 +113,19 @@
                         {
                             "xml": false,
                             "count": 1
+                        },
+                        {
+                            "xml": "false",
+                            "count": 1
                         }
                     ],
                     "SystemConfiguration.framework": [
                         {
                             "xml": true,
+                            "count": 1
+                        },
+                        {
+                            "xml": "false",
                             "count": 1
                         }
                     ],
@@ -121,11 +145,39 @@
                         {
                             "xml": false,
                             "count": 1
+                        },
+                        {
+                            "xml": "false",
+                            "count": 1
                         }
                     ],
                     "CoreImage.framework": [
                         {
                             "xml": false,
+                            "count": 1
+                        }
+                    ],
+                    "CFNetwork.framework": [
+                        {
+                            "xml": "false",
+                            "count": 1
+                        }
+                    ],
+                    "libz.1.1.3.dylib": [
+                        {
+                            "xml": "false",
+                            "count": 1
+                        }
+                    ],
+                    "Security.framework": [
+                        {
+                            "xml": "false",
+                            "count": 1
+                        }
+                    ],
+                    "StoreKit.framework": [
+                        {
+                            "xml": "false",
                             "count": 1
                         }
                     ]
@@ -172,6 +224,9 @@
             "PACKAGE_NAME": "co.n2d.ShhSanta"
         },
         "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "co.n2d.ShhSanta"
+        },
+        "com.phonegap.parsepushplugin": {
             "PACKAGE_NAME": "co.n2d.ShhSanta"
         }
     },

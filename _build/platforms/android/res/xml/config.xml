@@ -14,6 +14,9 @@
         <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="ParsePushPlugin">
+        <param name="android-package" value="com.phonegap.parsepushplugin.ParsePushPlugin" />
+    </feature>
     <name>Shh Santa</name>
     <description>
         Hello World sample application that responds to the deviceready event.

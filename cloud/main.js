@@ -34,6 +34,37 @@ function suffleSattolo(array) {
   }
 }
 
+Parse.Cloud.define("setInstallationUser", function(request, response){
+  var user = Parse.User.current();
+  var installationID = request.params.installationID;
+
+  var Installation = Parse.Object.extend("_Installation");
+  var installationQuery = new Parse.Query(Installation);
+  installationQuery.get(installationID, {
+    success: function(installationObject) {
+      console.log("Got installation object "+installationObject.id);
+      console.log("Adding user "+user.id);
+      installationObject.set('User', user);
+      installationObject.set('channels', ["global","U_"+user.id]);
+      installationObject.save({
+        success: function(updatedInstallationObject) {
+          console.log('Updated installation '+myObject.id+' for User '+user.id);
+          user.set("hasPushLinked",true);
+          user.save();
+          response.success(updatedInstallationObject);
+        },
+        error: function(error) {
+          response.error(error);
+        }
+      });
+    },
+    error: function(error) {
+      console.log("Could not get installation object "+installationID);
+      response.error(error);
+    }
+  });
+});
+
 Parse.Cloud.define("rollTheDice", function(request, response) {
   var id = request.params.ParseEventID;
   var Event = Parse.Object.extend("Event");

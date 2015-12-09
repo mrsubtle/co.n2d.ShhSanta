@@ -39,6 +39,10 @@
                         {
                             "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"ParsePushPlugin\"><param name=\"android-package\" value=\"com.phonegap.parsepushplugin.ParsePushPlugin\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -66,7 +70,7 @@
                     "/manifest": [
                         {
                             "xml": "<uses-permission android:name=\"android.permission.VIBRATE\" />",
-                            "count": 1
+                            "count": 2
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.CAMERA\" />",
@@ -78,6 +82,34 @@
                         },
                         {
                             "xml": "<uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.INTERNET\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.WAKE_LOCK\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"com.google.android.c2dm.permission.RECEIVE\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<permission android:name=\"co.n2d.ShhSanta.permission.C2D_MESSAGE\" android:protectionLevel=\"signature\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"co.n2d.ShhSanta.permission.C2D_MESSAGE\" />",
                             "count": 1
                         }
                     ],
@@ -92,6 +124,18 @@
                         },
                         {
                             "xml": "<activity android:label=\"@string/share_name\" android:name=\"com.google.zxing.client.android.HelpActivity\"><intent-filter><action android:name=\"android.intent.action.VIEW\" /><category android:name=\"android.intent.category.DEFAULT\" /></intent-filter></activity>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<service android:name=\"com.parse.PushService\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<receiver android:exported=\"false\" android:name=\"com.phonegap.parsepushplugin.ParsePushPluginReceiver\"><intent-filter><action android:name=\"com.parse.push.intent.RECEIVE\" /><action android:name=\"com.parse.push.intent.DELETE\" /><action android:name=\"com.parse.push.intent.OPEN\" /></intent-filter></receiver>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<receiver android:name=\"com.parse.GcmBroadcastReceiver\" android:permission=\"com.google.android.c2dm.permission.SEND\"><intent-filter><action android:name=\"com.google.android.c2dm.intent.RECEIVE\" /><action android:name=\"com.google.android.c2dm.intent.REGISTRATION\" /><category android:name=\"co.n2d.ShhSanta\" /></intent-filter></receiver>",
                             "count": 1
                         }
                     ]
@@ -610,6 +654,9 @@
             "PACKAGE_NAME": "co.n2d.ShhSanta"
         },
         "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "co.n2d.ShhSanta"
+        },
+        "com.phonegap.parsepushplugin": {
             "PACKAGE_NAME": "co.n2d.ShhSanta"
         }
     },

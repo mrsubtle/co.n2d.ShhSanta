@@ -25,6 +25,9 @@
     <feature name="ActivityIndicator">
         <param name="ios-package" value="ActivityIndicator" />
     </feature>
+    <feature name="ParsePushPlugin">
+        <param name="ios-package" value="CDVParsePlugin" />
+    </feature>
     <name>Shh Santa</name>
     <description>
         Hello World sample application that responds to the deviceready event.

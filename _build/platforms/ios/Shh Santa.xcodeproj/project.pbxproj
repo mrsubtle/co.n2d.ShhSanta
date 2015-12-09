@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		105E6BEAC3284451B88430BD /* CDVVibration.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F000DE8DDD542F9BFEE3E51 /* CDVVibration.m */; };
 		1D3623260D0F684500981E51 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* AppDelegate.m */; };
@@ -75,6 +74,9 @@
 		F0B769EFF75D454C9E99DED3 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 044962CA98D34E10AC175C5D /* QuartzCore.framework */; };
 		FAB207BF914A4C0C90AB54A9 /* CDVNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F39ACF559B5248A3B330683C /* CDVNotification.m */; };
 		FFF9AC943010436BA807BE8E /* ActivityIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2370CE04AFB34E77ADBAE074 /* ActivityIndicator.m */; };
+		F9F393DE459C45689D48B74D /* CDVParsePlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = A7AB98E08E0747DC88742A7F /* CDVParsePlugin.m */; };
+		D13028A328A449C99D10EDCE /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73D96A3BD1364B7E942CB9AE /* Parse.framework */; };
+		02CEB3EE08B44C4DAAF9620E /* libz.1.1.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 066503BD3EDF4D58A477ACF7 /* libz.1.1.3.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -187,6 +189,10 @@
 		F39ACF559B5248A3B330683C /* CDVNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVNotification.m; path = "cordova-plugin-dialogs/CDVNotification.m"; sourceTree = "<group>"; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = "Shh Santa/config.xml"; sourceTree = "<group>"; };
 		F9F3A1DB9C434EB59C97B850 /* ImageIO.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		A7AB98E08E0747DC88742A7F /* CDVParsePlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVParsePlugin.m"; path = "com.phonegap.parsepushplugin/CDVParsePlugin.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		736A6B5AA545433FA7FFBF21 /* CDVParsePlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVParsePlugin.h"; path = "com.phonegap.parsepushplugin/CDVParsePlugin.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		73D96A3BD1364B7E942CB9AE /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Parse.framework"; path = "Shh Santa/Plugins/com.phonegap.parsepushplugin/Parse.framework"; sourceTree = "<group>"; };
+		066503BD3EDF4D58A477ACF7 /* libz.1.1.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libz.1.1.3.dylib"; path = "usr/lib/libz.1.1.3.dylib"; sourceTree = SDKROOT; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -214,6 +220,8 @@
 				F0B769EFF75D454C9E99DED3 /* QuartzCore.framework in Frameworks */,
 				D509D8D1A2E84835B3DB5516 /* CoreImage.framework in Frameworks */,
 				9B269AAA1C17FE0100613182 /* Bolts.framework in Frameworks */,
+				D13028A328A449C99D10EDCE /* Parse.framework in Frameworks */,
+				02CEB3EE08B44C4DAAF9620E /* libz.1.1.3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,6 +315,8 @@
 				005B53132A69449EB24A3DE9 /* CoreVideo.framework */,
 				044962CA98D34E10AC175C5D /* QuartzCore.framework */,
 				27699EE357954D40BAD29F78 /* CoreImage.framework */,
+				73D96A3BD1364B7E942CB9AE /* Parse.framework */,
+				066503BD3EDF4D58A477ACF7 /* libz.1.1.3.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -350,6 +360,8 @@
 				13E4D1F9D0624F96B8A17DF6 /* MBProgressHUD.m */,
 				F3215FEDC0574E869929A6FE /* ActivityIndicator.h */,
 				768549B8626F48C1BA79F109 /* MBProgressHUD.h */,
+				A7AB98E08E0747DC88742A7F /* CDVParsePlugin.m */,
+				736A6B5AA545433FA7FFBF21 /* CDVParsePlugin.h */,
 			);
 			name = Plugins;
 			path = "Shh Santa/Plugins";
@@ -558,6 +570,7 @@
 				EB8DC8C8DE8E456F9D9099AB /* zxing-all-in-one.cpp in Sources */,
 				FFF9AC943010436BA807BE8E /* ActivityIndicator.m in Sources */,
 				85D12B88333A4EB793A7F9E2 /* MBProgressHUD.m in Sources */,
+				F9F393DE459C45689D48B74D /* CDVParsePlugin.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -583,6 +596,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"\"Shh Santa/Plugins/com.phonegap.parsepushplugin\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -620,6 +634,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"\"Shh Santa/Plugins/com.phonegap.parsepushplugin\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Shh Santa/Shh Santa-Prefix.pch";

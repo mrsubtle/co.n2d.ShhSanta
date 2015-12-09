@@ -2371,38 +2371,21 @@ var app = {
   onDeviceReady: function() {
     app.s('deviceready');
     // Push Notification setup
-    var push = PushNotification.init({
-        /*android: {
-            senderID: "12345679"
-        },*/
-        ios: {
-            alert: "true",
-            badge: "true",
-            sound: "true"
-        }
-    });
-
-    push.on('registration', function(data) {
-      console.log('Push registration');
-      console.log(data.registrationId);
-    });
-
-    push.on('notification', function(data) {
-      console.log('Push received');
-      console.log(JSON.stringify(data,null,4));
-        // data.message,
-        // data.title,
-        // data.count,
-        // data.sound,
-        // data.image,
-        // data.additionalData
-    });
-
-    push.on('error', function(e) {
-      console.log('Push error');
-      console.log(JSON.stringify(e,null,4));
-        // e.message
-    });
+    if (Parse.User.current().get('hasPushLinked') != true) {
+      ParsePushPlugin.getInstallationObjectId(function(r){
+        Parse.Cloud.run("setInstallationUser",{installationID:r},{
+          success : function(result){
+            app.l("Updated Installation object with current User");
+            Parse.User.current().fetch();
+          },
+          error : function(e){
+            app.l(JSON.stringify(e));
+          }
+        });
+      },function(e){
+        app.l(JSON.stringify(e));
+      });
+    }
   },
   updateBadge : function(tabBarObject, badgeInteger){
     if (badgeInteger == 0) {
