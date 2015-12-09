@@ -48,8 +48,9 @@ Parse.Cloud.define("setInstallationUser", function(request, response){
       installationObject.set('channels', ["global","U_"+user.id]);
       installationObject.save({
         success: function(updatedInstallationObject) {
-          console.log('Updated installation '+myObject.id+' for User '+user.id);
-          user.set("hasPushLinked",true);
+          console.log('Updated installation '+updatedInstallationObject.id+' for User '+user.id);
+          user.set("hasPushLinked", true);
+          user.set("Installation", updatedInstallationObject);
           user.save();
           response.success(updatedInstallationObject);
         },

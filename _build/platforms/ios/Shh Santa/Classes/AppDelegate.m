@@ -71,6 +71,12 @@
     // [Optional] Track statistics around application opens.
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
+    // INIT Push Notifications
+    UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound);
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:userNotificationTypes  categories:nil];
+    [application registerUserNotificationSettings:settings];
+    [application registerForRemoteNotifications];
+    
     CGRect screenBounds = [[UIScreen mainScreen] bounds];
 
 #if __has_feature(objc_arc)
@@ -126,6 +132,12 @@
     - (void)                                 application:(UIApplication*)application
         didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
     {
+        // Update Parse Installation object
+        // Store the deviceToken in the current Installation and save it to Parse
+        PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+        [currentInstallation setDeviceTokenFromData:deviceToken];
+        [currentInstallation saveInBackground];
+        
         // re-post ( broadcast )
         NSString* token = [[[[deviceToken description]
             stringByReplacingOccurrencesOfString:@"<" withString:@""]

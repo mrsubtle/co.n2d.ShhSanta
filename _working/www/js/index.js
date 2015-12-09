@@ -2371,7 +2371,7 @@ var app = {
   onDeviceReady: function() {
     app.s('deviceready');
     // Push Notification setup
-    if (Parse.User.current().get('hasPushLinked') != true) {
+    if (Parse.User.current().get('hasPushLinked') == false || typeof Parse.User.current().get('hasPushLinked') == "undefined") {
       ParsePushPlugin.getInstallationObjectId(function(r){
         Parse.Cloud.run("setInstallationUser",{installationID:r},{
           success : function(result){
