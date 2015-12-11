@@ -46,14 +46,25 @@ var as = {
       $('group.actionSheetContainer').addClass('actionSheetOff');
       $('.app').removeClass('tilt');
     },
-    show : function(){
+    show : function(isEventAdmin){
+      if (typeof isEventAdmin == "undefined") {
+        isEventAdmin = false;
+      }
       $('.app').addClass('tilt');
-      as.as_eventDetail_invitation.remE().done(as.as_eventDetail_invitation.addE().done(as.as_eventDetail_invitation.render));
+      as.as_eventDetail_invitation.remE().done(as.as_eventDetail_invitation.addE().done(as.as_eventDetail_invitation.render(isEventAdmin)));
     },
     addE : function(){
       return $.Deferred(function(a){
+        $(as.as_eventDetail_invitation.el + ' #btn_jingleUser').hammer().on('tap', function(){
+          as.as_eventDetail_invitation.jingleUser(user.currentAttendanceUserID).done(function(){
+            //DEBUG
+            console.log('Jingled');
+            as.as_eventDetail_invitation.hide();
+          });
+        });
         $(as.as_eventDetail_invitation.el + ' #btn_destroyAttendanceItem').hammer().on('tap', function(){
           as.as_eventDetail_invitation.destroyAttendance(user.currentAttendanceID).done(function(){
+            //DEBUG
             console.log('Destroyed');
             pages.eventDetail.getAttendanceForEvent(user.currentEvent).done(function(attendanceArray){
               as.as_eventDetail_invitation.hide();
@@ -74,15 +85,36 @@ var as = {
         r.resolve();
       }).promise();
     },
-    render : function(){
+    render : function(isEventAdmin){
       //unhide the appropriate as content
+      if (isEventAdmin) {
+        $(as.as_eventDetail_invitation.el + ' #btn_destroyAttendanceItem').removeClass('hidden');
+      } else {
+        $(as.as_eventDetail_invitation.el + ' #btn_destroyAttendanceItem').addClass('hidden');
+      }
       $(as.as_eventDetail_invitation.el).removeClass('hidden');
       //animate modal container
       $('group.actionSheetContainer').removeClass('actionSheetOff');
     },
+    jingleUser : function(ParseUserID){
+      return $.Deferred(function(j){
+        Parse.Cloud.run('jingleUserByID', { userToJingleID: ParseUserID }, {
+          success: function(response) {
+            app.n("Tee hee!", "You've jingled their bells!");
+            as.as_eventDetail_invitation.hide();
+          },
+          error: function(error) {
+            app.e("Oh no! I couldn't jingle that user's bells! Try again in a few minutes.");
+            app.l(JSON.stringify(error),2);
+            j.reject(error);
+          }
+        });
+      }).promise();
+    },
     destroyAttendance : function(attendanceObjectID){
       return $.Deferred(function(da){
         if (typeof attendanceObjectID != "undefined") {
+          ActivityIndicator.show("Recalling...");
           var Attendance = Parse.Object.extend("Attendance");
           var attendanceQuery = new Parse.Query(Attendance);
           attendanceQuery.get(attendanceObjectID, {
@@ -90,9 +122,11 @@ var as = {
               attendanceObject.destroy({
                 success: function(myObject) {
                   // The object was deleted from the Parse Cloud.
+                  ActivityIndicator.hide();
                   da.resolve();
                 },
                 error: function(error) {
+                  ActivityIndicator.hide();
                   app.e("Oh no! I couldn't remove that invitation! Try again in a few minutes.");
                   app.l(JSON.stringify(error),2);
                   da.reject(error);
@@ -1270,9 +1304,12 @@ var pages = {
           pages.eventDetail.tabCheck();
         });
         $('#eventDetail.screen ul li.attendee').hammer().on('tap', function(){
+          user.currentAttendanceID = $(this).data('aid');
+          user.currentAttendanceUserID = $(this).data('id');
           if ($(this).data('status') != 2 && user.currentEvent.get('createdBy').id == Parse.User.current().id) {
-            user.currentAttendanceID = $(this).data('aid');
-            as.as_eventDetail_invitation.show();
+            as.as_eventDetail_invitation.show(true);
+          } else {
+            as.as_eventDetail_invitation.show(false);
           }
         });
         $('#eventDetail.screen #frm_rsvp').on('submit', function(e){
@@ -2102,6 +2139,7 @@ var app = {
 
     //check if the user's token exists, and is still valid through Parse
     if(Parse.User.current()){
+      Parse.User.current().fetch();
       //load the user data
       app.signin();
     } else {
@@ -2371,7 +2409,10 @@ var app = {
   onDeviceReady: function() {
     app.s('deviceready');
     // Push Notification setup
+    console.log(Parse.User.current().get('hasPushLinked'));
+    console.log('Checking for push linking');
     if (Parse.User.current().get('hasPushLinked') == false || typeof Parse.User.current().get('hasPushLinked') == "undefined") {
+      console.log('No push linking');
       ParsePushPlugin.getInstallationObjectId(function(r){
         Parse.Cloud.run("setInstallationUser",{installationID:r},{
           success : function(result){
@@ -2501,6 +2542,7 @@ var user = {
   currentEvent : {},
   currentItem : {},
   currentAttendanceID : "",
+  currentAttendanceUserID : "",
   currentRecipient : {},
   currentRecipientWishList : [],
   tx : {

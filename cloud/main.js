@@ -34,6 +34,30 @@ function suffleSattolo(array) {
   }
 }
 
+Parse.Cloud.define("jingleUserByID", function(request, response){
+  var user = Parse.User.current();
+  var userToJingleID = request.params.userToJingleID;
+
+  Parse.Push.send({
+    channels: [ "U_"+userToJingleID ],
+    data: {
+      alert: "❄🔔 jingle ❄️ jingle 🔔❄️",
+      sound: "jingle.caf",
+      title: "JINGLE!"
+    }
+  }, {
+    success: function() {
+      console.log('Sent Push to channel U_'+userToJingleID);
+      response.success(true);
+    },
+    error: function(e) {
+      console.log('Could not send Push to channel U_'+userToJingleID);
+      console.log(e);
+      response.error(e);
+    }
+  });
+});
+
 Parse.Cloud.define("setInstallationUser", function(request, response){
   var user = Parse.User.current();
   var installationID = request.params.installationID;
